@@ -17,6 +17,13 @@
             font-family: 'Poppins', sans-serif;
             min-height: 100vh;
             background: linear-gradient(45deg, #000000, #0a0a0a, #000000);
+            opacity: 0;
+            animation: fadeIn 1s ease-in forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .container {
