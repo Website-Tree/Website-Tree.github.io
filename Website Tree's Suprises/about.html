@@ -1,0 +1,223 @@
+<html>
+<head>
+    <title>About - Syfer-eng</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(45deg, #000000, #0a0a0a, #000000);
+        }
+
+        nav {
+            background: rgba(0, 150, 255, 0.1);
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #0096ff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0096ff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #0096ff;
+        }
+
+        .about-header {
+            text-align: center;
+            padding: 60px 0;
+            position: relative;
+        }
+
+        .about-header h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #fff, #0096ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 40px 0;
+        }
+
+        .about-card {
+            background: rgba(0, 150, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(0, 150, 255, 0.2);
+            transition: transform 0.3s;
+        }
+
+        .about-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .about-card h2 {
+            color: #0096ff;
+            margin-bottom: 15px;
+        }
+
+        .about-card p {
+            color: #888;
+            line-height: 1.6;
+        }
+
+        .team-section {
+            padding: 60px 0;
+        }
+
+        .team-section h2 {
+            text-align: center;
+            color: #0096ff;
+            margin-bottom: 40px;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .team-member {
+            background: rgba(0, 150, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(0, 150, 255, 0.2);
+        }
+
+        .team-member img {
+            width: 120px;
+            height: 120px;
+            border-radius: 60px;
+            margin-bottom: 15px;
+            border: 3px solid #0096ff;
+        }
+
+        .team-member h3 {
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .team-member p {
+            color: #888;
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 2.5em;
+            color: #0096ff;
+            margin-bottom: 10px;
+        }
+
+        .stat-item p {
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container nav-content">
+            <div class="logo">Syfer-eng</div>
+            <div class="nav-links">
+                <a href="main-page.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="#">Services</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="about-header">
+            <h1>About Us</h1>
+            <p>Pioneering the future of digital innovation of game hacking</p>
+        </div>
+
+        <div class="about-grid">
+            <div class="about-card">
+                <h2>Just Game Cheats</h2>
+                <p>Some Game Cheats</p>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <div class="stat-item">
+                <h3>500+</h3>
+                <p>Projects Completed</p>
+            </div>
+            <div class="stat-item">
+                <h3>100+</h3>
+                <p>Team Members</p>
+            </div>
+            <div class="stat-item">
+                <h3>50+</h3>
+                <p>Countries Served</p>
+            </div>
+            <div class="stat-item">
+                <h3>95%</h3>
+                <p>Client Satisfaction</p>
+            </div>
+        </div>
+
+        <div class="team-section">
+            <h2></h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <img src="https://github.com/Website-Tree/Website-Tree.github.io/blob/main/Pics/Pfp%20Tr.png?raw=true" alt="Syfer-eng">
+                    <h3>Syfer-eng</h3>
+                    <p>Coder/Owner</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
