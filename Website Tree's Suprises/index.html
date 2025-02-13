@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Animated Intro</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+        
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #800080, #9400D3, #800080);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeOut 3s ease-in-out forwards;
+        }
+        .loader-text {
+            color: #fff;
+            font-size: 64px;
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+        }
+        .letter {
+            animation: wave 1s infinite;
+            display: inline-block;
+        }
+        .letter:nth-child(1) { animation-delay: 0.0s; }
+        .letter:nth-child(2) { animation-delay: 0.1s; }
+        .letter:nth-child(3) { animation-delay: 0.2s; }
+        .letter:nth-child(4) { animation-delay: 0.3s; }
+        .letter:nth-child(5) { animation-delay: 0.4s; }
+        .letter:nth-child(6) { animation-delay: 0.5s; }
+        .letter:nth-child(7) { animation-delay: 0.6s; }
+        .letter:nth-child(8) { animation-delay: 0.7s; }
+
+        @keyframes wave {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+        #mainContent {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="loader">
+        <div class="loader-text">
+            <span class="letter">S</span>
+            <span class="letter">Y</span>
+            <span class="letter">F</span>
+            <span class="letter">E</span>
+            <span class="letter">R</span>
+            <span class="letter">-</span>
+            <span class="letter">E</span>
+            <span class="letter">N</span>
+            <span class="letter">G</span>
+        </div>
+    </div>
+    <iframe id="mainContent"></iframe>
+    <script>
+        setTimeout(() => {
+            document.getElementById('mainContent').src = 'main-page.html';
+        }, 3000);
+    </script>
+</body>
+</html>
