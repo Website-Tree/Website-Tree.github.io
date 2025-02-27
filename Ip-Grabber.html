@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Information</title>
+    <!-- Link to particles.js library -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <!-- Link to Leaflet CSS and JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        /* Set the particles container to cover the entire viewport */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1; /* Ensures that the particles are behind the content */
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            overflow: hidden;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 36px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+            animation: fadeInUp 1.5s ease-in-out;
+        }
+
+        .info-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            margin: 20px auto;
+            text-align: left;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 1.5s ease-in-out;
+        }
+
+        .info {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .info span {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        /* Add some transition effects on hover for the info boxes */
+        .info:hover {
+            background-color: #4CAF50;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* Add some smoothness to the page load */
+        .info-container {
+            opacity: 0;
+            animation: fadeIn 1.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 1.5s ease-in-out;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Particles.js container -->
+    <div id="particles-js"></div>
+
+    <!-- Main header -->
+    <h1>Location Information</h1>
+
+    <!-- Information container where the data will be displayed -->
+    <div class="info-container" id="info-container">
+        <p>Loading location data...</p>
+    </div>
+
+    <!-- Map container -->
+    <div id="map"></div>
+
+    <script>
+        // Function to fetch the location data from ipinfo.io API
+        async function fetchLocationData() {
+            const ipInfoUrl = "https://ipinfo.io?token=b0140e42a16077"; // Replace with your actual token
+
+            try {
+                const response = await fetch(ipInfoUrl);
+                const data = await response.json();
+
+                // Display the information in the HTML container
+                displayLocationData(data);
+
+                // Initialize the map with the location data
+                initMap(data.loc);
+            } catch (error) {
+                console.error('Error fetching location data:', error);
+                document.getElementById('info-container').innerHTML = '<p>Error fetching location data. Please try again later.</p>';
+            }
+        }
+
+        // Function to display location data in the info-container
+        function displayLocationData(data) {
+            const container = document.getElementById('info-container');
+            container.innerHTML = `
+                <div class="info">
+                    <span>IP Address:</span> ${data.ip}
+                </div>
+                <div class="info">
+                    <span>Hostname:</span> ${data.hostname}
+                </div>
+                <div class="info">
+                    <span>City:</span> ${data.city}
+                </div>
+                <div class="info">
+                    <span>Region:</span> ${data.region}
+                </div>
+                <div class="info">
+                    <span>Country:</span> ${data.country}
+                </div>
+                <div class="info">
+                    <span>Location:</span> ${data.loc}
+                </div>
+                <div class="info">
+                    <span>Organization:</span> ${data.org}
+                </div>
+                <div class="info">
+                    <span>Postal Code:</span> ${data.postal}
+                </div>
+                <div class="info">
+                    <span>Timezone:</span> ${data.timezone}
+                </div>
+            `;
+        }
+
+        // Function to initialize the map
+        function initMap(location) {
+            const [lat, lon] = location.split(',').map(Number);
+            const map = L.map('map').setView([lat, lon], 10);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            L.marker([lat, lon]).addTo(map)
+                .bindPopup('Your Location')
+                .openPopup();
+        }
+
+        // Fetch and display the location data when the page loads
+        window.onload = fetchLocationData;
+
+        // Initialize particles.js
+        particlesJS("particles-js", {
+            "particles": {
+                "number": {
+                    "value": 100,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#ffffff"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 1,
+                        "opacity_min": 0.1
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 40,
+                        "size_min": 0.1
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#ffffff",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 6,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "repulse"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+    </script>
+</body>
+
+</html
