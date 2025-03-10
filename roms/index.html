@@ -9,7 +9,8 @@
   <h1>Upload Your Game ROM</h1>
   <form id="uploadForm" enctype="multipart/form-data">
     <label for="romFile">Select ROM File:</label>
-    <input type="file" id="romFile" name="romFile" accept=".zip,.rar,.n64,.iso,.bin" required />
+    <!-- Allow only .z64, .n64, .gba files -->
+    <input type="file" id="romFile" name="romFile" accept=".z64,.n64,.gba" required />
     <button type="submit">Upload</button>
   </form>
 
