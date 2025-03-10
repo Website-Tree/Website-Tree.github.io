@@ -21,7 +21,19 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage: storage });
+// File type validation function (only allow .z64, .n64, .gba)
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = ['.z64', '.n64', '.gba'];
+  const fileExt = path.extname(file.originalname).toLowerCase();
+  
+  if (allowedTypes.includes(fileExt)) {
+    cb(null, true); // Accept the file
+  } else {
+    cb(new Error('Invalid file type. Only .z64, .n64, and .gba are allowed.'));
+  }
+};
+
+const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 // Serve the HTML file (Frontend)
 app.get('/', (req, res) => {
