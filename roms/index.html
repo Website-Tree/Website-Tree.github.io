@@ -1,51 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Game ROM Upload</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game ROM Uploader</title>
 </head>
 <body>
-  <h1>Upload Your Game ROM</h1>
-  <form id="uploadForm" enctype="multipart/form-data">
-    <label for="romFile">Select ROM File:</label>
-    <!-- Allow only .z64, .n64, .gba files -->
-    <input type="file" id="romFile" name="romFile" accept=".z64,.n64,.gba" required />
-    <button type="submit">Upload</button>
-  </form>
-
-  <div id="result">
-    <!-- Display the uploaded file link here -->
-  </div>
-
-  <script>
-    document.getElementById("uploadForm").addEventListener("submit", async function(event) {
-      event.preventDefault();
-
-      const formData = new FormData();
-      formData.append("romFile", document.getElementById("romFile").files[0]);
-
-      try {
-        const response = await fetch("/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-          document.getElementById("result").innerHTML = `
-            <h2>Upload Successful</h2>
-            <p>Your ROM is available at <a href="${data.fileUrl}" target="_blank">${data.fileUrl}</a></p>
-          `;
-        } else {
-          document.getElementById("result").innerHTML = `<p>Error: ${data.error}</p>`;
-        }
-      } catch (error) {
-        console.error("Error uploading file:", error);
-        document.getElementById("result").innerHTML = "<p>Error uploading file.</p>";
-      }
-    });
-  </script>
+    <h1>Upload Your Game ROM</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="rom" accept=".zip,.n64">
+        <button type="submit">Upload</button>
+    </form>
 </body>
 </html>
