@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play Game</title>
+</head>
+<body>
+    <div id="game"></div>
+    <script type="text/javascript">
+        const urlParams = new URLSearchParams(window.location.search);
+        const rom = urlParams.get('rom');
+        if (rom) {
+            EJS_player = '#game';
+            EJS_gameUrl = `/uploads/${rom}`;
+            EJS_core = 'parallel-n64';
+        } else {
+            document.body.innerHTML = '<p>No ROM specified.</p>';
+        }
+    </script>
+    <script src="https://www.emulatorjs.com/loader.js"></script>
+</body>
+</html>
