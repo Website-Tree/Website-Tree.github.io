@@ -36,12 +36,8 @@
         }
 
         @keyframes glow {
-            from {
-                text-shadow: 0 0 10px #00ff9d;
-            }
-            to {
-                text-shadow: 0 0 20px #00ff9d, 0 0 30px #00ff9d;
-            }
+            from { text-shadow: 0 0 10px #00ff9d; }
+            to { text-shadow: 0 0 20px #00ff9d, 0 0 30px #00ff9d; }
         }
 
         .game-grid {
@@ -53,8 +49,7 @@
         }
 
         .game-card {
-            background: rgba(42, 42, 66, 0.8);
-            backdrop-filter: blur(10px);
+            background: rgb(42, 42, 66);
             border-radius: 15px;
             padding: 20px;
             text-align: center;
@@ -80,6 +75,20 @@
             transform: scale(1.05);
         }
 
+        .size-info {
+            display: flex;
+            justify-content: space-around;
+            margin: 10px 0;
+            font-size: 0.9em;
+            color: #00ff9d;
+        }
+
+        .compressed, .original {
+            padding: 5px 10px;
+            background: rgba(0, 255, 157, 0.1);
+            border-radius: 5px;
+        }
+
         button {
             background: linear-gradient(45deg, #00ff9d, #00a8ff);
             color: white;
@@ -92,6 +101,7 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
+            width: 80%;
         }
 
         button:hover {
@@ -99,46 +109,6 @@
             box-shadow: 0 0 20px rgba(0, 255, 157, 0.5);
         }
 
-        .server-list {
-            display: none;
-            position: absolute;
-            background: rgba(20, 20, 40, 0.95);
-            width: 90%;
-            left: 5%;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 15px;
-            z-index: 1;
-            backdrop-filter: blur(5px);
-            animation: slideDown 0.3s ease-out;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .server-list a {
-            display: block;
-            color: white;
-            text-decoration: none;
-            padding: 12px;
-            margin: 8px 0;
-            background: linear-gradient(45deg, rgba(0, 255, 157, 0.1), rgba(0, 168, 255, 0.1));
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .server-list a:hover {
-            background: linear-gradient(45deg, rgba(0, 255, 157, 0.2), rgba(0, 168, 255, 0.2));
-            transform: translateX(5px);
-        }
     </style>
 </head>
 <body>
@@ -151,38 +121,39 @@
         <div class="game-grid">
             <div class="game-card">
                 <img src="https://th.bing.com/th/id/OIP.ExooJQUPprfhVTDWYEZO0QAAAA?rs=1&pid=ImgDetMain" alt="Floor Plan">
-                <h3>Floor Plan (Pc Vr)</h3>
-                <button onclick="showServers('alyx-servers')">Download</button>
-                <div id="alyx-servers" class="server-list">
-                    <a href="https://mega.nz/folder/SpwmADQL#ikCSLjJJjNGh5E5bwS2eNA">Mega Server</a>
-                    <a href="https://drive.google.com/drive/folders/1EHNXZGPPShZqj-nxl7fDPDfuqg7CKX9g?usp=sharing">Google Drive</a>
-                </div>
+                <h3>Floor Plan</h3>
+                <p class="size-info">
+                    <span class="compressed">Compressed: 262 MB</span>
+                    <span class="original">Original: 676 MB</span>
+                </p>
+                <button onclick="window.location.href='https://mega.nz/folder/SpwmADQL#ikCSLjJJjNGh5E5bwS2eNA'">Download</button>
             </div>
 
             <div class="game-card">
-                <img src="https://th.bing.com/th/id/OIP.o9_yQVcsBSLqFWjbcnAcRQHaEK?rs=1&pid=ImgDetMain" alt="job simulator">
-                <h3>Job Simulator (Pc Vr)</h3>
-                <button onclick="showServers('boneworks-servers')">Download</button>
-                <div id="boneworks-servers" class="server-list">
-                    <a href="https://mega.nz/folder/qtBmTQoI#a8gJpzOOGQQkePISx6qxOQ">Mega Server</a>
-                    <a href="https://drive.google.com/drive/folders/1iWPTvtIixksnTBuIL-DqPaYqsHtXBbDS?usp=sharing">Google Drive</a>
-                </div>
+                <img src="https://th.bing.com/th/id/OIP.o9_yQVcsBSLqFWjbcnAcRQHaEK?rs=1&pid=ImgDetMain" alt="Job Simulator">
+                <h3>Job Simulator</h3>
+                <p class="size-info">
+                    <span class="compressed">Compressed: 3.2 GB</span>
+                    <span class="original">Original: 5.8 GB</span>
+                </p>
+                <button onclick="window.location.href='https://mega.nz/folder/qtBmTQoI#a8gJpzOOGQQkePISx6qxOQ'">Download</button>
             </div>
 
             <div class="game-card">
                 <img src="https://th.bing.com/th/id/OIP.B9gRkRXmS_P40lvSEsHeRQHaEK?rs=1&pid=ImgDetMain" alt="Prison Boss">
-                <h3>Prison Boss (Pc Vr)</h3>
-                <button onclick="showServers('beatsaber-servers')">Download</button>
-                <div id="beatsaber-servers" class="server-list">
-                    <a href="https://mega.nz/folder/vlgEBJrS#m0waVv6HyDZE8GdVU1Z2TQ">Mega Server</a>
-                    <a href="#">Google Drive</a>
-                </div>
+                <h3>Prison Boss</h3>
+                <p class="size-info">
+                    <span class="compressed">Compressed: 1.8 GB</span>
+                    <span class="original">Original: 3.5 GB</span>
+                </p>
+                <button onclick="window.location.href='https://mega.nz/folder/vlgEBJrS#m0waVv6HyDZE8GdVU1Z2TQ'">Download</button>
             </div>
         </div>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
-        particlesJS.load('particles-js', {
+        particlesJS("particles-js", {
             "particles": {
                 "number": {
                     "value": 80,
@@ -192,34 +163,56 @@
                     }
                 },
                 "color": {
-                    "value": "#00ff9d"
+                    "value": "#9b59b6"
                 },
                 "shape": {
-                    "type": "circle"
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
                 },
                 "opacity": {
                     "value": 0.5,
-                    "random": true
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 1,
+                        "opacity_min": 0.1
+                    }
                 },
                 "size": {
-                    "value": 3,
-                    "random": true
+                    "value": 5,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 40,
+                        "size_min": 0.1
+                    }
                 },
                 "line_linked": {
                     "enable": true,
                     "distance": 150,
-                    "color": "#00ff9d",
+                    "color": "#9b59b6",
                     "opacity": 0.4,
                     "width": 1
                 },
                 "move": {
                     "enable": true,
-                    "speed": 2,
+                    "speed": 6,
                     "direction": "none",
                     "random": false,
                     "straight": false,
                     "out_mode": "out",
-                    "bounce": false
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
                 }
             },
             "interactivity": {
@@ -232,37 +225,21 @@
                     "onclick": {
                         "enable": true,
                         "mode": "push"
-                    },
-                    "resize": true
+                    }
                 }
             },
             "retina_detect": true
         });
 
-        function showServers(serverId) {
-            const allServers = document.querySelectorAll('.server-list');
-            allServers.forEach(server => {
-                if (server.id !== serverId) {
-                    server.style.display = 'none';
-                }
-            });
-            
-            const serverList = document.getElementById(serverId);
-            if (serverList.style.display === 'block') {
-                serverList.style.display = 'none';
+        window.onscroll = function() {
+            var header = document.getElementById('header');
+            var scrollPosition = window.pageYOffset;
+            if (scrollPosition > 0) {
+                header.style.backgroundColor = 'rgba(31, 31, 31, 0.4)';
             } else {
-                serverList.style.display = 'block';
+                header.style.backgroundColor = 'rgba(31, 31, 31, 0.6)';
             }
-        }
-
-        document.addEventListener('click', (event) => {
-            if (!event.target.matches('button')) {
-                const serverLists = document.querySelectorAll('.server-list');
-                serverLists.forEach(list => {
-                    list.style.display = 'none';
-                });
-            }
-        });
+        };
     </script>
 </body>
 </html>
