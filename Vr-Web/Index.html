@@ -2,16 +2,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VR Games Download Hub</title>
+    <title>Syfer-eng PC-VR Games Download</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Roboto', sans-serif;
             margin: 0;
-            padding: 20px;
-            background-color: #0a0a1f;
+            padding: 0;
+            background: linear-gradient(135deg, #0a0a1f, #1f1f3f);
             color: white;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         #particles-js {
@@ -27,17 +29,18 @@
             text-align: center;
             margin-bottom: 40px;
             position: relative;
+            padding: 20px;
         }
 
         header h1 {
             font-size: 3em;
-            text-shadow: 0 0 10px #00ff9d;
+            text-shadow: 0 0 5px #9b59b6, 0 0 10px #9b59b6, 0 0 15px #9b59b6;
             animation: glow 2s ease-in-out infinite alternate;
         }
 
         @keyframes glow {
-            from { text-shadow: 0 0 10px #00ff9d; }
-            to { text-shadow: 0 0 20px #00ff9d, 0 0 30px #00ff9d; }
+            from { text-shadow: 0 0 5px #9b59b6, 0 0 10px #9b59b6, 0 0 15px #9b59b6; }
+            to { text-shadow: 0 0 10px #9b59b6, 0 0 15px #9b59b6, 0 0 20px #9b59b6; }
         }
 
         .game-grid {
@@ -46,6 +49,7 @@
             gap: 30px;
             max-width: 1200px;
             margin: 0 auto;
+            padding: 20px;
         }
 
         .game-card {
@@ -56,11 +60,12 @@
             position: relative;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .game-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 10px 20px rgba(0, 255, 157, 0.2);
+            box-shadow: 0 10px 20px rgba(155, 89, 182, 0.2);
         }
 
         .game-card img {
@@ -80,17 +85,17 @@
             justify-content: space-around;
             margin: 10px 0;
             font-size: 0.9em;
-            color: #00ff9d;
+            color: #9b59b6;
         }
 
         .compressed, .original {
             padding: 5px 10px;
-            background: rgba(0, 255, 157, 0.1);
+            background: rgba(155, 89, 182, 0.1);
             border-radius: 5px;
         }
 
         button {
-            background: linear-gradient(45deg, #00ff9d, #00a8ff);
+            background: linear-gradient(45deg, #9b59b6, #6a11cb);
             color: white;
             padding: 12px 25px;
             border: none;
@@ -106,17 +111,30 @@
 
         button:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(0, 255, 157, 0.5);
+            box-shadow: 0 0 20px rgba(155, 89, 182, 0.5);
         }
 
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .game-card {
+                padding: 15px;
+            }
+
+            .game-card img {
+                height: 150px;
+            }
+        }
     </style>
 </head>
 <body>
     <div id="particles-js"></div>
     <header>
-        <h1>VR Games Download Center</h1>
+        <h1>Syfer-eng PC-VR Games Download</h1>
     </header>
-    
+
     <main>
         <div class="game-grid">
             <div class="game-card">
@@ -151,7 +169,6 @@
         </div>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
         particlesJS("particles-js", {
             "particles": {
