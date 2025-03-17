@@ -509,6 +509,17 @@ particlesJS('particles-js', {
 }
 
 class ShareManager {
+    constructor() {
+        this.shareDirectory = 'shares/links';
+        this.ensureDirectoryExists();
+    }
+
+    ensureDirectoryExists() {
+        if (!fs.existsSync(this.shareDirectory)) {
+            fs.mkdirSync(this.shareDirectory, { recursive: true });
+        }
+    }
+
     generateShareLink(isShort = false) {
         const currentData = {
             b: buttonManager.buttons.map(button => ({
@@ -516,85 +527,87 @@ class ShareManager {
                 u: button.url
             })),
             n: document.getElementById('profile-name').value,
-            i: document.getElementById('bio').value
+            i: document.getElementById('bio').value,
+            timestamp: Date.now()
         };
-        
+
+        const shareId = Math.random().toString(36).substring(2, 15);
+        const fileName = `share_${shareId}.json`;
+        const filePath = path.join(this.shareDirectory, fileName);
+
         try {
-            if (isShort) {
-                const minData = {
-                    b: currentData.b.map(b => [b.n, b.u]),
-                    n: currentData.n,
-                    i: currentData.i
-                };
-                const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(minData))));
-                const shareUrl = `${window.location.origin}${window.location.pathname}?x=${encodedData}`;
-                navigator.clipboard.writeText(shareUrl);
-                alert('Short link copied to clipboard!');
-            } else {
-                const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(currentData))));
-                const shareUrl = `${window.location.origin}${window.location.pathname}?s=${encodedData}`;
-                navigator.clipboard.writeText(shareUrl);
-                alert('Share link copied to clipboard!');
-            }
+            const shareData = isShort ? {
+                b: currentData.b.map(b => [b.n, b.u]),
+                n: currentData.n,
+                i: currentData.i
+            } : currentData;
+
+            fs.writeFileSync(filePath, JSON.stringify(shareData, null, 2));
+            const shareUrl = `${window.location.origin}/share/${shareId}`;
+            navigator.clipboard.writeText(shareUrl);
+            alert('Share link copied to clipboard!');
         } catch (error) {
-            alert('Link generated successfully!');
+            console.error('Error creating share:', error);
+            alert('Error creating share link');
         }
     }
-    
-initViewMode() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const shareData = urlParams.get('s') || urlParams.get('x');
-    
-    if (shareData) {
+
+    loadShare(shareId) {
         try {
-            const decodedData = JSON.parse(decodeURIComponent(atob(shareData)));
+            const filePath = path.join(this.shareDirectory, `share_${shareId}.json`);
+            const shareData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
             
             document.getElementById('profile-pic').src = "https://raw.githubusercontent.com/Website-Tree/Website-Tree.github.io/refs/heads/main/Multi-Links/image.png";
             
             const profileInfo = document.querySelector('.profile-info');
             profileInfo.innerHTML = `
-                <h2 class="profile-name">${decodedData.n}</h2>
-                <p class="bio-text">${decodedData.i}</p>
+                <h2 class="profile-name">${shareData.n}</h2>
+                <p class="bio-text">${shareData.i}</p>
             `;
             
-            // Enable particles and dark background
             document.body.classList.add('dark-particle-mode');
             
-            if (urlParams.get('x')) {
-                buttonManager.buttons = decodedData.b.map(([name, url]) => ({
+            if (shareData.b[0] instanceof Array) {
+                buttonManager.buttons = shareData.b.map(([name, url]) => ({
                     id: Date.now() + Math.random(),
                     name,
                     url
                 }));
             } else {
-                buttonManager.buttons = decodedData.b;
+                buttonManager.buttons = shareData.b;
             }
             
             buttonManager.renderButtons();
-            
-            // Remove all admin/control elements
-            document.querySelector('.admin-panel')?.remove();
-            document.querySelector('.stats-container')?.remove();
-            
-            // Remove the bottom buttons container entirely
-            document.getElementById('bottom-buttons-container')?.remove();
-            
-            // Disable profile pic interaction
-            const profilePic = document.getElementById('profile-pic');
-            if (profilePic) {
-                profilePic.style.cursor = 'default';
-                profilePic.onclick = null;
-            }
-            
-            // Remove upload input
-            document.getElementById('profile-upload')?.remove();
+            this.cleanupInterface();
             
         } catch (error) {
-            console.error('Error loading shared data:', error);
+            console.error('Error loading share:', error);
+            alert('Share not found or expired');
+        }
+    }
+
+    cleanupInterface() {
+        document.querySelector('.admin-panel')?.remove();
+        document.querySelector('.stats-container')?.remove();
+        document.getElementById('bottom-buttons-container')?.remove();
+        
+        const profilePic = document.getElementById('profile-pic');
+        if (profilePic) {
+            profilePic.style.cursor = 'default';
+            profilePic.onclick = null;
+        }
+        
+        document.getElementById('profile-upload')?.remove();
+    }
+
+    initViewMode() {
+        const shareId = window.location.pathname.split('/').pop();
+        if (shareId) {
+            this.loadShare(shareId);
         }
     }
 }
-}
+
         // Initialize managers
         const buttonManager = new ButtonManager();
         const themeManager = new ThemeManager();
@@ -670,4 +683,4 @@ if (savedProfilePic) {
 }
     </script>
 </body>
-</html> 
+</html>
