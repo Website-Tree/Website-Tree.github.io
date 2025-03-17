@@ -551,6 +551,8 @@ class ShareManager {
         });
 
         // Profile picture handling
+document.getElementById('profile-pic').src = "https://raw.githubusercontent.com/Website-Tree/Website-Tree.github.io/refs/heads/main/Multi-Links/image.png";
+
 document.getElementById('profile-pic').addEventListener('click', () => {
     document.getElementById('profile-upload').click();
 });
@@ -599,7 +601,7 @@ document.getElementById('profile-upload').addEventListener('change', (e) => {
     }
 });
 
-// Load saved profile picture
+// Load saved profile picture if exists, otherwise use default
 const savedProfilePic = localStorage.getItem('profile-pic');
 if (savedProfilePic) {
     document.getElementById('profile-pic').src = savedProfilePic;
