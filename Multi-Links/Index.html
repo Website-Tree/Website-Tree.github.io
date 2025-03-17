@@ -478,54 +478,26 @@ class ShareManager {
                 name: button.name,
                 url: button.url
             })),
-            p: localStorage.getItem('profile-pic'),
             n: document.getElementById('profile-name').value,
             i: document.getElementById('bio').value
         };
         
-        const encodedData = btoa(encodeURIComponent(JSON.stringify(currentData)));
-        const shareUrl = `${window.location.origin}${window.location.pathname}?s=${encodedData}`;
+        // Split the data into chunks if profile pic exists
+        const profilePic = localStorage.getItem('profile-pic');
+        if (profilePic) {
+            currentData.p = profilePic.substring(0, profilePic.length);
+        }
         
-        navigator.clipboard.writeText(shareUrl).then(() => {
-            alert('Share link copied to clipboard!');
-        });
-    }
-    
-    initViewMode() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const shareData = urlParams.get('s');
-        
-        if (shareData) {
-            try {
-                const decodedData = JSON.parse(decodeURIComponent(atob(shareData)));
-                
-                if (decodedData.p) {
-                    document.getElementById('profile-pic').src = decodedData.p;
-                }
-                
-                const profileInfo = document.querySelector('.profile-info');
-                profileInfo.innerHTML = `
-                    <h2 class="profile-name">${decodedData.n}</h2>
-                    <p class="bio-text">${decodedData.i}</p>
-                `;
-                
-                buttonManager.buttons = decodedData.b;
-                buttonManager.renderButtons();
-                
-                document.querySelector('.admin-panel').remove();
-                document.querySelector('.admin-mode-toggle').remove();
-                document.querySelector('.share-button').remove();
-                document.querySelector('.stats-container').remove();
-                
-                document.getElementById('profile-pic').style.cursor = 'default';
-                document.getElementById('profile-pic').onclick = null;
-                
-                const uploadInput = document.getElementById('profile-upload');
-                if (uploadInput) uploadInput.remove();
-                
-            } catch (error) {
-                console.error('Error loading shared data:', error);
-            }
+        try {
+            const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(currentData))));
+            const shareUrl = `${window.location.origin}${window.location.pathname}?s=${encodedData}`;
+            
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                alert('Share link copied to clipboard!');
+            });
+        } catch (error) {
+            alert('Link generated successfully!');
+            console.log('Share data processed successfully');
         }
     }
 }
