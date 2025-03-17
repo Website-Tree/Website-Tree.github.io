@@ -541,58 +541,59 @@ class ShareManager {
         }
     }
     
-    initViewMode() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const shareData = urlParams.get('s') || urlParams.get('x');
-        
-        if (shareData) {
-            try {
-                const decodedData = JSON.parse(decodeURIComponent(atob(shareData)));
-                
-                document.getElementById('profile-pic').src = "https://raw.githubusercontent.com/Website-Tree/Website-Tree.github.io/refs/heads/main/Multi-Links/image.png";
-                
-                const profileInfo = document.querySelector('.profile-info');
-                profileInfo.innerHTML = `
-                    <h2 class="profile-name">${decodedData.n}</h2>
-                    <p class="bio-text">${decodedData.i}</p>
-                `;
-                
-                // Always enable particles and dark background
-                document.body.classList.add('dark-particle-mode');
-                particleManager.isActive = true;
-                particleManager.toggleParticles();
-                
-                if (urlParams.get('x')) {
-                    buttonManager.buttons = decodedData.b.map(([name, url]) => ({
-                        id: Date.now() + Math.random(),
-                        name,
-                        url
-                    }));
-                } else {
-                    buttonManager.buttons = decodedData.b;
-                }
-                
-                buttonManager.renderButtons();
-                
-                document.querySelector('.admin-panel').remove();
-                document.querySelector('.admin-mode-toggle').remove();
-                document.querySelector('.share-button').remove();
-                document.querySelector('.short-link-btn').remove();
-                document.querySelector('.stats-container').remove();
-                document.querySelector('.particle-toggle').remove();
-                document.querySelector('.theme-switcher').remove();
-                
-                document.getElementById('profile-pic').style.cursor = 'default';
-                document.getElementById('profile-pic').onclick = null;
-                
-                const uploadInput = document.getElementById('profile-upload');
-                if (uploadInput) uploadInput.remove();
-                
-            } catch (error) {
-                console.error('Error loading shared data:', error);
+initViewMode() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const shareData = urlParams.get('s') || urlParams.get('x');
+    
+    if (shareData) {
+        try {
+            const decodedData = JSON.parse(decodeURIComponent(atob(shareData)));
+            
+            document.getElementById('profile-pic').src = "https://raw.githubusercontent.com/Website-Tree/Website-Tree.github.io/refs/heads/main/Multi-Links/image.png";
+            
+            const profileInfo = document.querySelector('.profile-info');
+            profileInfo.innerHTML = `
+                <h2 class="profile-name">${decodedData.n}</h2>
+                <p class="bio-text">${decodedData.i}</p>
+            `;
+            
+            // Enable particles and dark background
+            document.body.classList.add('dark-particle-mode');
+            
+            if (urlParams.get('x')) {
+                buttonManager.buttons = decodedData.b.map(([name, url]) => ({
+                    id: Date.now() + Math.random(),
+                    name,
+                    url
+                }));
+            } else {
+                buttonManager.buttons = decodedData.b;
             }
+            
+            buttonManager.renderButtons();
+            
+            // Remove all admin/control elements
+            document.querySelector('.admin-panel')?.remove();
+            document.querySelector('.stats-container')?.remove();
+            
+            // Remove the bottom buttons container entirely
+            document.getElementById('bottom-buttons-container')?.remove();
+            
+            // Disable profile pic interaction
+            const profilePic = document.getElementById('profile-pic');
+            if (profilePic) {
+                profilePic.style.cursor = 'default';
+                profilePic.onclick = null;
+            }
+            
+            // Remove upload input
+            document.getElementById('profile-upload')?.remove();
+            
+        } catch (error) {
+            console.error('Error loading shared data:', error);
         }
     }
+}
 }
         // Initialize managers
         const buttonManager = new ButtonManager();
@@ -669,4 +670,4 @@ if (savedProfilePic) {
 }
     </script>
 </body>
-</html>
+</html> 
