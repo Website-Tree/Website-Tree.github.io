@@ -43,10 +43,28 @@
             z-index: -1;
         }
 
-        .dark-particle-mode {
-            background: #000000 !important;
-        }
+.dark-particle-mode {
+    background: #ffffff !important;  // Changed to white
+}
 
+.bottom-buttons .redirect-button {
+    min-width: 200px;
+    text-align: center;
+    justify-content: center;
+}
+
+.bottom-buttons {
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 0 20px;
+    z-index: 1000;
+}
+        
         .container {
             max-width: 800px;
             margin: 0 auto;
@@ -199,6 +217,27 @@
             text-align: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+        
+        #bottom-buttons-container {
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 20px;
+    z-index: 1000;
+}
+
+#bottom-buttons-container .button-container {
+    margin: 0;
+}
+
+#bottom-buttons-container .redirect-button {
+    min-width: 150px;
+    margin: 0;
+}
 
         .theme-switcher {
             position: fixed;
@@ -287,28 +326,31 @@
             <button class="btn" onclick="buttonManager.addButton()">Add New Button</button>
         </div>
 
-        <div id="buttons-container"></div>
+<div id="buttons-container"></div>
+</div>
+
+<div id="bottom-buttons-container">
+    <div class="button-container">
+        <a class="redirect-button" onclick="buttonManager.toggleAdminMode()">
+            <i class="fas fa-lock"></i> Admin Mode
+        </a>
     </div>
-
-    <button class="btn admin-mode-toggle" onclick="buttonManager.toggleAdminMode()">
-        <i class="fas fa-lock"></i> Admin Mode
-    </button>
-
-    <button class="btn share-button" onclick="shareManager.generateShareLink()">
-        <i class="fas fa-share-alt"></i> Share
-    </button>
-
-    <button class="btn short-link-btn" onclick="shareManager.generateShareLink(true)">
-    <i class="fas fa-compress-alt"></i> Short Link
-    </button>
-
-    <button class="btn particle-toggle" onclick="particleManager.toggleParticles()">
-        <i class="fas fa-atom"></i> Toggle Particles
-    </button>
-
-    <button class="btn theme-switcher" onclick="themeManager.toggleTheme()">
-        <i class="fas fa-paint-brush"></i> Theme
-    </button>
+    <div class="button-container">
+        <a class="redirect-button" onclick="shareManager.generateShareLink()">
+            <i class="fas fa-share-alt"></i> Share
+        </a>
+    </div>
+    <div class="button-container">
+        <a class="redirect-button" onclick="shareManager.generateShareLink(true)">
+            <i class="fas fa-compress-alt"></i> Short Link
+        </a>
+    </div>
+    <div class="button-container">
+        <a class="redirect-button" onclick="themeManager.toggleTheme()">
+            <i class="fas fa-paint-brush"></i> Theme
+        </a>
+    </div>
+</div>
 
     <script>
         class ButtonManager {
@@ -414,66 +456,57 @@
             }
         }
 
-        class ParticleManager {
-            constructor() {
-                this.isActive = false;
-                this.init();
-            }
+class ParticleManager {
+    constructor() {
+        this.init();
+        this.startParticles();  // Always start particles
+    }
 
-            init() {
-                const particlesDiv = document.createElement('div');
-                particlesDiv.id = 'particles-js';
-                particlesDiv.className = 'particles-bg';
-                document.body.prepend(particlesDiv);
-            }
+    init() {
+        const particlesDiv = document.createElement('div');
+        particlesDiv.id = 'particles-js';
+        particlesDiv.className = 'particles-bg';
+        document.body.prepend(particlesDiv);
+    }
 
-            toggleParticles() {
-                this.isActive = !this.isActive;
-                document.body.classList.toggle('dark-particle-mode');
-                
-                if (this.isActive) {
-                    particlesJS('particles-js', {
-                        particles: {
-                            number: { value: 80, density: { enable: true, value_area: 800 } },
-                            color: { value: '#00ff00' },
-                            shape: { type: 'circle' },
-                            opacity: { value: 0.5, random: false },
-                            size: { value: 3, random: true },
-                            line_linked: {
-                                enable: true,
-                                distance: 150,
-                                color: '#00ff00',
-                                opacity: 0.4,
-                                width: 1
-                            },
-                            move: {
-                                enable: true,
-                                speed: 6,
-                                direction: 'none',
-                                random: false,
-                                straight: false,
-                                out_mode: 'out',
-                                bounce: false
-                            }
-                        },
-                        interactivity: {
-                            detect_on: 'canvas',
-                            events: {
-                                onhover: { enable: true, mode: 'repulse' },
-                                onclick: { enable: true, mode: 'push' },
-                                resize: true
-                            }
-                        },
-                        retina_detect: true
-                    });
-                } else {
-                    if (window.pJSDom && window.pJSDom[0]) {
-                        window.pJSDom[0].pJS.fn.vendors.destroypJS();
-                        window.pJSDom = [];
-                    }
+    startParticles() {
+        document.body.classList.add('dark-particle-mode');
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: '#000000' },
+                shape: { type: 'circle' },
+                opacity: { value: 0.5, random: false },
+                size: { value: 3, random: true },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: '#000000',
+                    opacity: 0.4,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 6,
+                    direction: 'none',
+                    random: false,
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false
                 }
-            }
-        }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: { enable: true, mode: 'repulse' },
+                    onclick: { enable: true, mode: 'push' },
+                    resize: true
+                }
+            },
+            retina_detect: true
+        });
+    }
+}
 
 class ShareManager {
     generateShareLink(isShort = false) {
