@@ -515,10 +515,13 @@ class ShareManager {
                 buttonManager.buttons = decodedData.b;
                 buttonManager.renderButtons();
                 
+                // Remove all control buttons
                 document.querySelector('.admin-panel').remove();
                 document.querySelector('.admin-mode-toggle').remove();
                 document.querySelector('.share-button').remove();
                 document.querySelector('.stats-container').remove();
+                document.querySelector('.particle-toggle').remove();
+                document.querySelector('.theme-switcher').remove();
                 
                 document.getElementById('profile-pic').style.cursor = 'default';
                 document.getElementById('profile-pic').onclick = null;
