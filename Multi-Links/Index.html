@@ -510,17 +510,16 @@ particlesJS('particles-js', {
 
 class ShareManager {
     constructor() {
-        this.shareDirectory = 'shares/links';
-        this.ensureDirectoryExists();
+        this.githubToken = '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';
+        this.owner = 'Website-Tree';
+        this.repo = 'Website-Tree.github.io';
+        this.branch = 'main';
     }
 
-    ensureDirectoryExists() {
-        if (!fs.existsSync(this.shareDirectory)) {
-            fs.mkdirSync(this.shareDirectory, { recursive: true });
-        }
-    }
+    async generateShareLink(isShort = false) {
+        const shareId = Math.random().toString(36).substring(2, 15);
+        const fileName = `shares/links/share_${shareId}.json`;
 
-    generateShareLink(isShort = false) {
         const currentData = {
             b: buttonManager.buttons.map(button => ({
                 n: button.name,
@@ -531,79 +530,28 @@ class ShareManager {
             timestamp: Date.now()
         };
 
-        const shareId = Math.random().toString(36).substring(2, 15);
-        const fileName = `share_${shareId}.json`;
-        const filePath = path.join(this.shareDirectory, fileName);
+        const content = btoa(JSON.stringify(currentData, null, 2));
 
         try {
-            const shareData = isShort ? {
-                b: currentData.b.map(b => [b.n, b.u]),
-                n: currentData.n,
-                i: currentData.i
-            } : currentData;
+            await fetch(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/${fileName}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${this.githubToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: `Create share ${shareId}`,
+                    content: content,
+                    branch: this.branch
+                })
+            });
 
-            fs.writeFileSync(filePath, JSON.stringify(shareData, null, 2));
             const shareUrl = `${window.location.origin}/share/${shareId}`;
             navigator.clipboard.writeText(shareUrl);
-            alert('Share link copied to clipboard!');
+            alert('Share link created and copied to clipboard!');
         } catch (error) {
             console.error('Error creating share:', error);
             alert('Error creating share link');
-        }
-    }
-
-    loadShare(shareId) {
-        try {
-            const filePath = path.join(this.shareDirectory, `share_${shareId}.json`);
-            const shareData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-            
-            document.getElementById('profile-pic').src = "https://raw.githubusercontent.com/Website-Tree/Website-Tree.github.io/refs/heads/main/Multi-Links/image.png";
-            
-            const profileInfo = document.querySelector('.profile-info');
-            profileInfo.innerHTML = `
-                <h2 class="profile-name">${shareData.n}</h2>
-                <p class="bio-text">${shareData.i}</p>
-            `;
-            
-            document.body.classList.add('dark-particle-mode');
-            
-            if (shareData.b[0] instanceof Array) {
-                buttonManager.buttons = shareData.b.map(([name, url]) => ({
-                    id: Date.now() + Math.random(),
-                    name,
-                    url
-                }));
-            } else {
-                buttonManager.buttons = shareData.b;
-            }
-            
-            buttonManager.renderButtons();
-            this.cleanupInterface();
-            
-        } catch (error) {
-            console.error('Error loading share:', error);
-            alert('Share not found or expired');
-        }
-    }
-
-    cleanupInterface() {
-        document.querySelector('.admin-panel')?.remove();
-        document.querySelector('.stats-container')?.remove();
-        document.getElementById('bottom-buttons-container')?.remove();
-        
-        const profilePic = document.getElementById('profile-pic');
-        if (profilePic) {
-            profilePic.style.cursor = 'default';
-            profilePic.onclick = null;
-        }
-        
-        document.getElementById('profile-upload')?.remove();
-    }
-
-    initViewMode() {
-        const shareId = window.location.pathname.split('/').pop();
-        if (shareId) {
-            this.loadShare(shareId);
         }
     }
 }
