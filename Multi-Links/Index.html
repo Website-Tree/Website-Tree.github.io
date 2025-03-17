@@ -483,16 +483,19 @@ class ShareManager {
                 u: button.url
             })),
             n: document.getElementById('profile-name').value,
-            i: document.getElementById('bio').value
+            i: document.getElementById('bio').value,
+            t: document.body.className, // Save current theme
+            p: particleManager.isActive // Save particle state
         };
         
         try {
             if (isShort) {
-                // Create ultra-compact data structure
                 const minData = {
                     b: currentData.b.map(b => [b.n, b.u]),
                     n: currentData.n,
-                    i: currentData.i
+                    i: currentData.i,
+                    t: currentData.t,
+                    p: currentData.p
                 };
                 const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(minData))));
                 const shareUrl = `${window.location.origin}${window.location.pathname}?x=${encodedData}`;
@@ -525,7 +528,17 @@ class ShareManager {
                     <p class="bio-text">${decodedData.i}</p>
                 `;
                 
-                // Handle both full and short link formats
+                // Apply saved theme and particle settings
+                if (decodedData.t) {
+                    document.body.className = decodedData.t;
+                }
+                if (decodedData.p) {
+                    particleManager.isActive = decodedData.p;
+                    if (decodedData.p) {
+                        particleManager.toggleParticles();
+                    }
+                }
+                
                 if (urlParams.get('x')) {
                     buttonManager.buttons = decodedData.b.map(([name, url]) => ({
                         id: Date.now() + Math.random(),
@@ -543,8 +556,6 @@ class ShareManager {
                 document.querySelector('.share-button').remove();
                 document.querySelector('.short-link-btn').remove();
                 document.querySelector('.stats-container').remove();
-                document.querySelector('.particle-toggle').remove();
-                document.querySelector('.theme-switcher').remove();
                 
                 document.getElementById('profile-pic').style.cursor = 'default';
                 document.getElementById('profile-pic').onclick = null;
