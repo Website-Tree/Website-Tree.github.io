@@ -471,26 +471,27 @@
         }
 
         class ShareManager {
-            generateShareLink() {
-                const currentData = {
-                    buttons: buttonManager.buttons,
-                    profilePic: localStorage.getItem('profile-pic'),
-                    profileName: document.getElementById('profile-name').value,
-                    bio: document.getElementById('bio').value
-                };
-                
-                const encodedData = btoa(JSON.stringify(currentData));
-                const shareUrl = `${window.location.origin}${window.location.pathname}?share=${encodedData}`;
-                
-                const tempInput = document.createElement('input');
-                document.body.appendChild(tempInput);
-                tempInput.value = shareUrl;
-                tempInput.select();
-                document.execCommand('copy');
-                document.body.removeChild(tempInput);
-                
-                alert('Share link copied to clipboard!');
-            }
+generateShareLink() {
+    const currentData = {
+        buttons: buttonManager.buttons,
+        profilePic: localStorage.getItem('profile-pic'),
+        profileName: document.getElementById('profile-name').value,
+        bio: document.getElementById('bio').value
+    };
+    
+    // Compress the data by removing the profile pic if it's too large
+    if (currentData.profilePic && currentData.profilePic.length > 50000) {
+        currentData.profilePic = null; // Skip large profile pictures
+    }
+    
+    const encodedData = btoa(encodeURIComponent(JSON.stringify(currentData)));
+    const shareUrl = `${window.location.origin}${window.location.pathname}?share=${encodedData}`;
+    
+    // Use the modern clipboard API
+    navigator.clipboard.writeText(shareUrl).then(() => {
+        alert('Share link copied to clipboard!');
+    });
+}
             
             initViewMode() {
                 const urlParams = new URLSearchParams(window.location.search);
