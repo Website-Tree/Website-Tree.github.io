@@ -46,13 +46,6 @@
             background: #000000 !important;
         }
 
-        .particle-toggle {
-            position: fixed;
-            bottom: 70px;
-            right: 20px;
-            z-index: 1000;
-        }
-
         .container {
             max-width: 800px;
             margin: 0 auto;
@@ -220,6 +213,36 @@
             z-index: 1000;
         }
 
+        .share-button {
+            position: fixed;
+            bottom: 120px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .particle-toggle {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .view-only .admin-panel,
+        .view-only .admin-mode-toggle,
+        .view-only .delete-btn,
+        .view-only #profile-upload,
+        .view-only #profile-name,
+        .view-only #bio {
+            display: none !important;
+        }
+
+        .view-only #profile-name-display,
+        .view-only #bio-display {
+            display: block;
+            text-align: center;
+            margin: 10px 0;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -232,6 +255,8 @@
     </style>
 </head>
 <body>
+    <div id="particles-js" class="particles-bg"></div>
+    
     <div class="container">
         <div class="dashboard">
             <div class="profile">
@@ -266,6 +291,10 @@
 
     <button class="btn admin-mode-toggle" onclick="buttonManager.toggleAdminMode()">
         <i class="fas fa-lock"></i> Admin Mode
+    </button>
+
+    <button class="btn share-button" onclick="shareManager.generateShareLink()">
+        <i class="fas fa-share-alt"></i> Share
     </button>
 
     <button class="btn particle-toggle" onclick="particleManager.toggleParticles()">
@@ -441,10 +470,74 @@
             }
         }
 
+        class ShareManager {
+            generateShareLink() {
+                const currentData = {
+                    buttons: buttonManager.buttons,
+                    profilePic: localStorage.getItem('profile-pic'),
+                    profileName: document.getElementById('profile-name').value,
+                    bio: document.getElementById('bio').value
+                };
+                
+                const encodedData = btoa(JSON.stringify(currentData));
+                const shareUrl = `${window.location.origin}${window.location.pathname}?share=${encodedData}`;
+                
+                const tempInput = document.createElement('input');
+                document.body.appendChild(tempInput);
+                tempInput.value = shareUrl;
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                
+                alert('Share link copied to clipboard!');
+            }
+            
+            initViewMode() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const shareData = urlParams.get('share');
+                
+                if (shareData) {
+                    try {
+                        const decodedData = JSON.parse(atob(shareData));
+                        
+                        if (decodedData.profilePic) {
+                            document.getElementById('profile-pic').src = decodedData.profilePic;
+                        }
+                        
+                        const nameDisplay = document.createElement('h2');
+                        nameDisplay.id = 'profile-name-display';
+                        nameDisplay.textContent = decodedData.profileName;
+                        
+                        const bioDisplay = document.createElement('p');
+                        bioDisplay.id = 'bio-display';
+                        bioDisplay.textContent = decodedData.bio;
+                        
+                        document.getElementById('profile-name').replaceWith(nameDisplay);
+                        document.getElementById('bio').replaceWith(bioDisplay);
+                        
+                        buttonManager.buttons = decodedData.buttons;
+                        buttonManager.renderButtons();
+                        
+                        document.body.classList.add('view-only');
+                        
+                        document.querySelector('.admin-panel').style.display = 'none';
+                        document.querySelector('.admin-mode-toggle').style.display = 'none';
+                        document.querySelector('.share-button').style.display = 'none';
+                    } catch (error) {
+                        console.error('Error loading shared data:', error);
+                    }
+                }
+            }
+        }
+
         // Initialize managers
         const buttonManager = new ButtonManager();
         const themeManager = new ThemeManager();
         const particleManager = new ParticleManager();
+        const shareManager = new ShareManager();
+
+        // Initialize share/view mode
+        shareManager.initViewMode();
 
         // Generate QR Code
         new QRCode(document.getElementById("qrcode"), {
@@ -470,7 +563,7 @@
             }
         });
 
-        // Load saved data
+        // Load saved profile picture
         const savedProfilePic = localStorage.getItem('profile-pic');
         if (savedProfilePic) {
             document.getElementById('profile-pic').src = savedProfilePic;
