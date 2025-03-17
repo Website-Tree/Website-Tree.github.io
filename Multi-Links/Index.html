@@ -473,15 +473,15 @@
 class ShareManager {
     generateShareLink() {
         const currentData = {
-            b: buttonManager.buttons,
+            b: buttonManager.buttons.map(button => ({
+                id: button.id,
+                name: button.name,
+                url: button.url
+            })),
             p: localStorage.getItem('profile-pic'),
             n: document.getElementById('profile-name').value,
             i: document.getElementById('bio').value
         };
-        
-        if (currentData.p && currentData.p.length > 50000) {
-            currentData.p = null;
-        }
         
         const encodedData = btoa(encodeURIComponent(JSON.stringify(currentData)));
         const shareUrl = `${window.location.origin}${window.location.pathname}?s=${encodedData}`;
@@ -499,32 +499,27 @@ class ShareManager {
             try {
                 const decodedData = JSON.parse(decodeURIComponent(atob(shareData)));
                 
-                // Set profile picture
                 if (decodedData.p) {
                     document.getElementById('profile-pic').src = decodedData.p;
                 }
                 
-                // Replace editable elements with static text
                 const profileInfo = document.querySelector('.profile-info');
                 profileInfo.innerHTML = `
                     <h2 class="profile-name">${decodedData.n}</h2>
                     <p class="bio-text">${decodedData.i}</p>
                 `;
                 
-                // Set buttons
                 buttonManager.buttons = decodedData.b;
                 buttonManager.renderButtons();
                 
-                // Hide admin controls only
                 document.querySelector('.admin-panel').remove();
                 document.querySelector('.admin-mode-toggle').remove();
                 document.querySelector('.share-button').remove();
+                document.querySelector('.stats-container').remove();
                 
-                // Make profile pic non-clickable
                 document.getElementById('profile-pic').style.cursor = 'default';
                 document.getElementById('profile-pic').onclick = null;
                 
-                // Remove file upload
                 const uploadInput = document.getElementById('profile-upload');
                 if (uploadInput) uploadInput.remove();
                 
