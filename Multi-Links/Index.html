@@ -44,7 +44,7 @@
         }
 
 .dark-particle-mode {
-    background: #ffffff !important;  // Changed to white
+    background: #000000 !important;
 }
 
 .bottom-buttons .redirect-button {
@@ -471,20 +471,20 @@ class ParticleManager {
 
     startParticles() {
         document.body.classList.add('dark-particle-mode');
-        particlesJS('particles-js', {
-            particles: {
-                number: { value: 80, density: { enable: true, value_area: 800 } },
-                color: { value: '#000000' },
-                shape: { type: 'circle' },
-                opacity: { value: 0.5, random: false },
-                size: { value: 3, random: true },
-                line_linked: {
-                    enable: true,
-                    distance: 150,
-                    color: '#000000',
-                    opacity: 0.4,
-                    width: 1
-                },
+particlesJS('particles-js', {
+    particles: {
+        number: { value: 80, density: { enable: true, value_area: 800 } },
+        color: { value: '#00ff00' },  // Changed to green
+        shape: { type: 'circle' },
+        opacity: { value: 0.5, random: false },
+        size: { value: 3, random: true },
+        line_linked: {
+            enable: true,
+            distance: 150,
+            color: '#00ff00',  // Changed to green
+            opacity: 0.4,
+            width: 1
+        },
                 move: {
                     enable: true,
                     speed: 6,
