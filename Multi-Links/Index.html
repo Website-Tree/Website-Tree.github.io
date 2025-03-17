@@ -471,21 +471,25 @@
         }
 
 class ShareManager {
-generateShareLink() {
-    const currentData = {
-        b: buttonManager.buttons,
-        p: localStorage.getItem('profile-pic'), // Keep full image
-        n: document.getElementById('profile-name').value,
-        i: document.getElementById('bio').value
-    };
-    
-    const encodedData = btoa(encodeURIComponent(JSON.stringify(currentData)));
-    const shareUrl = `${window.location.origin}${window.location.pathname}?s=${encodedData}`;
-    
-    navigator.clipboard.writeText(shareUrl).then(() => {
-        alert('Share link copied to clipboard!');
-    });
-}
+    generateShareLink() {
+        const currentData = {
+            b: buttonManager.buttons,
+            p: localStorage.getItem('profile-pic'),
+            n: document.getElementById('profile-name').value,
+            i: document.getElementById('bio').value
+        };
+        
+        if (currentData.p && currentData.p.length > 50000) {
+            currentData.p = null;
+        }
+        
+        const encodedData = btoa(encodeURIComponent(JSON.stringify(currentData)));
+        const shareUrl = `${window.location.origin}${window.location.pathname}?s=${encodedData}`;
+        
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            alert('Share link copied to clipboard!');
+        });
+    }
     
     initViewMode() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -530,7 +534,6 @@ generateShareLink() {
         }
     }
 }
-
         // Initialize managers
         const buttonManager = new ButtonManager();
         const themeManager = new ThemeManager();
