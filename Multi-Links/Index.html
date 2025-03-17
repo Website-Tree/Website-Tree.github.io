@@ -297,6 +297,10 @@
         <i class="fas fa-share-alt"></i> Share
     </button>
 
+    <button class="btn short-link-btn" onclick="shareManager.generateShareLink(true)">
+    <i class="fas fa-compress-alt"></i> Short Link
+    </button>
+
     <button class="btn particle-toggle" onclick="particleManager.toggleParticles()">
         <i class="fas fa-atom"></i> Toggle Particles
     </button>
@@ -471,34 +475,42 @@
         }
 
 class ShareManager {
-    generateShareLink() {
+    generateShareLink(isShort = false) {
         const currentData = {
             b: buttonManager.buttons.map(button => ({
-                id: button.id,
-                name: button.name,
-                url: button.url
+                n: button.name,
+                u: button.url
             })),
             n: document.getElementById('profile-name').value,
-            i: document.getElementById('bio').value,
-            p: "https://raw.githubusercontent.com/Website-Tree/Website-Tree.github.io/refs/heads/main/Multi-Links/image.png"
+            i: document.getElementById('bio').value
         };
         
         try {
-            const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(currentData))));
-            const shareUrl = `${window.location.origin}${window.location.pathname}?s=${encodedData}`;
-            
-            navigator.clipboard.writeText(shareUrl).then(() => {
+            if (isShort) {
+                // Create ultra-compact data structure
+                const minData = {
+                    b: currentData.b.map(b => [b.n, b.u]),
+                    n: currentData.n,
+                    i: currentData.i
+                };
+                const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(minData))));
+                const shareUrl = `${window.location.origin}${window.location.pathname}?x=${encodedData}`;
+                navigator.clipboard.writeText(shareUrl);
+                alert('Short link copied to clipboard!');
+            } else {
+                const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(currentData))));
+                const shareUrl = `${window.location.origin}${window.location.pathname}?s=${encodedData}`;
+                navigator.clipboard.writeText(shareUrl);
                 alert('Share link copied to clipboard!');
-            });
+            }
         } catch (error) {
             alert('Link generated successfully!');
-            console.log('Share data processed successfully');
         }
     }
     
     initViewMode() {
         const urlParams = new URLSearchParams(window.location.search);
-        const shareData = urlParams.get('s');
+        const shareData = urlParams.get('s') || urlParams.get('x');
         
         if (shareData) {
             try {
@@ -512,13 +524,23 @@ class ShareManager {
                     <p class="bio-text">${decodedData.i}</p>
                 `;
                 
-                buttonManager.buttons = decodedData.b;
+                // Handle both full and short link formats
+                if (urlParams.get('x')) {
+                    buttonManager.buttons = decodedData.b.map(([name, url]) => ({
+                        id: Date.now() + Math.random(),
+                        name,
+                        url
+                    }));
+                } else {
+                    buttonManager.buttons = decodedData.b;
+                }
+                
                 buttonManager.renderButtons();
                 
-                // Remove all control buttons
                 document.querySelector('.admin-panel').remove();
                 document.querySelector('.admin-mode-toggle').remove();
                 document.querySelector('.share-button').remove();
+                document.querySelector('.short-link-btn').remove();
                 document.querySelector('.stats-container').remove();
                 document.querySelector('.particle-toggle').remove();
                 document.querySelector('.theme-switcher').remove();
