@@ -473,63 +473,68 @@
         class ShareManager {
 generateShareLink() {
     const currentData = {
-        buttons: buttonManager.buttons,
-        profilePic: localStorage.getItem('profile-pic'),
-        profileName: document.getElementById('profile-name').value,
-        bio: document.getElementById('bio').value
+        b: buttonManager.buttons,  // shortened key names
+        p: localStorage.getItem('profile-pic'),
+        n: document.getElementById('profile-name').value,
+        i: document.getElementById('bio').value
     };
     
-    // Compress the data by removing the profile pic if it's too large
-    if (currentData.profilePic && currentData.profilePic.length > 50000) {
-        currentData.profilePic = null; // Skip large profile pictures
+    if (currentData.p && currentData.p.length > 50000) {
+        currentData.p = null;
     }
     
     const encodedData = btoa(encodeURIComponent(JSON.stringify(currentData)));
-    const shareUrl = `${window.location.origin}${window.location.pathname}?share=${encodedData}`;
+    const shareUrl = `${window.location.origin}${window.location.pathname}?s=${encodedData}`;
     
-    // Use the modern clipboard API
     navigator.clipboard.writeText(shareUrl).then(() => {
         alert('Share link copied to clipboard!');
     });
 }
             
-            initViewMode() {
-                const urlParams = new URLSearchParams(window.location.search);
-                const shareData = urlParams.get('share');
-                
-                if (shareData) {
-                    try {
-                        const decodedData = JSON.parse(atob(shareData));
-                        
-                        if (decodedData.profilePic) {
-                            document.getElementById('profile-pic').src = decodedData.profilePic;
-                        }
-                        
-                        const nameDisplay = document.createElement('h2');
-                        nameDisplay.id = 'profile-name-display';
-                        nameDisplay.textContent = decodedData.profileName;
-                        
-                        const bioDisplay = document.createElement('p');
-                        bioDisplay.id = 'bio-display';
-                        bioDisplay.textContent = decodedData.bio;
-                        
-                        document.getElementById('profile-name').replaceWith(nameDisplay);
-                        document.getElementById('bio').replaceWith(bioDisplay);
-                        
-                        buttonManager.buttons = decodedData.buttons;
-                        buttonManager.renderButtons();
-                        
-                        document.body.classList.add('view-only');
-                        
-                        document.querySelector('.admin-panel').style.display = 'none';
-                        document.querySelector('.admin-mode-toggle').style.display = 'none';
-                        document.querySelector('.share-button').style.display = 'none';
-                    } catch (error) {
-                        console.error('Error loading shared data:', error);
-                    }
-                }
+initViewMode() {
+    const urlParams = new URLSearchParams(window.location.search);
+const shareData = urlParams.get('s');
+    
+    if (shareData) {
+        try {
+            const decodedData = JSON.parse(atob(shareData));
+            
+            // Set profile picture
+            if (decodedData.profilePic) {
+                document.getElementById('profile-pic').src = decodedData.profilePic;
             }
+            
+            // Replace editable elements with static text
+            const profileInfo = document.querySelector('.profile-info');
+            profileInfo.innerHTML = `
+                <h2 class="profile-name">${decodedData.profileName}</h2>
+                <p class="bio-text">${decodedData.bio}</p>
+            `;
+            
+            // Set buttons
+            buttonManager.buttons = decodedData.buttons;
+            buttonManager.renderButtons();
+            
+            // Hide all admin controls
+            document.querySelector('.admin-panel').remove();
+            document.querySelector('.admin-mode-toggle').remove();
+            document.querySelector('.particle-toggle').remove();
+            document.querySelector('.theme-switcher').remove();
+            document.querySelector('.share-button').remove();
+            
+            // Make profile pic non-clickable
+            document.getElementById('profile-pic').style.cursor = 'default';
+            document.getElementById('profile-pic').onclick = null;
+            
+            // Remove file upload
+            const uploadInput = document.getElementById('profile-upload');
+            if (uploadInput) uploadInput.remove();
+            
+        } catch (error) {
+            console.error('Error loading shared data:', error);
         }
+    }
+}
 
         // Initialize managers
         const buttonManager = new ButtonManager();
