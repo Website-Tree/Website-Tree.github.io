@@ -518,7 +518,7 @@ class ShareManager {
 
     async generateShareLink(isShort = false) {
         const shareId = Math.random().toString(36).substring(2, 15);
-        const fileName = `shares/links/share_${shareId}.json`;
+        const fileName = `shares/links/share_${shareId}.html`;
 
         const currentData = {
             b: buttonManager.buttons.map(button => ({
@@ -530,7 +530,41 @@ class ShareManager {
             timestamp: Date.now()
         };
 
-        const content = btoa(JSON.stringify(currentData, null, 2));
+        // Create HTML content
+        const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${currentData.n}'s Link Hub</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../script.js"></script>
+</head>
+<body>
+    <div id="particles-js" class="particles-bg"></div>
+    <div class="container">
+        <div class="profile">
+            <img src="https://raw.githubusercontent.com/Website-Tree/Website-Tree.github.io/refs/heads/main/Multi-Links/image.png" alt="Profile">
+            <h2>${currentData.n}</h2>
+            <p>${currentData.i}</p>
+        </div>
+        <div class="links">
+            ${currentData.b.map(button => `
+                <a href="${button.u}" class="redirect-button" target="_blank">
+                    ${button.n}
+                </a>
+            `).join('')}
+        </div>
+    </div>
+    <script>
+        const shareData = ${JSON.stringify(currentData)};
+        // Initialize your particles and other features here
+    </script>
+</body>
+</html>`;
+
+        const content = btoa(htmlContent);
 
         try {
             await fetch(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/${fileName}`, {
@@ -546,7 +580,7 @@ class ShareManager {
                 })
             });
 
-            const shareUrl = `${window.location.origin}/share/${shareId}`;
+            const shareUrl = `${window.location.origin}/shares/links/share_${shareId}.html`;
             navigator.clipboard.writeText(shareUrl);
             alert('Share link created and copied to clipboard!');
         } catch (error) {
@@ -555,7 +589,6 @@ class ShareManager {
         }
     }
 }
-
         // Initialize managers
         const buttonManager = new ButtonManager();
         const themeManager = new ThemeManager();
