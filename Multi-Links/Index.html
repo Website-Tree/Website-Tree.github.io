@@ -479,14 +479,9 @@ class ShareManager {
                 url: button.url
             })),
             n: document.getElementById('profile-name').value,
-            i: document.getElementById('bio').value
+            i: document.getElementById('bio').value,
+            p: "https://raw.githubusercontent.com/Website-Tree/Website-Tree.github.io/refs/heads/main/Multi-Links/image.png"
         };
-        
-        // Split the data into chunks if profile pic exists
-        const profilePic = localStorage.getItem('profile-pic');
-        if (profilePic) {
-            currentData.p = profilePic.substring(0, profilePic.length);
-        }
         
         try {
             const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(currentData))));
@@ -498,6 +493,42 @@ class ShareManager {
         } catch (error) {
             alert('Link generated successfully!');
             console.log('Share data processed successfully');
+        }
+    }
+    
+    initViewMode() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const shareData = urlParams.get('s');
+        
+        if (shareData) {
+            try {
+                const decodedData = JSON.parse(decodeURIComponent(atob(shareData)));
+                
+                document.getElementById('profile-pic').src = "https://raw.githubusercontent.com/Website-Tree/Website-Tree.github.io/refs/heads/main/Multi-Links/image.png";
+                
+                const profileInfo = document.querySelector('.profile-info');
+                profileInfo.innerHTML = `
+                    <h2 class="profile-name">${decodedData.n}</h2>
+                    <p class="bio-text">${decodedData.i}</p>
+                `;
+                
+                buttonManager.buttons = decodedData.b;
+                buttonManager.renderButtons();
+                
+                document.querySelector('.admin-panel').remove();
+                document.querySelector('.admin-mode-toggle').remove();
+                document.querySelector('.share-button').remove();
+                document.querySelector('.stats-container').remove();
+                
+                document.getElementById('profile-pic').style.cursor = 'default';
+                document.getElementById('profile-pic').onclick = null;
+                
+                const uploadInput = document.getElementById('profile-upload');
+                if (uploadInput) uploadInput.remove();
+                
+            } catch (error) {
+                console.error('Error loading shared data:', error);
+            }
         }
     }
 }
