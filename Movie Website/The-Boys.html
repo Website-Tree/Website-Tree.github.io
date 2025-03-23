@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Boys - Video Player</title>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #1a0033, #000000);
+            z-index: -1;
+        }
+        
+        body {
+            margin: 0;
+            color: white;
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .container {
+            display: flex;
+            gap: 30px;
+            padding: 30px;
+            position: relative;
+            z-index: 1;
+            height: 90vh;
+        }
+        
+        .left-panel {
+            flex: 1;
+            border: 2px solid #8a2be2;
+            padding: 25px;
+            background: rgba(26, 0, 51, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .right-panel {
+            flex: 3;
+            border: 2px solid #8a2be2;
+            padding: 25px;
+            background: rgba(26, 0, 51, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .season-selector {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .season-btn {
+            flex: 1;
+            padding: 10px;
+            background: #2a0052;
+            color: white;
+            border: 1px solid #8a2be2;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .season-btn:hover {
+            background: #3a0066;
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+        }
+
+        .season-btn.active {
+            background: #8a2be2;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+        }
+        
+        select {
+            flex-grow: 1;
+            padding: 15px;
+            background: #2a0052;
+            color: white;
+            border: 1px solid #8a2be2;
+            border-radius: 10px;
+            font-size: 16px;
+            min-height: 600px;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+        
+        option {
+            padding: 15px;
+            margin: 8px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        option:hover {
+            background: #3a0066;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 90%;
+            padding: 10px;
+            margin-top: 20px;
+            border: 3px solid #8a2be2;
+            border-radius: 15px;
+            background: rgba(138, 43, 226, 0.1);
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.3);
+        }
+        
+        iframe {
+            width: 100%;
+            height: 600px;
+            border-radius: 10px;
+            background: #000;
+        }
+        
+        h3 {
+            color: #bf00ff;
+            font-size: 24px;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(191, 0, 255, 0.3);
+        }
+        
+        select::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        select::-webkit-scrollbar-track {
+            background: #2a0052;
+            border-radius: 10px;
+        }
+        
+        select::-webkit-scrollbar-thumb {
+            background: #8a2be2;
+            border-radius: 10px;
+        }
+        
+        select::-webkit-scrollbar-thumb:hover {
+            background: #bf00ff;
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="container">
+        <div class="left-panel">
+            <h3>Select Episodes</h3>
+            <div class="season-selector">
+                <button class="season-btn" data-season="1">Season 1</button>
+                <button class="season-btn" data-season="2">Season 2</button>
+                <button class="season-btn" data-season="3">Season 3</button>
+            </div>
+            <select id="itemSelector" multiple></select>
+        </div>
+        <div class="right-panel">
+            <h3>Video Player</h3>
+            <div class="video-container">
+                <iframe id="videoPlayer" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+    <script>
+        const episodes = {
+            1: [
+                {value: "https://drive.google.com/file/d/1Kp7Xj8RkO0YzYr-FUyxu_vVNuJMGqnFx/preview", title: "S1E1 - The Name of the Game"},
+                {value: "https://drive.google.com/file/d/1KqPAVVPSgD-_4Qr8q5qFEPQwTvxGFGWM/preview", title: "S1E2 - Cherry"},
+                {value: "https://drive.google.com/file/d/1KrHGDPTuFXBVa8Yh4-_Hs5Iy1Hs_Iqt7/preview", title: "S1E3 - Get Some"},
+                {value: "https://drive.google.com/file/d/1KtDxLKBPGHZPEGXTGPTtGHVEcqPQrZCe/preview", title: "S1E4 - The Female of the Species"},
+                {value: "https://drive.google.com/file/d/1KtJPwXPGDPXXHWxkLZBGAXkXTLDPBVxv/preview", title: "S1E5 - Good for the Soul"},
+                {value: "https://drive.google.com/file/d/1KtLPwXPGDPXXHWxkLZBGAXkXTLDPBVxv/preview", title: "S1E6 - The Innocents"},
+                {value: "https://drive.google.com/file/d/1KtNPwXPGDPXXHWxkLZBGAXkXTLDPBVxv/preview", title: "S1E7 - The Self-Preservation Society"},
+                {value: "https://drive.google.com/file/d/1vYREqLDFcl-RtaHOPYZ4hRR7j2NNGu-B/preview", title: "S1E8 - You Found Me"}
+            ],
+            2: [
+                {value: "https://drive.google.com/file/d/1_weKxqD7nzznG9CvH-sToSxli12mNwh-/preview", title: "S2E1 - The Big Ride"},
+                {value: "https://drive.google.com/file/d/1gwJnjy2QML-pm6KwgEzLNgEjkuBcNCBA/preview", title: "S2E2 - Proper Preparation"},
+                {value: "https://drive.google.com/file/d/19op7cT5N0aBeVFyE6eiu7g6UPL4RocXn/preview", title: "S2E3 - Over the Hill"},
+                {value: "https://drive.google.com/file/d/1VZpu9mxWrQ6Ov9uldqt3EdJqxYEIlebC/preview", title: "S2E4 - Nothing Like It"},
+                {value: "https://drive.google.com/file/d/1nd4PTutWxM3LlzdYbrCf848S2Pfflzgn/preview", title: "S2E5 - We Gotta Go Now"},
+                {value: "https://drive.google.com/file/d/1XsNrV9LOQK50sf46xnvP5u4T2PFLxWG3/preview", title: "S2E6 - The Bloody Doors Off"},
+                {value: "https://drive.google.com/file/d/1ncWjNIIqFZzdRCV9PNClTU_JSXNoqs7H/preview", title: "S2E7 - Butcher, Baker"},
+                {value: "https://drive.google.com/file/d/1v__gLI6R3_YixR__9rvTvFUxeVSOV9hE/preview", title: "S2E8 - What I Know"}
+            ],
+            3: [
+                {value: "https://drive.google.com/file/d/1KthPwXPGDPXXHWxkLZBGAXkXTLDPBVxv/preview", title: "S3E1 - Payback"},
+                {value: "https://drive.google.com/file/d/1KtjPwXPGDPXXHWxkLZBGAXkXTLDPBVxv/preview", title: "S3E2 - The Only Man"},
+                {value: "https://drive.google.com/file/d/1KtlPwXPGDPXXHWxkLZBGAXkXTLDPBVxv/preview", title: "S3E3 - Barbary Coast"},
+                {value: "https://drive.google.com/file/d/1KtnPwXPGDPXXHWxkLZBGAXkXTLDPBVxv/preview", title: "S3E4 - Glorious Five Year Plan"},
+                {value: "https://drive.google.com/file/d/1KtpPwXPGDPXXHWxkLZBGAXkXTLDPBVxv/preview", title: "S3E5 - The Last Time to Look"},
+                {value: "https://drive.google.com/file/d/1KtrPwXPGDPXXHWxkLZBGAXkXTLDPBVxv/preview", title: "S3E6 - Herogasm"},
+                {value: "https://drive.google.com/file/d/1KttPwXPGDPXXHWxkLZBGAXkXTLDPBVxv/preview", title: "S3E7 - Here Comes a Candle"},
+                {value: "https://drive.google.com/file/d/1KtvPwXPGDPXXHWxkLZBGAXkXTLDPBVxv/preview", title: "S3E8 - The Instant White-Hot Wild"}
+            ]
+        };
+
+        particlesJS('particles-js', {
+            particles: {
+                number: {
+                    value: 200,
+                    density: {
+                        enable: true,
+                        value_area: 800
+                    }
+                },
+                color: {
+                    value: '#8a2be2'
+                },
+                shape: {
+                    type: 'circle'
+                },
+                size: {
+                    value: 3,
+                    random: true
+                },
+                move: {
+                    enable: true,
+                    speed: 2,
+                    direction: 'bottom',
+                    straight: false
+                }
+            }
+        });
+
+        function populateEpisodes(season) {
+            const select = document.getElementById('itemSelector');
+            select.innerHTML = '';
+            episodes[season].forEach(episode => {
+                const option = document.createElement('option');
+                option.value = episode.value;
+                option.textContent = episode.title;
+                select.appendChild(option);
+            });
+        }
+
+        document.querySelectorAll('.season-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                document.querySelectorAll('.season-btn').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                populateEpisodes(e.target.dataset.season);
+            });
+        });
+
+        const itemSelector = document.getElementById('itemSelector');
+        const videoPlayer = document.getElementById('videoPlayer');
+        
+        videoPlayer.src = episodes[1][0].value;
+        
+        itemSelector.addEventListener('change', function() {
+            const selectedVideo = this.value;
+            videoPlayer.src = selectedVideo;
+        });
+
+        // Initialize with Season 1
+        document.querySelector('[data-season="1"]').classList.add('active');
+        populateEpisodes(1);
+    </script>
+</body>
+</html>
