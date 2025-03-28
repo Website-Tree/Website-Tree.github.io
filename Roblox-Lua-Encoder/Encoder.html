@@ -209,14 +209,15 @@ function encode() {
         result = result.replace(/\s+/g, '');
     }
     
-    let finalOutput = result;
+    let finalOutput = `local encoded = "${result}"\n`;
     
     if (addDecoder) {
-        finalOutput = `loadstring(game:HttpGet("https://raw.githubusercontent.com/SYFER-eng/Roblox-Decoder/refs/heads/main/Decode/Decoder.lua",true))()\n\n` + finalOutput;
+        finalOutput = `${finalOutput}loadstring(game:HttpGet("https://raw.githubusercontent.com/SYFER-eng/Roblox-Decoder/refs/heads/main/Decode/Decoder.lua",true))()\n`;
     }
     
     document.getElementById('output').value = finalOutput;
 }
+
 
         function copyOutput() {
             const output = document.getElementById('output');
