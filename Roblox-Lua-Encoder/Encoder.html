@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Roblox Lua Encoder Pro</title>
+    <style>
+        body {
+            background: #1a1a1a;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            background: #1a1a1a;
+            color: #00ff00;
+            border: 1px solid #444;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: 'Consolas', monospace;
+            border-radius: 5px;
+        }
+        button {
+            background: #00aa00;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #00cc00;
+        }
+        .title {
+            color: #00ff00;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Roblox Lua Encoder Pro</h1>
+        <textarea id="input" placeholder="Enter your Lua code here..."></textarea>
+        <button onclick="encode()">Encode</button>
+        <textarea id="output" readonly></textarea>
+    </div>
+
+    <script>
+        const symbols = "!@#$%^&*()_+-=[]{}|;:,.<>?`~";
+        const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        
+        function encode() {
+            const input = document.getElementById('input').value;
+            let encoded = '';
+            
+            for (let i = 0; i < input.length; i++) {
+                const char = input.charCodeAt(i);
+                const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+                const randomLetter = letters[Math.floor(Math.random() * letters.length)];
+                encoded += `${randomLetter}${char.toString(36)}${randomSymbol}`;
+            }
+            
+            const decoderUrl = "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/SYFER-eng/Roblox-Decoder/refs/heads/main/Decode/Decoder.lua\",true))()\n\n";
+            const finalOutput = decoderUrl + `local encoded = "${encoded}"`;
+            
+            document.getElementById('output').value = finalOutput;
+        }
+    </script>
+</body>
+</html>
