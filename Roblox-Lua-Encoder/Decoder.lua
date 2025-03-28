@@ -1,4 +1,11 @@
-local function decode(str)
+-- Main Configuration
+local Config = {
+    Debug = true,
+    Version = "1.0.0"
+}
+
+-- Decoder Function
+local function decodeString(str)
     local decoded = ""
     local pattern = "X([^Y]+)Y"
     
@@ -9,11 +16,41 @@ local function decode(str)
         end
     end
     
-    return loadstring(decoded)()
+    return decoded
 end
 
-if getfenv().encoded then
-    return decode(getfenv().encoded)
+-- Main Execution Handler
+local function executeScript()
+    local encoded = getfenv().encoded
+    if encoded then
+        local decodedScript = decodeString(encoded)
+        if Config.Debug then
+            print("Script decoded successfully!")
+        end
+        
+        local success, result = pcall(function()
+            return loadstring(decodedScript)()
+        end)
+        
+        if success then
+            if Config.Debug then
+                print("Script executed successfully!")
+            end
+            return result
+        else
+            warn("Execution error:", result)
+        end
+    end
 end
 
-return decode
+-- Initialize
+local success = executeScript()
+if success and Config.Debug then
+    print("System initialized successfully!")
+end
+
+return function(str)
+    if str then
+        return decodeString(str)
+    end
+end
