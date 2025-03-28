@@ -1,4 +1,4 @@
-local function decodeString(str)
+local function decode(str)
     local decoded = ""
     local pattern = "X([^Y]+)Y"
     
@@ -9,21 +9,11 @@ local function decodeString(str)
         end
     end
     
-    return decoded
+    return loadstring(decoded)()
 end
 
-local encoded = getfenv().encoded
-if encoded then
-    local success, result = pcall(function()
-        local decodedScript = decodeString(encoded)
-        return loadstring(decodedScript)()
-    end)
-    
-    if not success then
-        warn("Decoding failed:", result)
-    end
+if getfenv().encoded then
+    return decode(getfenv().encoded)
 end
 
-return function(str)
-    return decodeString(str)
-end
+return decode
