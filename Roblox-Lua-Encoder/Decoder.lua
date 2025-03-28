@@ -1,56 +1,35 @@
--- Main Configuration
-local Config = {
-    Debug = true,
-    Version = "1.0.0"
+local charMap = {
+    ['A'] = 'Z', ['B'] = 'Y', ['C'] = 'X', ['D'] = 'W', ['E'] = 'V',
+    ['F'] = 'U', ['G'] = 'T', ['H'] = 'S', ['I'] = 'R', ['J'] = 'Q',
+    ['K'] = 'P', ['L'] = 'O', ['M'] = 'N', ['N'] = 'M', ['O'] = 'L',
+    ['P'] = 'K', ['Q'] = 'J', ['R'] = 'I', ['S'] = 'H', ['T'] = 'G',
+    ['U'] = 'F', ['V'] = 'E', ['W'] = 'D', ['X'] = 'C', ['Y'] = 'B',
+    ['Z'] = 'A', ['a'] = 'z', ['b'] = 'y', ['c'] = 'x', ['d'] = 'w',
+    ['e'] = 'v', ['f'] = 'u', ['g'] = 't', ['h'] = 's', ['i'] = 'r',
+    ['j'] = 'q', ['k'] = 'p', ['l'] = 'o', ['m'] = 'n', ['n'] = 'm',
+    ['o'] = 'l', ['p'] = 'k', ['q'] = 'j', ['r'] = 'i', ['s'] = 'h',
+    ['t'] = 'g', ['u'] = 'f', ['v'] = 'e', ['w'] = 'd', ['x'] = 'c',
+    ['y'] = 'b', ['z'] = 'a', ['0'] = '9', ['1'] = '8', ['2'] = '7',
+    ['3'] = '6', ['4'] = '5', ['5'] = '4', ['6'] = '3', ['7'] = '2',
+    ['8'] = '1', ['9'] = '0', [' '] = '_', ['.'] = '!', ['!'] = '.',
+    ['"'] = "'", ["'"] = '"', ['('] = ')', [')'] = '(', ['['] = ']',
+    [']'] = '[', ['{'] = '}', ['}'] = '{', ['<'] = '>', ['>'] = '<',
+    ['+'] = '-', ['-'] = '+', ['='] = '~', ['~'] = '=', ['@'] = '#',
+    ['#'] = '@', ['$'] = '%', ['%'] = '$', ['^'] = '&', ['&'] = '^',
+    ['*'] = '/', ['/'] = '*', ['\\'] = '|', ['|'] = '\\', [';'] = ':',
+    [':'] = ';', [','] = '`', ['`'] = ',', ['?'] = '/', ['\n'] = '\t',
+    ['\t'] = '\n'
 }
 
--- Decoder Function
-local function decodeString(str)
-    local decoded = ""
-    local pattern = "X([^Y]+)Y"
-    
-    for num in str:gmatch(pattern) do
-        local charCode = tonumber(num, 36)
-        if charCode then
-            decoded = decoded .. string.char(charCode)
-        end
-    end
-    
-    return decoded
+local function decode(str)
+    local decoded = str:gsub(".", function(c)
+        return charMap[c] or c
+    end)
+    return loadstring(decoded)()
 end
 
--- Main Execution Handler
-local function executeScript()
-    local encoded = getfenv().encoded
-    if encoded then
-        local decodedScript = decodeString(encoded)
-        if Config.Debug then
-            print("Script decoded successfully!")
-        end
-        
-        local success, result = pcall(function()
-            return loadstring(decodedScript)()
-        end)
-        
-        if success then
-            if Config.Debug then
-                print("Script executed successfully!")
-            end
-            return result
-        else
-            warn("Execution error:", result)
-        end
-    end
+if getfenv().encoded then
+    return decode(getfenv().encoded)
 end
 
--- Initialize
-local success = executeScript()
-if success and Config.Debug then
-    print("System initialized successfully!")
-end
-
-return function(str)
-    if str then
-        return decodeString(str)
-    end
-end
+return decode
