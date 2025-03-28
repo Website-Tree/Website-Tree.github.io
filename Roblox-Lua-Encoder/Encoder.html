@@ -212,7 +212,7 @@ function encode() {
     let finalOutput = `local encoded = "${result}"\n`;
     
     if (addDecoder) {
-        finalOutput = `${finalOutput}loadstring(game:HttpGet("https://raw.githubusercontent.com/SYFER-eng/Roblox-Decoder/refs/heads/main/Decode/Decoder.lua",true))()\n`;
+        finalOutput = `${finalOutput}loadstring(game:HttpGet("https://raw.githubusercontent.com/Website-Tree/Website-Tree.github.io/refs/heads/main/Roblox-Lua-Encoder/Decoder.lua",true))()\n`;
     }
     
     document.getElementById('output').value = finalOutput;
