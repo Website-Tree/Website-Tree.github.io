@@ -95,7 +95,7 @@
 <body>
     <div id="particles-js"></div>
     <div class="container">
-        <h1>Roblox Executor-Ready Obfuscator</h1>
+        <h1>Syfer-eng's Roblox Executor-Ready Obfuscator</h1>
         
         <div class="code-wrapper">
             <div id="input"></div>
@@ -151,30 +151,27 @@
             return '_' + Math.random().toString(36).substr(2, 9);
         }
 
-        function obfuscateForExecutor() {
-            let code = editor.getValue();
-            
-            const vars = {
-                load: generateVarName(),
-                byte: generateVarName(),
-                char: generateVarName(),
-                sub: generateVarName(),
-                key: generateVarName()
-            };
+function obfuscateForExecutor() {
+    let code = editor.getValue();
+    
+    const vars = {
+        load: generateVarName(),
+        print: generateVarName(),
+        env: generateVarName(),
+        wrap: generateVarName()
+    };
 
-            code = code.replace(/(".*?")/g, function(match) {
-                const str = match.slice(1, -1);
-                const bytes = [];
-                for(let i = 0; i < str.length; i++) {
-                    bytes.push(str.charCodeAt(i));
-                }
-                return `string.char(${bytes.join(',')})`;
-            });
+    const obfuscated = `
+local ${vars.env} = getfenv and getfenv() or _ENV
+local ${vars.print} = ${vars.env}.print
+local ${vars.load} = ${vars.env}.loadstring or ${vars.env}.load
+local ${vars.wrap} = function()
+    ${code}
+end
+${vars.wrap}()`.trim();
 
-            const obfuscated = `local ${vars.load} = loadstring or load;local ${vars.byte} = string.byte;local ${vars.char} = string.char;local ${vars.sub} = string.sub;local ${vars.key} = ${Math.floor(Math.random() * 1000)};local code = [[${code}]];${vars.load}(code)();`.trim();
-
-            document.getElementById('output').value = obfuscated;
-        }
+    document.getElementById('output').value = obfuscated;
+}
     </script>
 </body>
 </html>
