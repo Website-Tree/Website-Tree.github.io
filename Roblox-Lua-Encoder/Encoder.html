@@ -154,24 +154,41 @@
 function obfuscateForExecutor() {
     let code = editor.getValue();
     
+    // Create encryption key and encrypt code
+    const key = Math.floor(Math.random() * 256);
+    let encrypted = '';
+    for(let i = 0; i < code.length; i++) {
+        encrypted += String.fromCharCode(code.charCodeAt(i) ^ key);
+    }
+    
+    // Convert to hex
+    let hex = '';
+    for(let i = 0; i < encrypted.length; i++) {
+        hex += '\\' + encrypted.charCodeAt(i).toString(16);
+    }
+
+    // Generate random variable names
     const vars = {
-        load: generateVarName(),
-        print: generateVarName(),
-        env: generateVarName(),
-        wrap: generateVarName()
+        decode: '_' + Math.random().toString(36).substr(2),
+        exec: '_' + Math.random().toString(36).substr(2), 
+        str: '_' + Math.random().toString(36).substr(2)
     };
 
     const obfuscated = `
-local ${vars.env} = getfenv and getfenv() or _ENV
-local ${vars.print} = ${vars.env}.print
-local ${vars.load} = ${vars.env}.loadstring or ${vars.env}.load
-local ${vars.wrap} = function()
-    ${code}
+local ${vars.decode}=function(str,key)
+    local result=''
+    for i=1,#str do
+        result=result..string.char(bit32.bxor(string.byte(str,i),key))
+    end
+    return result
 end
-${vars.wrap}()`.trim();
+local ${vars.str}='${hex}'
+local ${vars.exec}=loadstring or load
+${vars.exec}(${vars.decode}('${encrypted}',${key}))()`.trim();
 
     document.getElementById('output').value = obfuscated;
 }
+
     </script>
 </body>
 </html>
