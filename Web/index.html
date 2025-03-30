@@ -1,0 +1,3014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cinestream</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Custom CSS */
+    :root {
+      --color-primary: #e11d48;
+      --color-primary-darker: #be123c;
+      --color-background: #0f172a;
+      --color-foreground: #f8fafc;
+      --color-card: #1e293b;
+      --color-card-hover: #334155;
+    }
+    
+    body {
+      background-color: var(--color-background);
+      color: var(--color-foreground);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    .navbar {
+      background-color: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(10px);
+    }
+    
+    .card {
+      background-color: var(--color-card);
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: scale(1.05);
+      background-color: var(--color-card-hover);
+    }
+    
+    .btn-primary {
+      background-color: var(--color-primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--color-primary-darker);
+    }
+    
+    .hero-overlay {
+      background: linear-gradient(to top, rgba(15, 23, 42, 1) 0%, rgba(15, 23, 42, 0.7) 50%, rgba(15, 23, 42, 0.4) 100%);
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 50;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+    
+    .modal-content {
+      background-color: var(--color-card);
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 90%;
+      width: 600px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    .close:hover,
+    .close:focus {
+      color: var(--color-primary);
+    }
+    
+    .tab {
+      display: none;
+    }
+    
+    .tab.active {
+      display: block;
+    }
+    
+    .tab-button {
+      padding: 8px 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-right: 4px;
+    }
+    
+    .tab-button.active {
+      background-color: var(--color-primary);
+      color: white;
+    }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      border-radius: 4px;
+      color: white;
+      font-weight: 500;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      transform: translateY(-100px);
+      opacity: 0;
+    }
+    
+    .notification.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    .notification-success {
+      background-color: #10b981;
+    }
+    
+    .notification-error {
+      background-color: #ef4444;
+    }
+    
+    .notification-info {
+      background-color: #3b82f6;
+    }
+    
+    .toast-icon {
+      margin-right: 12px;
+      font-size: 20px;
+    }
+    
+    /* Enhanced Video player styles */
+    .video-player-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.95);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    
+    .video-player {
+      width: 90%;
+      max-width: 1280px;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .video-title-bar {
+      background: linear-gradient(to right, #1a1a2e, #16213e);
+      border-bottom: 1px solid #30304d;
+    }
+    
+    .custom-video-controls {
+      background: linear-gradient(to bottom, #1a1a2e, #0f0f17);
+      border-top: 1px solid #30304d;
+    }
+
+    #progressBar, #bufferBar {
+      transition: width 0.1s;
+      cursor: pointer;
+    }
+
+    #volumeSlider {
+      cursor: pointer;
+      -webkit-appearance: none;
+      height: 6px;
+      background: #4a5568;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    #volumeSlider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+    }
+    
+    .episode-picker-container {
+      width: 90%;
+      max-width: 1280px;
+      margin-top: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #4a5568 #1a1a2e;
+    }
+
+    .episode-card {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      border: 1px solid #30304d;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .episode-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      border-color: #4361ee;
+    }
+
+    .episode-card.active {
+      border-color: #4361ee;
+      background: linear-gradient(135deg, #20254c, #2a365f);
+    }
+    
+    .video-controls {
+      width: 80%;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #374151;
+      border-radius: 4px;
+      background-color: #1f2937;
+      color: white;
+    }
+    
+    .movie-card-container {
+      position: relative;
+    }
+    
+    .delete-button {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background-color: rgba(220, 38, 38, 0.8);
+      color: white;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      cursor: pointer;
+      z-index: 10;
+    }
+    
+    .movie-card-container:hover .delete-button {
+      opacity: 1;
+    }
+    
+    .content-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+    }
+    
+    .content-table th, 
+    .content-table td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #334155;
+    }
+    
+    .content-table th {
+      background-color: #1e293b;
+    }
+    
+    .content-table tr:hover {
+      background-color: #1e293b;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      margin-right: 0.25rem;
+      margin-bottom: 0.25rem;
+    }
+    
+    .badge-featured {
+      background-color: #8b5cf6;
+      color: white;
+    }
+    
+    .badge-popular {
+      background-color: #f97316;
+      color: white;
+    }
+    
+    .badge-new {
+      background-color: #06b6d4;
+      color: white;
+    }
+    
+    /* Episode section styling */
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    #episodes-section h3 {
+      color: #3b82f6;
+      margin-bottom: 1rem;
+    }
+    
+    .episode-item {
+      transition: transform 0.2s;
+    }
+    
+    .episode-item:hover {
+      transform: translateY(-5px);
+    }
+    
+    /* Season selector styling */
+    #seasons-selector button {
+      transition: all 0.2s;
+    }
+    
+    #seasons-selector button:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar fixed top-0 left-0 right-0 z-40 px-4 py-3">
+    <div class="container mx-auto flex justify-between items-center">
+      <a href="#" class="flex items-center text-2xl font-bold text-white" onclick="showPage('home')">
+        <i class="fas fa-film mr-2 text-red-600"></i>
+        <span>Cinestream</span>
+      </a>
+      
+      <div class="flex items-center space-x-6">
+        <div class="hidden md:flex space-x-6">
+          <a href="#" class="text-gray-300 hover:text-white" onclick="showPage('home')">Home</a>
+          <a href="#" class="text-gray-300 hover:text-white" onclick="showPage('movies')">Movies</a>
+          <a href="#" class="text-gray-300 hover:text-white" onclick="showPage('tvshows')">TV Shows</a>
+        </div>
+        
+        <div class="relative">
+          <input id="searchInput" type="text" placeholder="Search..." class="bg-gray-800 text-white px-3 py-1 rounded-full focus:outline-none focus:ring-2 focus:ring-red-600" onkeydown="handleSearchKeyDown(event)">
+        </div>
+        
+        <div id="loggedOutActions" class="flex items-center">
+          <button onclick="openModal('authModal')" class="btn-primary px-4 py-1 rounded-full font-medium">Sign In</button>
+        </div>
+        
+        <div id="loggedInActions" class="hidden flex items-center space-x-4">
+          <button id="userManagementButton" onclick="openModal('userManagementModal')" class="hidden text-white hover:text-red-600">
+            <i class="fas fa-users text-xl"></i>
+          </button>
+          <button id="contentManagementButton" onclick="openModal('contentManagementModal')" class="hidden text-white hover:text-red-600">
+            <i class="fas fa-film text-xl"></i>
+          </button>
+          <div class="relative">
+            <button class="text-white hover:text-red-600 user-profile-button" onclick="toggleUserMenu()">
+              <i class="fas fa-user-circle text-2xl"></i>
+            </button>
+            <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg py-1 z-50">
+              <div id="usernameDisplay" class="px-4 py-2 text-sm text-gray-300 border-b border-gray-700"></div>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700" onclick="handleLogout()">Logout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main content area -->
+  <main class="pt-16 pb-6">
+    <!-- Home Page -->
+    <div id="home-page" class="page">
+      <!-- Hero Section - Initially hidden and managed via JS -->
+      <section id="hero-section" class="relative h-[70vh] mb-8 hidden">
+        <div id="hero-backdrop" class="absolute inset-0 bg-cover bg-center"></div>
+        <div class="hero-overlay absolute inset-0 flex items-end">
+          <div class="container mx-auto px-4 mb-8">
+            <h1 id="hero-title" class="text-4xl md:text-5xl font-bold mb-2"></h1>
+            <p id="hero-overview" class="text-lg max-w-2xl mb-6"></p>
+            <div class="flex space-x-4">
+              <button id="hero-play-button" class="btn-primary px-6 py-2 rounded-full font-medium flex items-center">
+                <i class="fas fa-play mr-2"></i> Play
+              </button>
+              <button id="hero-info-button" class="bg-gray-700 text-white px-6 py-2 rounded-full font-medium flex items-center">
+                <i class="fas fa-info-circle mr-2"></i> More Info
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Welcome message for empty state (this will be shown by default) -->
+      <section id="welcome-banner" class="py-12 mb-8 bg-gradient-to-r from-purple-900 to-indigo-900 rounded-lg">
+        <div class="container mx-auto px-4 text-center">
+          <h1 class="text-4xl md:text-5xl font-bold mb-4">Welcome to Cinestream</h1>
+          <p class="text-xl max-w-2xl mx-auto mb-8">Your premium streaming service for movies and TV shows</p>
+        </div>
+      </section>
+      
+      <!-- Featured Content -->
+      <section class="container mx-auto px-4 mb-8">
+        <h2 class="text-2xl font-bold mb-4">Featured</h2>
+        <div id="featured-content" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+      </section>
+      
+      <!-- Popular Movies -->
+      <section class="container mx-auto px-4 mb-8">
+        <h2 class="text-2xl font-bold mb-4">Popular Movies</h2>
+        <div id="popular-movies" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+      </section>
+      
+      <!-- Top TV Shows -->
+      <section class="container mx-auto px-4 mb-8">
+        <h2 class="text-2xl font-bold mb-4">Top TV Shows</h2>
+        <div id="top-tvshows" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+      </section>
+      
+      <!-- New Releases -->
+      <section class="container mx-auto px-4">
+        <h2 class="text-2xl font-bold mb-4">New Releases</h2>
+        <div id="new-releases" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+      </section>
+    </div>
+    
+    <!-- Movies Page -->
+    <div id="movies-page" class="page hidden">
+      <section class="container mx-auto px-4">
+        <h1 class="text-3xl font-bold mb-6">Movies</h1>
+        <div id="all-movies" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+      </section>
+    </div>
+    
+    <!-- TV Shows Page -->
+    <div id="tvshows-page" class="page hidden">
+      <section class="container mx-auto px-4">
+        <h1 class="text-3xl font-bold mb-6">TV Shows</h1>
+        <div id="all-tvshows" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+      </section>
+    </div>
+    
+    <!-- Search Results Page -->
+    <div id="search-page" class="page hidden">
+      <section class="container mx-auto px-4">
+        <h1 class="text-3xl font-bold mb-6">Search Results: <span id="search-query"></span></h1>
+        <div id="search-results" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+      </section>
+    </div>
+  </main>
+  
+  <!-- Content Detail Modal -->
+  <div id="movieDetailModal" class="modal">
+    <div class="modal-content max-w-4xl">
+      <span class="close" onclick="closeModal('movieDetailModal')">&times;</span>
+      
+      <!-- Main content details section -->
+      <div class="flex flex-col md:flex-row mb-6">
+        <div class="md:w-1/3 p-4">
+          <img id="detail-poster" src="" alt="Content poster" class="w-full h-auto rounded-lg">
+        </div>
+        <div class="md:w-2/3 p-4">
+          <h2 id="detail-title" class="text-2xl font-bold mb-2"></h2>
+          <div id="detail-badges" class="mb-3"></div>
+          <div class="flex items-center mb-4">
+            <span id="detail-rating" class="bg-yellow-600 text-white px-2 py-1 rounded text-sm mr-3"></span>
+            <span id="detail-year" class="text-gray-400 mr-3"></span>
+            <span id="detail-duration" class="text-gray-400"></span>
+          </div>
+          <p id="detail-overview" class="text-gray-300 mb-6"></p>
+          <div class="flex space-x-4 mb-6">
+            <button id="detail-play-button" class="btn-primary px-6 py-2 rounded-full font-medium flex items-center">
+              <i class="fas fa-play mr-2"></i> Play
+            </button>
+            <div id="detail-content-actions" class="flex space-x-4 hidden"> <!-- Will be shown only for owner -->
+              <button id="detail-edit-button" class="bg-blue-600 text-white px-6 py-2 rounded-full font-medium flex items-center">
+                <i class="fas fa-edit mr-2"></i> Edit
+              </button>
+              <button id="detail-delete-button" class="bg-red-600 text-white px-6 py-2 rounded-full font-medium flex items-center">
+                <i class="fas fa-trash mr-2"></i> Delete
+              </button>
+            </div>
+          </div>
+          <div class="mb-4">
+            <h3 class="text-lg font-semibold mb-2">Genre</h3>
+            <div id="detail-genres" class="flex flex-wrap"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- TV Show Episodes Section -->
+      <div id="episodes-section" class="p-4 hidden">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-xl font-bold text-primary">Episodes</h3>
+          <div id="seasons-selector" class="text-sm flex gap-2"></div>
+        </div>
+        
+        <div id="episodes-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Episodes will be added here dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Auth Modal -->
+  <div id="authModal" class="modal">
+    <div class="modal-content max-w-md">
+      <span class="close" onclick="closeModal('authModal')">&times;</span>
+      <h2 class="text-xl font-bold mb-6">Sign In</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" id="username" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" id="password" class="form-input" required>
+        </div>
+        <div id="login-error" class="text-red-500 mb-4 hidden"></div>
+        <button type="submit" class="btn-primary w-full py-2 rounded-md">Sign In</button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Enhanced Video Player Modal -->
+  <div id="videoPlayerModal" class="video-player-container">
+    <div class="video-player">
+      <div class="video-title-bar flex justify-between items-center mb-2 px-4 py-2 bg-gray-800 rounded-t-lg">
+        <h3 id="videoTitle" class="text-xl font-bold text-white">Watching: </h3>
+        <div class="flex space-x-2">
+          <button id="fullscreenBtn" class="text-white px-2 py-1 rounded hover:bg-gray-700" title="Toggle Fullscreen">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M21 8V5a2 2 0 0 0-2-2h-3"></path><path d="M3 16v3a2 2 0 0 0 2 2h3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg>
+          </button>
+          <button class="text-white px-2 py-1 rounded hover:bg-gray-700" onclick="closeVideoPlayer()" title="Close Player">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+      </div>
+      <video id="videoElement" class="w-full rounded-b-lg" controlsList="nodownload">
+        <source id="videoSource" src="" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      
+      <!-- Custom Video Controls -->
+      <div class="custom-video-controls p-4 bg-gray-800 rounded-b-lg">
+        <div class="flex items-center justify-between mb-2">
+          <button id="playPauseBtn" class="text-white hover:text-gray-300">
+            <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class=""><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+          </button>
+          <div class="flex items-center mx-4 flex-grow">
+            <span id="currentTime" class="text-white text-sm mr-2">0:00</span>
+            <div class="w-full bg-gray-600 rounded-full h-2 relative">
+              <div id="progressBar" class="bg-blue-500 h-2 rounded-full" style="width: 0%"></div>
+              <div id="bufferBar" class="absolute top-0 bg-gray-500 h-2 rounded-full" style="width: 0%"></div>
+            </div>
+            <span id="duration" class="text-white text-sm ml-2">0:00</span>
+          </div>
+          <div class="flex items-center">
+            <button id="muteBtn" class="text-white hover:text-gray-300 mr-2">
+              <svg id="volumeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+              <svg id="muteIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+            </button>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="1" class="w-20">
+          </div>
+        </div>
+        
+        <!-- Playback Settings -->
+        <div class="flex justify-between mt-2">
+          <div class="flex space-x-2">
+            <button id="rewind10Btn" class="text-white px-2 py-1 rounded hover:bg-gray-700" title="Rewind 10s">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path><text x="7" y="16" font-size="8" font-weight="bold">10</text></svg>
+            </button>
+            <button id="forward10Btn" class="text-white px-2 py-1 rounded hover:bg-gray-700" title="Forward 10s">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path><text x="10" y="16" font-size="8" font-weight="bold">10</text></svg>
+            </button>
+          </div>
+          <div class="flex items-center">
+            <label for="playbackSpeed" class="text-white text-sm mr-2">Speed:</label>
+            <select id="playbackSpeed" class="bg-gray-700 text-white text-sm rounded">
+              <option value="0.5">0.5x</option>
+              <option value="0.75">0.75x</option>
+              <option value="1" selected>1x</option>
+              <option value="1.25">1.25x</option>
+              <option value="1.5">1.5x</option>
+              <option value="2">2x</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Episode Picker for TV Shows -->
+    <div id="episodePickerContainer" class="episode-picker-container mt-4 p-4 bg-gray-800 rounded-lg hidden">
+      <h3 class="text-xl font-bold text-white mb-4">Episodes</h3>
+      <div id="episodePicker" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Episodes will be populated dynamically -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteConfirmModal" class="modal">
+    <div class="modal-content max-w-md">
+      <h2 class="text-xl font-bold mb-6">Confirm Delete</h2>
+      <p id="delete-confirm-message" class="mb-6 text-gray-300">Are you sure you want to delete this content?</p>
+      <div class="flex justify-end space-x-4">
+        <button class="px-4 py-2 bg-gray-700 text-white rounded-md" onclick="closeModal('deleteConfirmModal')">
+          No, Cancel
+        </button>
+        <button id="confirm-delete-btn" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+          Yes, Delete
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- User Management Modal -->
+  <div id="userManagementModal" class="modal">
+    <div class="modal-content max-w-6xl">
+      <span class="close" onclick="closeModal('userManagementModal')">&times;</span>
+      <h2 class="text-2xl font-bold mb-6">User Management</h2>
+      
+      <div class="flex mb-4">
+        <button class="tab-button active" onclick="showTab('createUserTab', this)">Create User</button>
+        <button class="tab-button" onclick="showTab('editUserTab', this)">Edit User</button>
+        <button class="tab-button" onclick="showTab('deleteUserTab', this)">Delete User</button>
+      </div>
+      
+      <!-- Create User Tab -->
+      <div id="createUserTab" class="tab active">
+        <form id="createUserForm">
+          <div class="form-group">
+            <label for="newUsername" class="form-label">Username</label>
+            <input type="text" id="newUsername" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label for="newPassword" class="form-label">Password</label>
+            <input type="password" id="newPassword" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label for="newRole" class="form-label">Role</label>
+            <select id="newRole" class="form-input">
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div id="create-user-error" class="text-red-500 mb-4 hidden"></div>
+          <button type="submit" class="btn-primary px-6 py-2 rounded-md">Create User</button>
+        </form>
+      </div>
+      
+      <!-- Edit User Tab -->
+      <div id="editUserTab" class="tab">
+        <h3 class="text-xl font-semibold mb-4">Select a user to edit</h3>
+        <div class="overflow-x-auto">
+          <table class="content-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="editUserTableBody"></tbody>
+          </table>
+        </div>
+        
+        <div id="editUserForm" class="mt-6 hidden">
+          <h3 class="text-xl font-semibold mb-4">Edit User</h3>
+          <form id="updateUserForm">
+            <input type="hidden" id="editUserId">
+            <div class="form-group">
+              <label for="editUsername" class="form-label">Username</label>
+              <input type="text" id="editUsername" class="form-input" readonly>
+            </div>
+            <div class="form-group">
+              <label for="editRole" class="form-label">Role</label>
+              <select id="editRole" class="form-input">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <div id="edit-user-error" class="text-red-500 mb-4 hidden"></div>
+            <button type="submit" class="btn-primary px-6 py-2 rounded-md">Update User</button>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Delete User Tab -->
+      <div id="deleteUserTab" class="tab">
+        <h3 class="text-xl font-semibold mb-4">Select a user to delete</h3>
+        <div class="overflow-x-auto">
+          <table class="content-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="deleteUserTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Content Management Modal -->
+  <div id="contentManagementModal" class="modal">
+    <div class="modal-content max-w-6xl">
+      <span class="close" onclick="closeModal('contentManagementModal')">&times;</span>
+      <h2 class="text-2xl font-bold mb-6">Content Management</h2>
+      
+      <div class="flex mb-4">
+        <button class="tab-button active" onclick="showTab('addMovieTab', this)">Add Movie</button>
+        <button class="tab-button" onclick="showTab('addTvShowTab', this)">Add TV Show</button>
+        <button class="tab-button" onclick="showTab('editMovieTab', this)">Edit Movie</button>
+        <button class="tab-button" onclick="showTab('editTvShowTab', this)">Edit TV Show</button>
+      </div>
+      
+      <!-- Add Movie Tab -->
+      <div id="addMovieTab" class="tab active">
+        <form id="addMovieForm">
+          <div class="form-group">
+            <label for="movieTitle" class="form-label">Title</label>
+            <input type="text" id="movieTitle" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label for="movieOverview" class="form-label">Overview</label>
+            <textarea id="movieOverview" class="form-input" rows="3" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="moviePoster" class="form-label">Poster URL</label>
+            <input type="text" id="moviePoster" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label for="movieBackdrop" class="form-label">Backdrop URL (Optional)</label>
+            <input type="text" id="movieBackdrop" class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="movieReleaseDate" class="form-label">Release Date</label>
+            <input type="date" id="movieReleaseDate" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label for="movieRuntime" class="form-label">Runtime (minutes)</label>
+            <input type="number" id="movieRuntime" class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="movieGenre" class="form-label">Genres (comma separated)</label>
+            <input type="text" id="movieGenre" class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="movieRating" class="form-label">Rating</label>
+            <input type="text" id="movieRating" class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="movieVideo" class="form-label">Video URL (Optional)</label>
+            <input type="text" id="movieVideo" class="form-input">
+          </div>
+          <div class="flex space-x-4">
+            <div class="form-group flex items-center">
+              <input type="checkbox" id="movieFeatured" class="mr-2">
+              <label for="movieFeatured" class="form-label m-0">Featured</label>
+            </div>
+            <div class="form-group flex items-center">
+              <input type="checkbox" id="moviePopular" class="mr-2">
+              <label for="moviePopular" class="form-label m-0">Popular</label>
+            </div>
+            <div class="form-group flex items-center">
+              <input type="checkbox" id="movieNewRelease" class="mr-2">
+              <label for="movieNewRelease" class="form-label m-0">New Release</label>
+            </div>
+          </div>
+          <div id="add-movie-error" class="text-red-500 mb-4 hidden"></div>
+          <button type="submit" class="btn-primary px-6 py-2 rounded-md">Add Movie</button>
+        </form>
+      </div>
+      
+      <!-- Add TV Show Tab -->
+      <div id="addTvShowTab" class="tab">
+        <form id="addTvShowForm">
+          <!-- TV Show Info Section -->
+          <div class="bg-gray-800 p-4 rounded-lg mb-6">
+            <h3 class="text-lg font-semibold mb-4 text-primary">TV Show Information</h3>
+            <div class="form-group">
+              <label for="tvTitle" class="form-label">Title</label>
+              <input type="text" id="tvTitle" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label for="tvOverview" class="form-label">Overview</label>
+              <textarea id="tvOverview" class="form-input" rows="3" required></textarea>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="form-group">
+                <label for="tvPoster" class="form-label">Poster URL</label>
+                <input type="text" id="tvPoster" class="form-input" required>
+              </div>
+              <div class="form-group">
+                <label for="tvBackdrop" class="form-label">Backdrop URL (Optional)</label>
+                <input type="text" id="tvBackdrop" class="form-input">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="form-group">
+                <label for="tvFirstAirDate" class="form-label">First Air Date</label>
+                <input type="date" id="tvFirstAirDate" class="form-input" required>
+              </div>
+              <div class="form-group">
+                <label for="tvLastAirDate" class="form-label">Last Air Date (Optional)</label>
+                <input type="date" id="tvLastAirDate" class="form-input">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="form-group">
+                <label for="tvGenre" class="form-label">Genres (comma separated)</label>
+                <input type="text" id="tvGenre" class="form-input">
+              </div>
+              <div class="form-group">
+                <label for="tvRating" class="form-label">Rating</label>
+                <input type="text" id="tvRating" class="form-input">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="tvVideo" class="form-label">Main Trailer URL (Optional)</label>
+              <input type="text" id="tvVideo" class="form-input">
+            </div>
+            <div class="flex space-x-4">
+              <div class="form-group flex items-center">
+                <input type="checkbox" id="tvFeatured" class="mr-2">
+                <label for="tvFeatured" class="form-label m-0">Featured</label>
+              </div>
+              <div class="form-group flex items-center">
+                <input type="checkbox" id="tvPopular" class="mr-2">
+                <label for="tvPopular" class="form-label m-0">Popular</label>
+              </div>
+              <div class="form-group flex items-center">
+                <input type="checkbox" id="tvNewRelease" class="mr-2">
+                <label for="tvNewRelease" class="form-label m-0">New Release</label>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Episodes Section -->
+          <div class="bg-gray-800 p-4 rounded-lg mb-6">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-lg font-semibold text-primary">Episodes</h3>
+              <button type="button" class="px-3 py-1 bg-blue-600 text-white rounded-md text-sm" onclick="addEpisodeInput()">+ Add Episode</button>
+            </div>
+            
+            <div id="episodesContainer" class="space-y-6">
+              <!-- Episode template will be added here dynamically -->
+            </div>
+          </div>
+          
+          <div id="add-tvshow-error" class="text-red-500 mb-4 hidden"></div>
+          <button type="submit" class="btn-primary px-6 py-2 rounded-md">Add TV Show</button>
+        </form>
+      </div>
+      
+      <!-- Edit Movie Tab -->
+      <div id="editMovieTab" class="tab">
+        <form id="editMovieForm">
+          <input type="hidden" id="editMovieId">
+          <div class="form-group">
+            <label for="editMovieTitle" class="form-label">Title</label>
+            <input type="text" id="editMovieTitle" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label for="editMovieOverview" class="form-label">Overview</label>
+            <textarea id="editMovieOverview" class="form-input" rows="3" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="editMoviePoster" class="form-label">Poster URL</label>
+            <input type="text" id="editMoviePoster" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label for="editMovieBackdrop" class="form-label">Backdrop URL (Optional)</label>
+            <input type="text" id="editMovieBackdrop" class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="editMovieReleaseDate" class="form-label">Release Date</label>
+            <input type="date" id="editMovieReleaseDate" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label for="editMovieRuntime" class="form-label">Runtime (minutes)</label>
+            <input type="number" id="editMovieRuntime" class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="editMovieGenre" class="form-label">Genres (comma separated)</label>
+            <input type="text" id="editMovieGenre" class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="editMovieRating" class="form-label">Rating</label>
+            <input type="text" id="editMovieRating" class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="editMovieVideo" class="form-label">Video URL (Optional)</label>
+            <input type="text" id="editMovieVideo" class="form-input">
+          </div>
+          <div class="flex space-x-4">
+            <div class="form-group flex items-center">
+              <input type="checkbox" id="editMovieFeatured" class="mr-2">
+              <label for="editMovieFeatured" class="form-label m-0">Featured</label>
+            </div>
+            <div class="form-group flex items-center">
+              <input type="checkbox" id="editMoviePopular" class="mr-2">
+              <label for="editMoviePopular" class="form-label m-0">Popular</label>
+            </div>
+            <div class="form-group flex items-center">
+              <input type="checkbox" id="editMovieNewRelease" class="mr-2">
+              <label for="editMovieNewRelease" class="form-label m-0">New Release</label>
+            </div>
+          </div>
+          <div id="edit-movie-error" class="text-red-500 mb-4 hidden"></div>
+          <button type="submit" class="btn-primary px-6 py-2 rounded-md">Update Movie</button>
+        </form>
+      </div>
+      
+      <!-- Edit TV Show Tab -->
+      <div id="editTvShowTab" class="tab">
+        <form id="editTvShowForm">
+          <input type="hidden" id="editTvShowId">
+          <!-- TV Show Info Section -->
+          <div class="bg-gray-800 p-4 rounded-lg mb-6">
+            <h3 class="text-lg font-semibold mb-4 text-primary">TV Show Information</h3>
+            <div class="form-group">
+              <label for="editTvTitle" class="form-label">Title</label>
+              <input type="text" id="editTvTitle" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label for="editTvOverview" class="form-label">Overview</label>
+              <textarea id="editTvOverview" class="form-input" rows="3" required></textarea>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="form-group">
+                <label for="editTvPoster" class="form-label">Poster URL</label>
+                <input type="text" id="editTvPoster" class="form-input" required>
+              </div>
+              <div class="form-group">
+                <label for="editTvBackdrop" class="form-label">Backdrop URL (Optional)</label>
+                <input type="text" id="editTvBackdrop" class="form-input">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="form-group">
+                <label for="editTvFirstAirDate" class="form-label">First Air Date</label>
+                <input type="date" id="editTvFirstAirDate" class="form-input" required>
+              </div>
+              <div class="form-group">
+                <label for="editTvLastAirDate" class="form-label">Last Air Date (Optional)</label>
+                <input type="date" id="editTvLastAirDate" class="form-input">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="form-group">
+                <label for="editTvGenre" class="form-label">Genres (comma separated)</label>
+                <input type="text" id="editTvGenre" class="form-input">
+              </div>
+              <div class="form-group">
+                <label for="editTvRating" class="form-label">Rating</label>
+                <input type="text" id="editTvRating" class="form-input">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="editTvVideo" class="form-label">Main Trailer URL (Optional)</label>
+              <input type="text" id="editTvVideo" class="form-input">
+            </div>
+            <div class="flex space-x-4">
+              <div class="form-group flex items-center">
+                <input type="checkbox" id="editTvFeatured" class="mr-2">
+                <label for="editTvFeatured" class="form-label m-0">Featured</label>
+              </div>
+              <div class="form-group flex items-center">
+                <input type="checkbox" id="editTvPopular" class="mr-2">
+                <label for="editTvPopular" class="form-label m-0">Popular</label>
+              </div>
+              <div class="form-group flex items-center">
+                <input type="checkbox" id="editTvNewRelease" class="mr-2">
+                <label for="editTvNewRelease" class="form-label m-0">New Release</label>
+              </div>
+            </div>
+          </div>
+          <div id="edit-tvshow-error" class="text-red-500 mb-4 hidden"></div>
+          <button type="submit" class="btn-primary px-6 py-2 rounded-md">Update TV Show</button>
+        </form>
+      </div>
+      
+      <!-- Episode Template (hidden) -->
+      <template id="episodeTemplate">
+        <div class="episode-item bg-gray-700 p-4 rounded-lg">
+          <div class="flex justify-between items-center mb-3">
+            <h4 class="text-md font-medium">Episode <span class="episode-number"></span></h4>
+            <button type="button" class="delete-episode-btn text-red-500 hover:text-red-400">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+            <div class="form-group">
+              <label class="form-label">Season Number</label>
+              <input type="number" class="form-input episode-season" min="1" value="1" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Episode Number</label>
+              <input type="number" class="form-input episode-number-input" min="1" value="1" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Runtime (min)</label>
+              <input type="number" class="form-input episode-runtime" min="1" value="30">
+            </div>
+          </div>
+          
+          <div class="form-group mb-3">
+            <label class="form-label">Title</label>
+            <input type="text" class="form-input episode-title" required>
+          </div>
+          
+          <div class="form-group mb-3">
+            <label class="form-label">Overview</label>
+            <textarea class="form-input episode-overview" rows="2" required></textarea>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-group">
+              <label class="form-label">Thumbnail URL</label>
+              <input type="text" class="form-input episode-still" placeholder="Image URL for the episode">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Video URL</label>
+              <input type="text" class="form-input episode-video" placeholder="Video URL for the episode">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Air Date</label>
+            <input type="date" class="form-input episode-airdate">
+          </div>
+        </div>
+      </template>
+      
+
+    </div>
+  </div>
+  
+  <!-- Notification component -->
+  <div id="notification" class="notification">
+    <i id="notification-icon" class="fas fa-check-circle toast-icon"></i>
+    <span id="notification-message"></span>
+  </div>
+
+  <script>
+    // Mock data storage for github version
+    const storage = {
+      users: [
+        { id: 1, username: 'Syfer-eng', password: 'Cheechers1!1', role: 'owner' }
+        // Add more users here if needed
+      ],
+      movies: [
+        {
+          id: 1,
+          type: 'movie',
+          title: 'Interstellar',
+          overview: 'A team of explorers travel through a wormhole in space in an attempt to ensure humanity\'s survival.',
+          posterPath: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
+          backdropPath: 'https://image.tmdb.org/t/p/original/zfWPeRgYpRjPZLGwwkfnTfaFnNh.jpg',
+          releaseDate: '2014-11-07',
+          runtime: 169,
+          genre: ['Adventure', 'Drama', 'Science Fiction'],
+          rating: 'PG-13',
+          voteAverage: 8.4,
+          videoPath: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
+          featured: true,
+          popular: true,
+          newRelease: false
+        },
+        {
+          id: 2,
+          type: 'movie',
+          title: 'The Shawshank Redemption',
+          overview: 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.',
+          posterPath: 'https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg',
+          backdropPath: 'https://image.tmdb.org/t/p/original/kXfqcdQKsToO0OUXHcrrNCHDBzO.jpg',
+          releaseDate: '1994-09-23',
+          runtime: 142,
+          genre: ['Drama', 'Crime'],
+          rating: 'R',
+          voteAverage: 8.7,
+          videoPath: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
+          featured: true,
+          popular: true,
+          newRelease: false
+        },
+        {
+          id: 3,
+          type: 'movie',
+          title: 'The Dark Knight',
+          overview: 'Batman raises the stakes in his war on crime. With the help of Lt. Jim Gordon and District Attorney Harvey Dent, Batman sets out to dismantle the remaining criminal organizations that plague the streets.',
+          posterPath: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
+          backdropPath: 'https://image.tmdb.org/t/p/original/nMKdUUepR0i5zn0y1T4CsSB5chy.jpg',
+          releaseDate: '2008-07-18',
+          runtime: 152,
+          genre: ['Drama', 'Action', 'Crime', 'Thriller'],
+          rating: 'PG-13',
+          voteAverage: 8.5,
+          videoPath: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
+          featured: false,
+          popular: true,
+          newRelease: false
+        },
+        {
+          id: 8,
+          type: 'movie',
+          title: 'No Time to Die',
+          overview: 'Bond has left active service and is enjoying a tranquil life in Jamaica. His peace is short-lived when his old friend Felix Leiter from the CIA turns up asking for help.',
+          posterPath: 'https://image.tmdb.org/t/p/w500/iUgygt3fscRoKWCV1d0C7FbM9TP.jpg',
+          backdropPath: 'https://image.tmdb.org/t/p/original/r2GAjd4rNOHJh6i6Y0FntmYuPQW.jpg',
+          releaseDate: '2021-09-30',
+          runtime: 163,
+          genre: ['Action', 'Thriller', 'Adventure'],
+          rating: 'PG-13',
+          voteAverage: 7.5,
+          videoPath: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
+          featured: false,
+          popular: false,
+          newRelease: true
+        }
+      ],
+      tvShows: [
+        {
+          id: 1,
+          type: 'tv',
+          title: 'Breaking Bad',
+          overview: 'A high school chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine in order to secure his family\'s future.',
+          posterPath: 'https://image.tmdb.org/t/p/w500/ggFHVNu6YYI5L9pCfOacjizRGt.jpg',
+          backdropPath: 'https://image.tmdb.org/t/p/original/tsRy63Mu5cu8etL1X7ZLyf7UP1M.jpg',
+          firstAirDate: '2008-01-20',
+          lastAirDate: '2013-09-29',
+          seasons: 5,
+          genre: ['Drama', 'Crime'],
+          rating: 'TV-MA',
+          voteAverage: 8.7,
+          videoPath: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
+          featured: true,
+          popular: true,
+          newRelease: false,
+          episodes: [
+            {
+              id: 1,
+              seasonNumber: 1,
+              episodeNumber: 1,
+              title: 'Pilot',
+              overview: 'A high school chemistry teacher learns he\'s diagnosed with terminal lung cancer and makes the decision to begin a meth lab to secure his family\'s future.',
+              stillPath: 'https://image.tmdb.org/t/p/w500/x5EUEv1N9g4BCX9GQXCv9e9R3jm.jpg',
+              airDate: '2008-01-20',
+              runtime: 58,
+              videoPath: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4'
+            },
+            {
+              id: 2,
+              seasonNumber: 1,
+              episodeNumber: 2,
+              title: 'Cat\'s in the Bag...',
+              overview: 'Walt and Jesse must dispose of a body after a third cook goes wrong, and Walt must explain to Skyler where he has been.',
+              stillPath: 'https://image.tmdb.org/t/p/w500/An90qy1ItNVnoZ7s6kUKwbfxuSL.jpg',
+              airDate: '2008-01-27',
+              runtime: 48,
+              videoPath: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4'
+            },
+            {
+              id: 3,
+              seasonNumber: 2,
+              episodeNumber: 1,
+              title: 'Seven Thirty-Seven',
+              overview: 'Walt and Jesse decide to expand operations, and Skyler becomes suspicious as Walt\'s medical bills mount.',
+              stillPath: 'https://image.tmdb.org/t/p/w500/hGxNVYqvdKmYr9ODO9vBBa29e5W.jpg',
+              airDate: '2009-03-08',
+              runtime: 47,
+              videoPath: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4'
+            }
+          ]
+        },
+        {
+          id: 2,
+          type: 'tv',
+          title: 'Stranger Things',
+          overview: 'When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces, and one strange little girl.',
+          posterPath: 'https://image.tmdb.org/t/p/w500/49WJfeN0moxb9IPfGn8AIqMGskD.jpg',
+          backdropPath: 'https://image.tmdb.org/t/p/original/56v2KjBlU4XaOv9rVYEQypROD7P.jpg',
+          firstAirDate: '2016-07-15',
+          lastAirDate: '2022-07-01',
+          seasons: 4,
+          genre: ['Drama', 'Mystery', 'Sci-Fi & Fantasy', 'Horror'],
+          rating: 'TV-14',
+          voteAverage: 8.6,
+          videoPath: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
+          featured: false,
+          popular: true,
+          newRelease: false,
+          episodes: [
+            {
+              id: 1,
+              seasonNumber: 1,
+              episodeNumber: 1,
+              title: 'Chapter One: The Vanishing of Will Byers',
+              overview: 'In a small Indiana town in 1983, a boy named Will disappears. His friends and family search for answers, but uncover something darker than they ever imagined.',
+              stillPath: 'https://image.tmdb.org/t/p/w500/AdwF9VBOoIGIKkofQs7L5aCuNcb.jpg',
+              airDate: '2016-07-15',
+              runtime: 47,
+              videoPath: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4'
+            },
+            {
+              id: 2,
+              seasonNumber: 1,
+              episodeNumber: 2,
+              title: 'Chapter Two: The Weirdo on Maple Street',
+              overview: 'Mike hides the mysterious girl in his house while Lucas and Dustin try to understand where she came from.',
+              stillPath: 'https://image.tmdb.org/t/p/w500/9jn5F3eXWJkX1VIKXVBjgZ8WMo.jpg',
+              airDate: '2016-07-15',
+              runtime: 55,
+              videoPath: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4'
+            },
+            {
+              id: 3,
+              seasonNumber: 2,
+              episodeNumber: 1,
+              title: 'Chapter One: MADMAX',
+              overview: 'As the town preps for Halloween, a high-scoring rival shakes things up in the arcade, and a skeptical Hopper inspects a field of rotting pumpkins.',
+              stillPath: 'https://image.tmdb.org/t/p/w500/tcfeoxwV9tKQSsj87zcnfV5kp4J.jpg',
+              airDate: '2017-10-27',
+              runtime: 48,
+              videoPath: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4'
+            }
+          ]
+        },
+        {
+          id: 3,
+          type: 'tv',
+          title: 'Game of Thrones',
+          overview: 'Seven noble families fight for control of the mythical land of Westeros. Political and sexual intrigue abound. The primary families are the Stark, Lannister, and Baratheon families.',
+          posterPath: 'https://image.tmdb.org/t/p/w500/u3bZgnGQ9T01sWNhyveQz0wH0Hl.jpg',
+          backdropPath: 'https://image.tmdb.org/t/p/original/suopoADq0k8YZr4dQXcU6pToj6s.jpg',
+          firstAirDate: '2011-04-17',
+          lastAirDate: '2019-05-19',
+          seasons: 8,
+          genre: ['Sci-Fi & Fantasy', 'Drama', 'Action & Adventure'],
+          rating: 'TV-MA',
+          voteAverage: 8.4,
+          videoPath: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
+          featured: true,
+          popular: false,
+          newRelease: false,
+          episodes: [
+            {
+              id: 1,
+              seasonNumber: 1,
+              episodeNumber: 1,
+              title: 'Winter Is Coming',
+              overview: 'A Night\'s Watch deserter is tracked down; Lord Eddard "Ned" Stark learns that his mentor has died; Viserys Targaryen plots to win back the throne; Robert arrives at Winterfell with his family.',
+              stillPath: 'https://image.tmdb.org/t/p/w500/wrGWeW4WKxnaeA8sxJb2T9O6ryo.jpg',
+              airDate: '2011-04-17',
+              runtime: 62,
+              videoPath: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4'
+            },
+            {
+              id: 2,
+              seasonNumber: 1,
+              episodeNumber: 2,
+              title: 'The Kingsroad',
+              overview: 'While Bran recovers from his fall, Ned takes only his daughters to King\'s Landing. Jon Snow goes with his uncle Benjen to the Wall.',
+              stillPath: 'https://image.tmdb.org/t/p/w500/icjOgl5F9DhysOEo6Six2Qsb4N7.jpg',
+              airDate: '2011-04-24',
+              runtime: 56,
+              videoPath: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4'
+            },
+            {
+              id: 3,
+              seasonNumber: 2,
+              episodeNumber: 1,
+              title: 'The North Remembers',
+              overview: 'As Robb Stark and his northern army continue the war against the Lannisters, Tyrion arrives in King\'s Landing to counsel Joffrey.',
+              stillPath: 'https://image.tmdb.org/t/p/w500/bUlkfIiNnfXAS1WMSGTwF9Q9R7J.jpg',
+              airDate: '2012-04-01',
+              runtime: 54,
+              videoPath: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4'
+            }
+          ]
+        }
+      ],
+      nextMovieId: 9,
+      nextTVShowId: 4,
+      nextUserId: 2
+    };
+    
+    // State management
+    let currentUser = null;
+    let currentPage = 'home';
+    
+    // App initialization
+    document.addEventListener('DOMContentLoaded', () => {
+      loadInitialContent();
+      
+      document.getElementById('loginForm').addEventListener('submit', handleLogin);
+      document.getElementById('createUserForm').addEventListener('submit', handleCreateUser);
+      document.getElementById('updateUserForm').addEventListener('submit', handleUpdateUser);
+      document.getElementById('addMovieForm').addEventListener('submit', handleAddMovie);
+      document.getElementById('addTvShowForm').addEventListener('submit', handleAddTVShow);
+      
+      // Close modals when clicking outside
+      window.addEventListener('click', (event) => {
+        const modals = document.getElementsByClassName('modal');
+        for (let modal of modals) {
+          if (event.target === modal) {
+            closeModal(modal.id);
+          }
+        }
+      });
+    });
+    
+    // Load initial content
+    function loadInitialContent() {
+      loadFeaturedContent();
+      loadPopularMovies();
+      loadTopTVShows();
+      loadNewReleases();
+      setRandomHeroContent();
+      
+      // Check if user is already logged in (from localStorage)
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        updateLoginState();
+      }
+    }
+    
+    // Set content for home page, managing welcome banner
+    function setRandomHeroContent() {
+      const allContent = [...storage.movies, ...storage.tvShows];
+      const welcomeBanner = document.getElementById('welcome-banner');
+      
+      // Always keep hero section hidden to avoid navigation issues
+      document.getElementById('hero-section').classList.add('hidden');
+      
+      // Show welcome banner if no content is available
+      if (allContent.length === 0) {
+        welcomeBanner.classList.remove('hidden');
+      } else {
+        welcomeBanner.classList.add('hidden');
+      }
+    }
+    
+    // Load featured content
+    function loadFeaturedContent() {
+      const featuredContainer = document.getElementById('featured-content');
+      featuredContainer.innerHTML = '';
+      
+      const allContent = [...storage.movies, ...storage.tvShows];
+      const featuredContent = allContent.filter(item => item.featured);
+      
+      featuredContent.forEach(content => {
+        featuredContainer.appendChild(createMovieCard(content));
+      });
+    }
+    
+    // Load popular movies
+    function loadPopularMovies() {
+      const popularMoviesContainer = document.getElementById('popular-movies');
+      popularMoviesContainer.innerHTML = '';
+      
+      const popularMovies = storage.movies.filter(movie => movie.popular);
+      
+      popularMovies.forEach(movie => {
+        popularMoviesContainer.appendChild(createMovieCard(movie));
+      });
+    }
+    
+    // Load top TV shows
+    function loadTopTVShows() {
+      const topTVShowsContainer = document.getElementById('top-tvshows');
+      topTVShowsContainer.innerHTML = '';
+      
+      const topTVShows = storage.tvShows.filter(show => show.popular);
+      
+      topTVShows.forEach(show => {
+        topTVShowsContainer.appendChild(createMovieCard(show));
+      });
+    }
+    
+    // Load new releases
+    function loadNewReleases() {
+      const newReleasesContainer = document.getElementById('new-releases');
+      newReleasesContainer.innerHTML = '';
+      
+      const allContent = [...storage.movies, ...storage.tvShows];
+      const newReleases = allContent.filter(item => item.newRelease);
+      
+      newReleases.forEach(content => {
+        newReleasesContainer.appendChild(createMovieCard(content));
+      });
+    }
+    
+    // Load all movies for the movies page
+    function loadAllMovies() {
+      const allMoviesContainer = document.getElementById('all-movies');
+      allMoviesContainer.innerHTML = '';
+      
+      if (storage.movies.length > 0) {
+        storage.movies.forEach(movie => {
+          allMoviesContainer.appendChild(createMovieCard(movie));
+        });
+      } else {
+        // Display a message when there are no movies
+        const noMovies = document.createElement('div');
+        noMovies.className = 'col-span-full text-center py-8';
+        noMovies.innerHTML = `
+          <p class="text-gray-400 mb-4">No movies available</p>
+          ${currentUser && currentUser.role === 'owner' ? 
+            '<button class="btn-primary px-4 py-2 rounded-md" onclick="openModal(\'contentManagementModal\'); showTab(\'addMovieTab\')">Add Movie</button>' : 
+            ''}
+        `;
+        allMoviesContainer.appendChild(noMovies);
+      }
+    }
+    
+    // Load all TV shows for the TV shows page
+    function loadAllTVShows() {
+      const allTVShowsContainer = document.getElementById('all-tvshows');
+      allTVShowsContainer.innerHTML = '';
+      
+      if (storage.tvShows.length > 0) {
+        storage.tvShows.forEach(show => {
+          allTVShowsContainer.appendChild(createMovieCard(show));
+        });
+      } else {
+        // Display a message when there are no TV shows
+        const noTVShows = document.createElement('div');
+        noTVShows.className = 'col-span-full text-center py-8';
+        noTVShows.innerHTML = `
+          <p class="text-gray-400 mb-4">No TV shows available</p>
+          ${currentUser && currentUser.role === 'owner' ? 
+            '<button class="btn-primary px-4 py-2 rounded-md" onclick="openModal(\'contentManagementModal\'); showTab(\'addTvShowTab\')">Add TV Show</button>' : 
+            ''}
+        `;
+        allTVShowsContainer.appendChild(noTVShows);
+      }
+    }
+    
+    // Create a movie card element
+    function createMovieCard(content) {
+      const container = document.createElement('div');
+      container.className = 'movie-card-container';
+      
+      // Only show delete button for owner
+      if (currentUser && currentUser.role === 'owner') {
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'delete-button';
+        deleteButton.innerHTML = '<i class="fas fa-times"></i>';
+        deleteButton.onclick = (e) => {
+          e.stopPropagation();
+          confirmDeleteContent(content);
+        };
+        container.appendChild(deleteButton);
+      }
+      
+      const card = document.createElement('div');
+      card.className = 'card rounded-lg overflow-hidden cursor-pointer';
+      card.onclick = () => openMovieDetail(content);
+      
+      const img = document.createElement('img');
+      img.src = content.posterPath;
+      img.alt = content.title;
+      img.className = 'w-full h-auto';
+      
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'p-3';
+      
+      const title = document.createElement('h3');
+      title.className = 'text-sm font-medium truncate';
+      title.textContent = content.title;
+      
+      const badges = document.createElement('div');
+      badges.className = 'flex flex-wrap mt-1';
+      
+      if (content.featured) {
+        const featuredBadge = document.createElement('span');
+        featuredBadge.className = 'badge badge-featured';
+        featuredBadge.textContent = 'Featured';
+        badges.appendChild(featuredBadge);
+      }
+      
+      if (content.popular) {
+        const popularBadge = document.createElement('span');
+        popularBadge.className = 'badge badge-popular';
+        popularBadge.textContent = 'Popular';
+        badges.appendChild(popularBadge);
+      }
+      
+      if (content.newRelease) {
+        const newBadge = document.createElement('span');
+        newBadge.className = 'badge badge-new';
+        newBadge.textContent = 'New';
+        badges.appendChild(newBadge);
+      }
+      
+      contentDiv.appendChild(title);
+      contentDiv.appendChild(badges);
+      card.appendChild(img);
+      card.appendChild(contentDiv);
+      container.appendChild(card);
+      
+      return container;
+    }
+    
+    // Open content detail modal
+    function openMovieDetail(content) {
+      const modal = document.getElementById('movieDetailModal');
+      const poster = document.getElementById('detail-poster');
+      const title = document.getElementById('detail-title');
+      const badges = document.getElementById('detail-badges');
+      const contentActions = document.getElementById('detail-content-actions');
+      const rating = document.getElementById('detail-rating');
+      const year = document.getElementById('detail-year');
+      const duration = document.getElementById('detail-duration');
+      const overview = document.getElementById('detail-overview');
+      const genres = document.getElementById('detail-genres');
+      const playButton = document.getElementById('detail-play-button');
+      const episodesSection = document.getElementById('episodes-section');
+      const episodesContainer = document.getElementById('episodes-container');
+      const seasonsSelector = document.getElementById('seasons-selector');
+      
+      poster.src = content.posterPath;
+      title.textContent = content.title;
+      overview.textContent = content.overview;
+      
+      // Set badges
+      badges.innerHTML = '';
+      if (content.featured) {
+        const featuredBadge = document.createElement('span');
+        featuredBadge.className = 'badge badge-featured';
+        featuredBadge.textContent = 'Featured';
+        badges.appendChild(featuredBadge);
+      }
+      if (content.popular) {
+        const popularBadge = document.createElement('span');
+        popularBadge.className = 'badge badge-popular';
+        popularBadge.textContent = 'Popular';
+        badges.appendChild(popularBadge);
+      }
+      if (content.newRelease) {
+        const newBadge = document.createElement('span');
+        newBadge.className = 'badge badge-new';
+        newBadge.textContent = 'New';
+        badges.appendChild(newBadge);
+      }
+      
+      // Set metadata
+      rating.textContent = content.rating || 'NR';
+      
+      if (content.type === 'movie') {
+        year.textContent = new Date(content.releaseDate).getFullYear();
+        duration.textContent = content.runtime ? `${content.runtime} min` : '';
+        
+        // Hide episodes section for movies
+        episodesSection.classList.add('hidden');
+      } else {
+        // TV Show metadata
+        year.textContent = `${new Date(content.firstAirDate).getFullYear()}`;
+        duration.textContent = content.seasons ? `${content.seasons} seasons` : '';
+        
+        // Show and populate episodes section for TV shows
+        if (content.episodes && content.episodes.length > 0) {
+          episodesSection.classList.remove('hidden');
+          
+          // Group episodes by season
+          const episodesBySeason = {};
+          content.episodes.forEach(episode => {
+            if (!episodesBySeason[episode.seasonNumber]) {
+              episodesBySeason[episode.seasonNumber] = [];
+            }
+            episodesBySeason[episode.seasonNumber].push(episode);
+          });
+          
+          // Sort episodes within each season
+          Object.keys(episodesBySeason).forEach(season => {
+            episodesBySeason[season].sort((a, b) => a.episodeNumber - b.episodeNumber);
+          });
+          
+          // Create season selector
+          seasonsSelector.innerHTML = '';
+          const seasons = Object.keys(episodesBySeason).sort((a, b) => parseInt(a) - parseInt(b));
+          
+          seasons.forEach((season, idx) => {
+            const seasonBtn = document.createElement('button');
+            seasonBtn.className = idx === 0 ? 'px-3 py-1 bg-blue-600 text-white rounded-md' : 'px-3 py-1 bg-gray-700 text-white rounded-md';
+            seasonBtn.textContent = `Season ${season}`;
+            seasonBtn.onclick = () => {
+              // Update active button style
+              seasonsSelector.querySelectorAll('button').forEach(btn => {
+                btn.className = 'px-3 py-1 bg-gray-700 text-white rounded-md';
+              });
+              seasonBtn.className = 'px-3 py-1 bg-blue-600 text-white rounded-md';
+              
+              // Display episodes for selected season
+              displayEpisodesForSeason(content, episodesBySeason[season]);
+            };
+            seasonsSelector.appendChild(seasonBtn);
+          });
+          
+          // Display episodes for first season by default
+          if (seasons.length > 0) {
+            displayEpisodesForSeason(content, episodesBySeason[seasons[0]]);
+          }
+        } else {
+          // No episodes available
+          episodesSection.classList.add('hidden');
+        }
+      }
+      
+      // Set genres
+      genres.innerHTML = '';
+      if (content.genre && content.genre.length > 0) {
+        content.genre.forEach(g => {
+          const genreSpan = document.createElement('span');
+          genreSpan.className = 'bg-gray-700 text-gray-200 px-2 py-1 rounded text-xs mr-2 mb-2';
+          genreSpan.textContent = g;
+          genres.appendChild(genreSpan);
+        });
+      }
+      
+      // Set play button action
+      playButton.onclick = () => playContent(content);
+      
+      // Show edit/delete buttons only for owner
+      if (currentUser && currentUser.role === 'owner') {
+        contentActions.classList.remove('hidden');
+        
+        // Set up edit button
+        const editButton = document.getElementById('detail-edit-button');
+        editButton.onclick = () => {
+          // Close detail modal
+          closeModal('movieDetailModal');
+          
+          // Open content management modal and switch to edit tab
+          openContentForEditing(content);
+        };
+        
+        // Set up delete button
+        const deleteButton = document.getElementById('detail-delete-button');
+        deleteButton.onclick = () => confirmDeleteContent(content);
+      } else {
+        contentActions.classList.add('hidden');
+      }
+      
+      openModal('movieDetailModal');
+    }
+    
+    // Display episodes for a specific season
+    function displayEpisodesForSeason(tvShow, episodes) {
+      const episodesContainer = document.getElementById('episodes-container');
+      episodesContainer.innerHTML = '';
+      
+      episodes.forEach(episode => {
+        const episodeCard = document.createElement('div');
+        episodeCard.className = 'bg-gray-800 rounded-lg overflow-hidden flex flex-col';
+        
+        // Episode image
+        let episodeImageHtml = '';
+        if (episode.stillPath) {
+          episodeImageHtml = `<img src="${episode.stillPath}" alt="${episode.title}" class="w-full h-32 object-cover">`;
+        } else {
+          // Use TV show's poster as fallback
+          episodeImageHtml = `<img src="${tvShow.posterPath}" alt="${episode.title}" class="w-full h-32 object-cover opacity-60">`;
+        }
+        
+        // Episode info
+        const runtime = episode.runtime ? `${episode.runtime} min` : '';
+        
+        episodeCard.innerHTML = `
+          <div class="relative">
+            ${episodeImageHtml}
+            <div class="absolute top-0 left-0 bg-black bg-opacity-60 text-white text-xs px-2 py-1">
+              S${episode.seasonNumber}:E${episode.episodeNumber}
+            </div>
+          </div>
+          <div class="p-3 flex-grow">
+            <div class="flex justify-between items-start mb-1">
+              <h4 class="font-medium text-md">${episode.title}</h4>
+              <span class="text-gray-400 text-xs">${runtime}</span>
+            </div>
+            <p class="text-gray-400 text-sm mb-2 line-clamp-2">${episode.overview}</p>
+          </div>
+          <div class="p-3 pt-0">
+            <button class="w-full py-1 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700" 
+                    onclick="playEpisode(${JSON.stringify(episode).replace(/"/g, '&quot;')})">
+              <i class="fas fa-play mr-1"></i> Play
+            </button>
+          </div>
+        `;
+        
+        episodesContainer.appendChild(episodeCard);
+      });
+    }
+    
+    // Play specific episode
+    function playEpisode(episode) {
+      if (episode.videoPath) {
+        // Set up video source
+        const videoSource = document.getElementById('videoSource');
+        const videoElement = document.getElementById('videoElement');
+        const videoTitle = document.getElementById('videoTitle');
+        
+        videoSource.src = episode.videoPath;
+        videoElement.load();
+        
+        // Set video title
+        videoTitle.textContent = `Watching: ${episode.title}`;
+        
+        // Reset episodes picker if previously shown
+        document.getElementById('episodePickerContainer').classList.add('hidden');
+        
+        // Show video player
+        document.getElementById('videoPlayerModal').style.display = 'flex';
+        
+        // Initialize video player controls
+        initializeVideoControls();
+        
+        // Play video automatically
+        videoElement.play().catch(err => console.log('Auto-play prevented:', err));
+      } else {
+        showNotification('No video available for this episode', 'error');
+      }
+    }
+    
+    // Play content in video player
+    function playContent(content) {
+      if (content.videoPath) {
+        // Set up video source
+        const videoSource = document.getElementById('videoSource');
+        const videoElement = document.getElementById('videoElement');
+        const videoTitle = document.getElementById('videoTitle');
+        const episodePickerContainer = document.getElementById('episodePickerContainer');
+        
+        videoSource.src = content.videoPath;
+        videoElement.load();
+        
+        // Set video title
+        videoTitle.textContent = `Watching: ${content.title}`;
+        
+        // Show episode picker for TV shows
+        if (content.type === 'tv' && content.episodes && content.episodes.length > 0) {
+          // Clear any existing episodes
+          const episodePicker = document.getElementById('episodePicker');
+          episodePicker.innerHTML = '';
+          
+          // Group episodes by season
+          const seasonEpisodes = {};
+          content.episodes.forEach(episode => {
+            if (!seasonEpisodes[episode.seasonNumber]) {
+              seasonEpisodes[episode.seasonNumber] = [];
+            }
+            seasonEpisodes[episode.seasonNumber].push(episode);
+          });
+          
+          // Sort each season's episodes
+          Object.keys(seasonEpisodes).forEach(season => {
+            seasonEpisodes[season].sort((a, b) => a.episodeNumber - b.episodeNumber);
+          });
+          
+          // Add season headings and episodes
+          Object.keys(seasonEpisodes).sort((a, b) => parseInt(a) - parseInt(b)).forEach(season => {
+            // Add season heading
+            const seasonHeading = document.createElement('div');
+            seasonHeading.className = 'col-span-full text-xl font-bold text-blue-500 mb-2 mt-4';
+            seasonHeading.textContent = `Season ${season}`;
+            episodePicker.appendChild(seasonHeading);
+            
+            // Add episodes for this season
+            seasonEpisodes[season].forEach(episode => {
+              const episodeCard = document.createElement('div');
+              episodeCard.className = 'episode-card p-3 rounded-lg flex items-center';
+              episodeCard.dataset.episodeId = episode.id;
+              
+              let episodeThumb = episode.stillPath || content.posterPath;
+              
+              episodeCard.innerHTML = `
+                <div class="flex-shrink-0 mr-3">
+                  <img src="${episodeThumb}" alt="Episode ${episode.episodeNumber}" class="w-16 h-16 object-cover rounded-md">
+                </div>
+                <div class="flex-grow">
+                  <h4 class="font-bold">${episode.episodeNumber}. ${episode.title}</h4>
+                  <p class="text-sm text-gray-400 line-clamp-2">${episode.overview}</p>
+                </div>
+                <div class="flex-shrink-0 ml-2">
+                  <span class="text-sm text-gray-400">${episode.runtime ? episode.runtime + 'm' : '30m'}</span>
+                </div>
+              `;
+              
+              // Add click handler to play episode
+              episodeCard.addEventListener('click', () => {
+                // Remove active class from all episode cards
+                document.querySelectorAll('.episode-card').forEach(card => {
+                  card.classList.remove('active');
+                });
+                
+                // Add active class to clicked card
+                episodeCard.classList.add('active');
+                
+                // Play the episode
+                playEpisode(episode);
+              });
+              
+              episodePicker.appendChild(episodeCard);
+            });
+          });
+          
+          episodePickerContainer.classList.remove('hidden');
+        } else {
+          // Hide episode picker for movies
+          episodePickerContainer.classList.add('hidden');
+        }
+        
+        // Show video player
+        document.getElementById('videoPlayerModal').style.display = 'flex';
+        
+        // Initialize video player controls
+        initializeVideoControls();
+        
+        // Play video automatically
+        videoElement.play().catch(err => console.log('Auto-play prevented:', err));
+      } else {
+        showNotification('No video available for this content', 'error');
+      }
+    }
+    
+    // Initialize video player controls
+    function initializeVideoControls() {
+      const video = document.getElementById('videoElement');
+      const playPauseBtn = document.getElementById('playPauseBtn');
+      const playIcon = document.getElementById('playIcon');
+      const pauseIcon = document.getElementById('pauseIcon');
+      const progressBar = document.getElementById('progressBar');
+      const bufferBar = document.getElementById('bufferBar');
+      const currentTime = document.getElementById('currentTime');
+      const duration = document.getElementById('duration');
+      const volumeSlider = document.getElementById('volumeSlider');
+      const muteBtn = document.getElementById('muteBtn');
+      const volumeIcon = document.getElementById('volumeIcon');
+      const muteIcon = document.getElementById('muteIcon');
+      const fullscreenBtn = document.getElementById('fullscreenBtn');
+      const playbackSpeed = document.getElementById('playbackSpeed');
+      const rewind10Btn = document.getElementById('rewind10Btn');
+      const forward10Btn = document.getElementById('forward10Btn');
+      
+      // Update progress and buffer bars
+      video.addEventListener('timeupdate', () => {
+        if (!isNaN(video.duration)) {
+          const percent = (video.currentTime / video.duration) * 100;
+          progressBar.style.width = `${percent}%`;
+          
+          // Format time display
+          currentTime.textContent = formatTime(video.currentTime);
+          duration.textContent = formatTime(video.duration);
+        }
+      });
+      
+      // Update buffer progress
+      video.addEventListener('progress', () => {
+        if (video.buffered.length > 0 && !isNaN(video.duration)) {
+          const bufferedEnd = video.buffered.end(video.buffered.length - 1);
+          const percent = (bufferedEnd / video.duration) * 100;
+          bufferBar.style.width = `${percent}%`;
+        }
+      });
+      
+      // Play/Pause button
+      playPauseBtn.addEventListener('click', togglePlayPause);
+      video.addEventListener('click', togglePlayPause);
+      
+      function togglePlayPause() {
+        if (video.paused) {
+          video.play();
+          playIcon.classList.add('hidden');
+          pauseIcon.classList.remove('hidden');
+        } else {
+          video.pause();
+          playIcon.classList.remove('hidden');
+          pauseIcon.classList.add('hidden');
+        }
+      }
+      
+      // Volume control
+      volumeSlider.addEventListener('input', () => {
+        video.volume = volumeSlider.value;
+        
+        // Update mute button state
+        if (video.volume === 0) {
+          volumeIcon.classList.add('hidden');
+          muteIcon.classList.remove('hidden');
+        } else {
+          volumeIcon.classList.remove('hidden');
+          muteIcon.classList.add('hidden');
+        }
+      });
+      
+      // Mute button
+      muteBtn.addEventListener('click', () => {
+        video.muted = !video.muted;
+        
+        if (video.muted) {
+          volumeIcon.classList.add('hidden');
+          muteIcon.classList.remove('hidden');
+        } else {
+          volumeIcon.classList.remove('hidden');
+          muteIcon.classList.add('hidden');
+        }
+      });
+      
+      // Fullscreen button
+      fullscreenBtn.addEventListener('click', () => {
+        if (document.fullscreenElement) {
+          document.exitFullscreen();
+        } else {
+          video.requestFullscreen();
+        }
+      });
+      
+      // Skip forward/backward
+      rewind10Btn.addEventListener('click', () => {
+        video.currentTime = Math.max(0, video.currentTime - 10);
+      });
+      
+      forward10Btn.addEventListener('click', () => {
+        video.currentTime = Math.min(video.duration, video.currentTime + 10);
+      });
+      
+      // Playback speed
+      playbackSpeed.addEventListener('change', () => {
+        video.playbackRate = playbackSpeed.value;
+      });
+      
+      // Click on progress bar to seek
+      const progressContainer = progressBar.parentElement;
+      progressContainer.addEventListener('click', (e) => {
+        const rect = progressContainer.getBoundingClientRect();
+        const pos = (e.clientX - rect.left) / progressContainer.offsetWidth;
+        video.currentTime = pos * video.duration;
+      });
+      
+      // Update play/pause button state on video events
+      video.addEventListener('play', () => {
+        playIcon.classList.add('hidden');
+        pauseIcon.classList.remove('hidden');
+      });
+      
+      video.addEventListener('pause', () => {
+        playIcon.classList.remove('hidden');
+        pauseIcon.classList.add('hidden');
+      });
+      
+      // Reset to default state
+      video.volume = 1;
+      volumeSlider.value = 1;
+      playbackSpeed.value = 1;
+      currentTime.textContent = '0:00';
+      duration.textContent = '0:00';
+      progressBar.style.width = '0%';
+      bufferBar.style.width = '0%';
+      playIcon.classList.remove('hidden');
+      pauseIcon.classList.add('hidden');
+      volumeIcon.classList.remove('hidden');
+      muteIcon.classList.add('hidden');
+    }
+    
+    // Format time in MM:SS format
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+    
+    // Close video player
+    function closeVideoPlayer() {
+      const videoElement = document.getElementById('videoElement');
+      videoElement.pause();
+      document.getElementById('videoPlayerModal').style.display = 'none';
+    }
+    
+    // Content to be deleted (set by confirmation dialog)
+    let contentToDelete = null;
+    
+    // Show delete confirmation modal
+    function confirmDeleteContent(content) {
+      if (!currentUser || currentUser.role !== 'owner') {
+        showNotification('You need to be an owner to delete content', 'error');
+        return;
+      }
+      
+      // Store the content to be deleted
+      contentToDelete = content;
+      
+      // Set the confirmation message
+      const contentType = content.type === 'movie' ? 'movie' : 'TV show';
+      document.getElementById('delete-confirm-message').textContent = 
+        `Are you sure you want to delete the ${contentType} "${content.title}"?`;
+      
+      // Set up the confirm button
+      const confirmBtn = document.getElementById('confirm-delete-btn');
+      confirmBtn.onclick = () => {
+        deleteConfirmedContent();
+        closeModal('deleteConfirmModal');
+      };
+      
+      // Show the confirmation modal
+      openModal('deleteConfirmModal');
+    }
+    
+    // Delete content after confirmation
+    function deleteConfirmedContent() {
+      if (!contentToDelete) return;
+      
+      if (contentToDelete.type === 'movie') {
+        // Remove from movies array
+        storage.movies = storage.movies.filter(movie => movie.id !== contentToDelete.id);
+        showNotification('Movie deleted successfully', 'success');
+      } else if (contentToDelete.type === 'tv') {
+        // Remove from TV shows array
+        storage.tvShows = storage.tvShows.filter(show => show.id !== contentToDelete.id);
+        showNotification('TV show deleted successfully', 'success');
+      }
+      
+      // Close the detail modal if it's open
+      closeModal('movieDetailModal');
+      
+      // Reload content
+      reloadAllContent();
+      
+      // If we're on the movies or TV shows page, update those directly
+      if (currentPage === 'movies') {
+        loadAllMovies();
+      } else if (currentPage === 'tvshows') {
+        loadAllTVShows();
+      }
+      
+      // Clear the content to delete
+      contentToDelete = null;
+    }
+    
+    // Legacy function, now redirects to confirmation
+    function deleteContent(content) {
+      confirmDeleteContent(content);
+    }
+    
+    // Show notification
+    function showNotification(message, type = 'info') {
+      const notification = document.getElementById('notification');
+      const notificationMessage = document.getElementById('notification-message');
+      const notificationIcon = document.getElementById('notification-icon');
+      
+      notificationMessage.textContent = message;
+      
+      // Reset classes
+      notification.classList.remove('notification-success', 'notification-error', 'notification-info');
+      notificationIcon.classList.remove('fa-check-circle', 'fa-exclamation-circle', 'fa-info-circle');
+      
+      // Set appropriate classes
+      if (type === 'success') {
+        notification.classList.add('notification-success');
+        notificationIcon.classList.add('fa-check-circle');
+      } else if (type === 'error') {
+        notification.classList.add('notification-error');
+        notificationIcon.classList.add('fa-exclamation-circle');
+      } else {
+        notification.classList.add('notification-info');
+        notificationIcon.classList.add('fa-info-circle');
+      }
+      
+      // Show notification
+      notification.classList.add('show');
+      
+      // Auto hide after 3 seconds
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+    
+    // Handle login form submission
+    function handleLogin(event) {
+      event.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorElement = document.getElementById('login-error');
+      
+      // Find user
+      const user = storage.users.find(u => u.username === username && u.password === password);
+      
+      if (user) {
+        // Store user without password
+        const { password, ...userWithoutPassword } = user;
+        currentUser = userWithoutPassword;
+        
+        // Save to localStorage
+        localStorage.setItem('user', JSON.stringify(currentUser));
+        
+        // Update UI
+        updateLoginState();
+        
+        // Close modal
+        closeModal('authModal');
+        
+        // Show notification
+        showNotification('Logged in successfully', 'success');
+      } else {
+        errorElement.textContent = 'Invalid username or password';
+        errorElement.classList.remove('hidden');
+      }
+    }
+    
+    // Handle logout
+    function handleLogout() {
+      currentUser = null;
+      localStorage.removeItem('user');
+      updateLoginState();
+      toggleUserMenu();
+      showNotification('Logged out successfully', 'info');
+    }
+    
+    // Update login state UI
+    function updateLoginState() {
+      const loggedOutActions = document.getElementById('loggedOutActions');
+      const loggedInActions = document.getElementById('loggedInActions');
+      const usernameDisplay = document.getElementById('usernameDisplay');
+      const userManagementButton = document.getElementById('userManagementButton');
+      const contentManagementButton = document.getElementById('contentManagementButton');
+      
+      if (currentUser) {
+        loggedOutActions.classList.add('hidden');
+        loggedInActions.classList.remove('hidden');
+        
+        usernameDisplay.textContent = currentUser.username;
+        
+        // Show management buttons for owner
+        if (currentUser.role === 'owner') {
+          userManagementButton.classList.remove('hidden');
+          contentManagementButton.classList.remove('hidden');
+          
+          // Load users for user management modal
+          loadUsers();
+          
+          // Load content for content management modal
+          // Content tables removed
+        } else {
+          userManagementButton.classList.add('hidden');
+          contentManagementButton.classList.add('hidden');
+        }
+      } else {
+        loggedOutActions.classList.remove('hidden');
+        loggedInActions.classList.add('hidden');
+      }
+    }
+    
+    // Toggle user menu
+    function toggleUserMenu() {
+      const userMenu = document.getElementById('userMenu');
+      userMenu.classList.toggle('hidden');
+      
+      // If menu is now visible, add a click event listener to close it when clicking outside
+      if (!userMenu.classList.contains('hidden')) {
+        // Use setTimeout to avoid the current click event from triggering the document click
+        setTimeout(() => {
+          document.addEventListener('click', closeUserMenuOnClickOutside);
+        }, 0);
+      } else {
+        // Remove the event listener if the menu is now hidden
+        document.removeEventListener('click', closeUserMenuOnClickOutside);
+      }
+    }
+    
+    // Close user menu when clicking outside
+    function closeUserMenuOnClickOutside(event) {
+      const userMenu = document.getElementById('userMenu');
+      const profileButton = document.querySelector('.user-profile-button');
+      
+      // If click is outside the menu and the profile button
+      if (!userMenu.contains(event.target) && !profileButton.contains(event.target)) {
+        userMenu.classList.add('hidden');
+        document.removeEventListener('click', closeUserMenuOnClickOutside);
+      }
+    }
+    
+    // Show a specific page
+    function showPage(pageName) {
+      const pages = document.getElementsByClassName('page');
+      for (let page of pages) {
+        page.classList.add('hidden');
+      }
+      
+      document.getElementById(`${pageName}-page`).classList.remove('hidden');
+      currentPage = pageName;
+      
+      // Load page-specific content
+      if (pageName === 'movies') {
+        loadAllMovies();
+      } else if (pageName === 'tvshows') {
+        loadAllTVShows();
+      }
+    }
+    
+    // Handle search
+    function handleSearchKeyDown(event) {
+      if (event.key === 'Enter') {
+        const query = event.target.value.trim().toLowerCase();
+        if (query) {
+          searchContent(query);
+        }
+      }
+    }
+    
+    // Search content
+    function searchContent(query) {
+      const allContent = [...storage.movies, ...storage.tvShows];
+      const results = allContent.filter(item => 
+        item.title.toLowerCase().includes(query) || 
+        item.overview.toLowerCase().includes(query)
+      );
+      
+      const searchResultsContainer = document.getElementById('search-results');
+      const searchQueryElement = document.getElementById('search-query');
+      
+      searchResultsContainer.innerHTML = '';
+      searchQueryElement.textContent = query;
+      
+      if (results.length > 0) {
+        results.forEach(content => {
+          searchResultsContainer.appendChild(createMovieCard(content));
+        });
+      } else {
+        const noResults = document.createElement('div');
+        noResults.className = 'col-span-full text-center py-8';
+        noResults.textContent = 'No results found';
+        searchResultsContainer.appendChild(noResults);
+      }
+      
+      showPage('search');
+    }
+    
+    // Modal functions
+    function openModal(modalId) {
+      document.getElementById(modalId).style.display = 'block';
+    }
+    
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
+    
+    // Tab functions
+    function showTab(tabId, button) {
+      const tabs = document.getElementsByClassName('tab');
+      for (let tab of tabs) {
+        tab.classList.remove('active');
+      }
+      
+      const tabButtons = document.getElementsByClassName('tab-button');
+      for (let btn of tabButtons) {
+        btn.classList.remove('active');
+      }
+      
+      document.getElementById(tabId).classList.add('active');
+      if (button) {
+        button.classList.add('active');
+      }
+    }
+    
+    // showContentTab function removed - no longer needed
+    // since the Content List tab has been removed
+    
+    // Open content editing in the content management modal
+    function openContentForEditing(content) {
+      // Open the content management modal
+      openModal('contentManagementModal');
+      
+      const contentType = content.type;
+      
+      if (contentType === 'movie') {
+        // Switch to edit movie tab
+        showTab('editMovieTab', document.querySelector('.tab-button[onclick="showTab(\'editMovieTab\', this)"]'));
+        
+        // Fill the form with the movie data
+        document.getElementById('editMovieId').value = content.id;
+        document.getElementById('editMovieTitle').value = content.title;
+        document.getElementById('editMovieOverview').value = content.overview;
+        document.getElementById('editMoviePoster').value = content.posterPath;
+        document.getElementById('editMovieBackdrop').value = content.backdropPath || '';
+        document.getElementById('editMovieReleaseDate').value = content.releaseDate;
+        document.getElementById('editMovieRuntime').value = content.runtime || '';
+        document.getElementById('editMovieGenre').value = content.genre ? content.genre.join(', ') : '';
+        document.getElementById('editMovieRating').value = content.rating || '';
+        document.getElementById('editMovieVideo').value = content.videoPath || '';
+        document.getElementById('editMovieFeatured').checked = content.featured || false;
+        document.getElementById('editMoviePopular').checked = content.popular || false;
+        document.getElementById('editMovieNewRelease').checked = content.newRelease || false;
+        
+        // Add event listener for form submission
+        document.getElementById('editMovieForm').onsubmit = function(event) {
+          handleUpdateMovie(event);
+        };
+      } else if (contentType === 'tv') {
+        // Switch to edit TV show tab
+        showTab('editTvShowTab', document.querySelector('.tab-button[onclick="showTab(\'editTvShowTab\', this)"]'));
+        
+        // Fill the form with the TV show data
+        document.getElementById('editTvShowId').value = content.id;
+        document.getElementById('editTvTitle').value = content.title;
+        document.getElementById('editTvOverview').value = content.overview;
+        document.getElementById('editTvPoster').value = content.posterPath;
+        document.getElementById('editTvBackdrop').value = content.backdropPath || '';
+        document.getElementById('editTvFirstAirDate').value = content.firstAirDate;
+        document.getElementById('editTvLastAirDate').value = content.lastAirDate || '';
+        document.getElementById('editTvGenre').value = content.genre ? content.genre.join(', ') : '';
+        document.getElementById('editTvRating').value = content.rating || '';
+        document.getElementById('editTvVideo').value = content.videoPath || '';
+        document.getElementById('editTvFeatured').checked = content.featured || false;
+        document.getElementById('editTvPopular').checked = content.popular || false;
+        document.getElementById('editTvNewRelease').checked = content.newRelease || false;
+        
+        // Add event listener for form submission
+        document.getElementById('editTvShowForm').onsubmit = function(event) {
+          handleUpdateTVShow(event);
+        };
+      }
+      
+      // Show notification
+      showNotification(`Editing ${contentType} "${content.title}"`, 'info');
+    }
+    
+    // Load users for user management modal
+    function loadUsers() {
+      const editTableBody = document.getElementById('editUserTableBody');
+      const deleteTableBody = document.getElementById('deleteUserTableBody');
+      
+      // Clear table bodies
+      editTableBody.innerHTML = '';
+      deleteTableBody.innerHTML = '';
+      
+      // Add users to tables
+      storage.users.forEach(user => {
+        // Edit table row
+        const editRow = document.createElement('tr');
+        editRow.innerHTML = `
+          <td>${user.id}</td>
+          <td>${user.username}</td>
+          <td>${user.role}</td>
+          <td>
+            <button class="bg-blue-600 text-white px-3 py-1 rounded-md text-sm">Edit</button>
+          </td>
+        `;
+        
+        // Add event listener to edit button if not Syfer-eng
+        if (user.username !== 'Syfer-eng') {
+          editRow.querySelector('button').addEventListener('click', () => {
+            editUser(user);
+          });
+        } else {
+          // Disable edit button for Syfer-eng
+          const editButton = editRow.querySelector('button');
+          editButton.classList.remove('bg-blue-600');
+          editButton.classList.add('bg-gray-500');
+          editButton.disabled = true;
+          editButton.title = 'Cannot edit owner account';
+        }
+        
+        editTableBody.appendChild(editRow);
+        
+        // Delete table row (don't allow deleting yourself)
+        if (currentUser.id !== user.id) {
+          const deleteRow = document.createElement('tr');
+          deleteRow.innerHTML = `
+            <td>${user.id}</td>
+            <td>${user.username}</td>
+            <td>${user.role}</td>
+            <td>
+              <button class="bg-red-600 text-white px-3 py-1 rounded-md text-sm">Delete</button>
+            </td>
+          `;
+          
+          // Add event listener to delete button
+          deleteRow.querySelector('button').addEventListener('click', () => {
+            deleteUser(user.id);
+          });
+          
+          deleteTableBody.appendChild(deleteRow);
+        }
+      });
+    }
+    
+    // Edit user
+    function editUser(user) {
+      // Additional protection against editing Syfer-eng account
+      if (user.username === 'Syfer-eng') {
+        showNotification('Cannot edit the owner account', 'error');
+        return;
+      }
+      
+      const editUserId = document.getElementById('editUserId');
+      const editUsername = document.getElementById('editUsername');
+      const editRole = document.getElementById('editRole');
+      const editUserForm = document.getElementById('editUserForm');
+      
+      editUserId.value = user.id;
+      editUsername.value = user.username;
+      editRole.value = user.role;
+      
+      editUserForm.classList.remove('hidden');
+    }
+    
+    // Handle update user form submission
+    function handleUpdateUser(event) {
+      event.preventDefault();
+      
+      const id = parseInt(document.getElementById('editUserId').value);
+      const role = document.getElementById('editRole').value;
+      const errorElement = document.getElementById('edit-user-error');
+      
+      // Find user
+      const user = storage.users.find(u => u.id === id);
+      
+      // Additional check for Syfer-eng by username
+      if (user && user.username === 'Syfer-eng') {
+        errorElement.textContent = 'Cannot modify the Syfer-eng owner account';
+        errorElement.classList.remove('hidden');
+        return;
+      }
+      
+      // Prevent modifying owner accounts
+      if (user && user.role === 'owner') {
+        errorElement.textContent = 'Cannot modify an owner account';
+        errorElement.classList.remove('hidden');
+        return;
+      }
+      
+      // Prevent setting role to owner
+      if (role === 'owner') {
+        errorElement.textContent = 'Cannot set users to owner role';
+        errorElement.classList.remove('hidden');
+        return;
+      }
+      
+      // Find user index
+      const userIndex = storage.users.findIndex(u => u.id === id);
+      
+      if (userIndex !== -1) {
+        // Update user role
+        storage.users[userIndex].role = role;
+        
+        // Update current user if it's the same user
+        if (currentUser.id === id) {
+          currentUser.role = role;
+          localStorage.setItem('user', JSON.stringify(currentUser));
+          updateLoginState();
+        }
+        
+        // Reload users
+        loadUsers();
+        
+        // Hide form
+        document.getElementById('editUserForm').classList.add('hidden');
+        
+        // Show notification
+        showNotification('User updated successfully', 'success');
+      } else {
+        errorElement.textContent = 'User not found';
+        errorElement.classList.remove('hidden');
+      }
+    }
+    
+    // Handle create user form submission
+    function handleCreateUser(event) {
+      event.preventDefault();
+      
+      const username = document.getElementById('newUsername').value;
+      const password = document.getElementById('newPassword').value;
+      const role = document.getElementById('newRole').value;
+      const errorElement = document.getElementById('create-user-error');
+      
+      // Prevent creating another owner account
+      if (role === 'owner') {
+        errorElement.textContent = 'Cannot create another owner account';
+        errorElement.classList.remove('hidden');
+        return;
+      }
+      
+      // Check if username already exists
+      if (storage.users.some(u => u.username === username)) {
+        errorElement.textContent = 'Username already exists';
+        errorElement.classList.remove('hidden');
+        return;
+      }
+      
+      // Create new user
+      const newUser = {
+        id: storage.nextUserId++,
+        username,
+        password,
+        role
+      };
+      
+      storage.users.push(newUser);
+      
+      // Reset form
+      document.getElementById('createUserForm').reset();
+      
+      // Reload users
+      loadUsers();
+      
+      // Show notification
+      showNotification('User created successfully', 'success');
+      
+      // Hide error if shown
+      errorElement.classList.add('hidden');
+    }
+    
+    // Delete user
+    function deleteUser(id) {
+      // Find user
+      const user = storage.users.find(u => u.id === id);
+      
+      // Specific check for Syfer-eng account
+      if (user && user.username === 'Syfer-eng') {
+        showNotification('Cannot delete the Syfer-eng owner account', 'error');
+        return;
+      }
+      
+      // Prevent deleting owner accounts
+      if (user && user.role === 'owner') {
+        showNotification('Cannot delete an owner account', 'error');
+        return;
+      }
+      
+      // Can't delete yourself
+      if (id === currentUser.id) {
+        showNotification('You cannot delete your own account', 'error');
+        return;
+      }
+      
+      // Filter out the user
+      storage.users = storage.users.filter(user => user.id !== id);
+      
+      // Reload users
+      loadUsers();
+      
+      // Show notification
+      showNotification('User deleted successfully', 'success');
+    }
+    
+    // Load content tables for content management modal
+    // Content tables function has been removed
+    // No longer needed after removing the Content List tab
+    
+    // Toggle content flag (featured, popular, newRelease)
+    function toggleFlag(content, flag) {
+      // Find the content in the appropriate array
+      let contentArray = content.type === 'movie' ? storage.movies : storage.tvShows;
+      let contentIndex = contentArray.findIndex(item => item.id === content.id);
+      
+      if (contentIndex !== -1) {
+        // Toggle the flag
+        contentArray[contentIndex][flag] = !contentArray[contentIndex][flag];
+        
+        // Reload content tables
+        
+        
+        // Reload all content
+        reloadAllContent();
+        
+        // Show notification
+        const flagName = flag === 'newRelease' ? 'New Release' : flag.charAt(0).toUpperCase() + flag.slice(1);
+        showNotification(`${flagName} flag toggled for ${content.title}`, 'success');
+      }
+    }
+    
+    // Handle add movie form submission
+    function handleAddMovie(event) {
+      event.preventDefault();
+      
+      const form = document.getElementById('addMovieForm');
+      const errorElement = document.getElementById('add-movie-error');
+      
+      // Get form values
+      const title = document.getElementById('movieTitle').value;
+      const overview = document.getElementById('movieOverview').value;
+      const posterPath = document.getElementById('moviePoster').value;
+      const backdropPath = document.getElementById('movieBackdrop').value || null;
+      const releaseDate = document.getElementById('movieReleaseDate').value;
+      const runtime = document.getElementById('movieRuntime').value ? parseInt(document.getElementById('movieRuntime').value) : null;
+      const genre = document.getElementById('movieGenre').value ? document.getElementById('movieGenre').value.split(',').map(g => g.trim()) : null;
+      const rating = document.getElementById('movieRating').value || null;
+      const videoPath = document.getElementById('movieVideo').value || null;
+      const featured = document.getElementById('movieFeatured').checked;
+      const popular = document.getElementById('moviePopular').checked;
+      const newRelease = document.getElementById('movieNewRelease').checked;
+      
+      // Validate required fields
+      if (!title || !overview || !posterPath || !releaseDate) {
+        errorElement.textContent = 'Please fill in all required fields';
+        errorElement.classList.remove('hidden');
+        return;
+      }
+      
+      // Create new movie
+      const newMovie = {
+        id: storage.nextMovieId++,
+        type: 'movie',
+        title,
+        overview,
+        posterPath,
+        backdropPath,
+        releaseDate,
+        runtime,
+        genre,
+        rating,
+        videoPath,
+        featured,
+        popular,
+        newRelease
+      };
+      
+      // Add to movies array
+      storage.movies.push(newMovie);
+      
+      // Reset form
+      form.reset();
+      
+      // Reload content tables
+      
+      
+      // Reload all content
+      reloadAllContent();
+      
+      // Show notification
+      showNotification(`Movie "${title}" added successfully`, 'success');
+      
+      // Hide error if shown
+      errorElement.classList.add('hidden');
+    }
+    
+    // Handle add TV show form submission
+    // Function to add episode inputs to the form
+    function addEpisodeInput() {
+      const episodesContainer = document.getElementById('episodesContainer');
+      const template = document.getElementById('episodeTemplate');
+      const episodeItem = template.content.cloneNode(true);
+      
+      // Update episode number in UI display
+      const episodeNumber = episodesContainer.children.length + 1;
+      episodeItem.querySelector('.episode-number').textContent = episodeNumber;
+      
+      // Add delete functionality
+      episodeItem.querySelector('.delete-episode-btn').addEventListener('click', function(e) {
+        e.target.closest('.episode-item').remove();
+        // Renumber episodes after deletion
+        updateEpisodeNumbers();
+      });
+      
+      episodesContainer.appendChild(episodeItem);
+    }
+    
+    // Function to update episode numbers after deletion
+    function updateEpisodeNumbers() {
+      const episodeItems = document.querySelectorAll('.episode-item');
+      episodeItems.forEach((item, index) => {
+        item.querySelector('.episode-number').textContent = index + 1;
+      });
+    }
+    
+    // Function to collect episode data from the form
+    function collectEpisodeData() {
+      const episodeItems = document.querySelectorAll('.episode-item');
+      const episodes = [];
+      
+      episodeItems.forEach((item) => {
+        const seasonNumber = parseInt(item.querySelector('.episode-season').value);
+        const episodeNumber = parseInt(item.querySelector('.episode-number-input').value);
+        const title = item.querySelector('.episode-title').value;
+        const overview = item.querySelector('.episode-overview').value;
+        const stillPath = item.querySelector('.episode-still').value || null;
+        const videoPath = item.querySelector('.episode-video').value || null;
+        const airDate = item.querySelector('.episode-airdate').value || null;
+        const runtime = parseInt(item.querySelector('.episode-runtime').value) || 30;
+        
+        if (title && overview) {
+          episodes.push({
+            id: episodes.length + 1,
+            seasonNumber,
+            episodeNumber,
+            title,
+            overview,
+            stillPath,
+            videoPath,
+            airDate,
+            runtime
+          });
+        }
+      });
+      
+      return episodes;
+    }
+    
+    // Handle update movie form submission
+    function handleUpdateMovie(event) {
+      event.preventDefault();
+      
+      const errorElement = document.getElementById('edit-movie-error');
+      
+      // Get form values
+      const id = parseInt(document.getElementById('editMovieId').value);
+      const title = document.getElementById('editMovieTitle').value;
+      const overview = document.getElementById('editMovieOverview').value;
+      const posterPath = document.getElementById('editMoviePoster').value;
+      const backdropPath = document.getElementById('editMovieBackdrop').value || null;
+      const releaseDate = document.getElementById('editMovieReleaseDate').value;
+      const runtime = document.getElementById('editMovieRuntime').value ? parseInt(document.getElementById('editMovieRuntime').value) : null;
+      const genre = document.getElementById('editMovieGenre').value ? document.getElementById('editMovieGenre').value.split(',').map(g => g.trim()) : null;
+      const rating = document.getElementById('editMovieRating').value || null;
+      const videoPath = document.getElementById('editMovieVideo').value || null;
+      const featured = document.getElementById('editMovieFeatured').checked;
+      const popular = document.getElementById('editMoviePopular').checked;
+      const newRelease = document.getElementById('editMovieNewRelease').checked;
+      
+      // Validate required fields
+      if (!title || !overview || !posterPath || !releaseDate) {
+        errorElement.textContent = 'Please fill in all required fields';
+        errorElement.classList.remove('hidden');
+        return;
+      }
+      
+      // Find movie index
+      const movieIndex = storage.movies.findIndex(movie => movie.id === id);
+      
+      if (movieIndex !== -1) {
+        // Update movie
+        storage.movies[movieIndex] = {
+          ...storage.movies[movieIndex],
+          title,
+          overview,
+          posterPath,
+          backdropPath,
+          releaseDate,
+          runtime,
+          genre,
+          rating,
+          videoPath,
+          featured,
+          popular,
+          newRelease
+        };
+        
+        // Reload content tables
+        
+        
+        // Reload all content
+        reloadAllContent();
+        
+        // Close modal
+        closeModal('contentManagementModal');
+        
+        // Show notification
+        showNotification(`Movie "${title}" updated successfully`, 'success');
+      } else {
+        errorElement.textContent = 'Movie not found';
+        errorElement.classList.remove('hidden');
+      }
+    }
+    
+    // Handle update TV show form submission
+    function handleUpdateTVShow(event) {
+      event.preventDefault();
+      
+      const errorElement = document.getElementById('edit-tvshow-error');
+      
+      // Get form values
+      const id = parseInt(document.getElementById('editTvShowId').value);
+      const title = document.getElementById('editTvTitle').value;
+      const overview = document.getElementById('editTvOverview').value;
+      const posterPath = document.getElementById('editTvPoster').value;
+      const backdropPath = document.getElementById('editTvBackdrop').value || null;
+      const firstAirDate = document.getElementById('editTvFirstAirDate').value;
+      const lastAirDate = document.getElementById('editTvLastAirDate').value || null;
+      const genre = document.getElementById('editTvGenre').value ? document.getElementById('editTvGenre').value.split(',').map(g => g.trim()) : null;
+      const rating = document.getElementById('editTvRating').value || null;
+      const videoPath = document.getElementById('editTvVideo').value || null;
+      const featured = document.getElementById('editTvFeatured').checked;
+      const popular = document.getElementById('editTvPopular').checked;
+      const newRelease = document.getElementById('editTvNewRelease').checked;
+      
+      // Validate required fields
+      if (!title || !overview || !posterPath || !firstAirDate) {
+        errorElement.textContent = 'Please fill in all required fields';
+        errorElement.classList.remove('hidden');
+        return;
+      }
+      
+      // Find TV show index
+      const tvShowIndex = storage.tvShows.findIndex(show => show.id === id);
+      
+      if (tvShowIndex !== -1) {
+        // Keep existing episodes
+        const episodes = storage.tvShows[tvShowIndex].episodes || [];
+        
+        // Update TV show
+        storage.tvShows[tvShowIndex] = {
+          ...storage.tvShows[tvShowIndex],
+          title,
+          overview,
+          posterPath,
+          backdropPath,
+          firstAirDate,
+          lastAirDate,
+          genre,
+          rating,
+          videoPath,
+          featured,
+          popular,
+          newRelease,
+          episodes
+        };
+        
+        // Reload content tables
+        
+        
+        // Reload all content
+        reloadAllContent();
+        
+        // Close modal
+        closeModal('contentManagementModal');
+        
+        // Show notification
+        showNotification(`TV Show "${title}" updated successfully`, 'success');
+      } else {
+        errorElement.textContent = 'TV Show not found';
+        errorElement.classList.remove('hidden');
+      }
+    }
+    
+    function handleAddTVShow(event) {
+      event.preventDefault();
+      
+      const form = document.getElementById('addTvShowForm');
+      const errorElement = document.getElementById('add-tvshow-error');
+      
+      // Get form values
+      const title = document.getElementById('tvTitle').value;
+      const overview = document.getElementById('tvOverview').value;
+      const posterPath = document.getElementById('tvPoster').value;
+      const backdropPath = document.getElementById('tvBackdrop').value || null;
+      const firstAirDate = document.getElementById('tvFirstAirDate').value;
+      const lastAirDate = document.getElementById('tvLastAirDate').value || null;
+      const genre = document.getElementById('tvGenre').value ? document.getElementById('tvGenre').value.split(',').map(g => g.trim()) : null;
+      const rating = document.getElementById('tvRating').value || null;
+      const videoPath = document.getElementById('tvVideo').value || null;
+      const featured = document.getElementById('tvFeatured').checked;
+      const popular = document.getElementById('tvPopular').checked;
+      const newRelease = document.getElementById('tvNewRelease').checked;
+      
+      // Collect episode data
+      const episodes = collectEpisodeData();
+      
+      // Validate required fields
+      if (!title || !overview || !posterPath || !firstAirDate) {
+        errorElement.textContent = 'Please fill in all required fields';
+        errorElement.classList.remove('hidden');
+        return;
+      }
+      
+      // Validate at least one episode
+      if (episodes.length === 0) {
+        errorElement.textContent = 'Please add at least one episode';
+        errorElement.classList.remove('hidden');
+        return;
+      }
+      
+      // Calculate number of seasons based on episodes
+      const maxSeason = Math.max(...episodes.map(ep => ep.seasonNumber));
+      
+      // Create new TV show
+      const newTVShow = {
+        id: storage.nextTVShowId++,
+        type: 'tv',
+        title,
+        overview,
+        posterPath,
+        backdropPath,
+        firstAirDate,
+        lastAirDate,
+        seasons: maxSeason,
+        genre,
+        rating,
+        videoPath,
+        featured,
+        popular,
+        newRelease,
+        episodes: episodes // Store episodes with the TV show
+      };
+      
+      // Add to TV shows array
+      storage.tvShows.push(newTVShow);
+      
+      // Reset form
+      form.reset();
+      document.getElementById('episodesContainer').innerHTML = '';
+      
+      // Reload content tables
+      
+      
+      // Reload all content
+      reloadAllContent();
+      
+      // Show notification
+      showNotification(`TV show "${title}" added successfully with ${episodes.length} episodes`, 'success');
+      
+      // Hide error if shown
+      errorElement.classList.add('hidden');
+      
+      // Close modal
+      closeModal('contentManagementModal');
+    }
+    
+    // Reload all content sections
+    function reloadAllContent() {
+      // Check if there are any movies or TV shows
+      const hasMovies = storage.movies.length > 0;
+      const hasTVShows = storage.tvShows.length > 0;
+      
+      // Load content sections
+      loadFeaturedContent();
+      loadPopularMovies();
+      loadTopTVShows();
+      loadNewReleases();
+      
+      // Only set hero content if we have content
+      if (hasMovies || hasTVShows) {
+        setRandomHeroContent();
+      } else {
+        // Display an empty state in hero section if no content
+        const heroContainer = document.getElementById('hero-container');
+        const allContent = document.querySelectorAll('.content-section');
+        
+        heroContainer.innerHTML = `
+          <div class="hero-empty-state">
+            <h2 class="text-3xl font-bold mb-4">Welcome to StreamFlix</h2>
+            <p class="text-xl mb-6">No movies or TV shows available yet</p>
+            ${currentUser && currentUser.role === 'owner' ? 
+              '<button class="btn-primary px-6 py-3 rounded-md text-lg" onclick="openModal(\'contentManagementModal\')">Add Content</button>' : 
+              ''}
+          </div>
+        `;
+        
+        // Hide content sections if no content
+        allContent.forEach(section => {
+          section.classList.add('hidden');
+        });
+      }
+      
+      // Reload page-specific content
+      if (currentPage === 'movies') {
+        loadAllMovies();
+      } else if (currentPage === 'tvshows') {
+        loadAllTVShows();
+      }
+    }
+  </script>
+</body>
+</html>
