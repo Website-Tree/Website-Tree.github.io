@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Player</title>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            color: white;
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #1a0033, #000000);
+            z-index: -1;
+        }
+        
+        .container {
+            display: flex;
+            gap: 30px;
+            padding: 30px;
+            position: relative;
+            z-index: 1;
+            height: 90vh;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+        }
+        
+        .left-panel {
+            flex: 1;
+            border: 2px solid #8a2be2;
+            padding: 25px;
+            background: rgba(26, 0, 51, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .right-panel {
+            flex: 3;
+            border: 2px solid #8a2be2;
+            padding: 25px;
+            background: rgba(26, 0, 51, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .category-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .category-btn {
+            flex: 1;
+            padding: 10px;
+            background: #2a0052;
+            color: white;
+            border: 1px solid #8a2be2;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .category-btn:hover {
+            background: #3a0066;
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+        }
+        
+        .category-btn.active {
+            background: #8a2be2;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+        }
+        
+        .content-selector {
+            flex-grow: 1;
+            padding: 15px;
+            background: #2a0052;
+            color: white;
+            border: 1px solid #8a2be2;
+            border-radius: 10px;
+            font-size: 16px;
+            min-height: 600px;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+        
+        .content-selector option {
+            padding: 15px;
+            margin: 8px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        .content-selector option:hover {
+            background: #3a0066;
+        }
+        
+        .content-selector::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        .content-selector::-webkit-scrollbar-track {
+            background: #2a0052;
+            border-radius: 10px;
+        }
+        
+        .content-selector::-webkit-scrollbar-thumb {
+            background: #8a2be2;
+            border-radius: 10px;
+        }
+        
+        .content-selector::-webkit-scrollbar-thumb:hover {
+            background: #bf00ff;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 90%;
+            padding: 10px;
+            margin-top: 20px;
+            border: 3px solid #8a2be2;
+            border-radius: 15px;
+            background: rgba(138, 43, 226, 0.1);
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.3);
+        }
+        
+        .fullscreen-btn {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            z-index: 10;
+            background: rgba(138, 43, 226, 0);
+            color: rgba(255, 255, 255, 0.5);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: none;
+        }
+        
+        .fullscreen-btn:hover {
+            background: rgba(191, 0, 255, 0.7);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(191, 0, 255, 0.7);
+        }
+        
+        /* Styles for episode picker */
+        .episode-picker {
+            display: none;
+            margin-top: 20px;
+            background: rgba(26, 0, 51, 0.9);
+            border: 1px solid #8a2be2;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            width: 100%;
+        }
+        
+        .episode-picker::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .episode-picker::-webkit-scrollbar-track {
+            background: #2a0052;
+            border-radius: 10px;
+        }
+        
+        .episode-picker::-webkit-scrollbar-thumb {
+            background: #8a2be2;
+            border-radius: 10px;
+        }
+        
+        .season-header {
+            color: #bf00ff;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+            border-bottom: 1px solid #8a2be2;
+            padding-bottom: 5px;
+        }
+        
+        .episode-item {
+            display: flex;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 5px 0;
+            transition: all 0.2s ease;
+        }
+        
+        .episode-item:hover {
+            background: rgba(138, 43, 226, 0.3);
+        }
+        
+        .episode-item.active {
+            background: rgba(138, 43, 226, 0.5);
+            box-shadow: 0 0 10px rgba(191, 0, 255, 0.5);
+        }
+        
+        .episode-number {
+            flex: 0 0 60px;
+            color: #bf00ff;
+            font-weight: bold;
+        }
+        
+        .episode-title {
+            flex: 1;
+        }
+        
+        /* Add styles for full screen */
+        .video-container:-webkit-full-screen {
+            width: 100vw !important;
+            height: 100vh !important;
+            padding: 0;
+            border: none;
+            background: black;
+        }
+        
+        .video-container:-moz-full-screen {
+            width: 100vw !important;
+            height: 100vh !important;
+            padding: 0;
+            border: none;
+            background: black;
+        }
+        
+        .video-container:-ms-fullscreen {
+            width: 100vw !important;
+            height: 100vh !important;
+            padding: 0;
+            border: none;
+            background: black;
+        }
+        
+        .video-container:fullscreen {
+            width: 100vw !important;
+            height: 100vh !important;
+            padding: 0;
+            border: none;
+            background: black;
+        }
+        
+        .video-container:fullscreen iframe {
+            width: 100vw;
+            height: 100vh;
+            border-radius: 0;
+        }
+        
+        .fullscreen-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .player-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 600px;
+            border-radius: 10px;
+            background: #000;
+        }
+        
+        @media (max-width: 768px) {
+            iframe {
+                height: 400px;
+            }
+        }
+        
+        h3 {
+            color: #bf00ff;
+            font-size: 24px;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(191, 0, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="container">
+        <div class="left-panel">
+            <h3>Select Content</h3>
+            <div class="category-buttons">
+                <button class="category-btn active" data-category="tvShows">TV Shows</button>
+                <button class="category-btn" data-category="movies">Movies</button>
+                <button class="category-btn" data-category="shortFilms">Short Films</button>
+            </div>
+            <select id="contentSelector" class="content-selector" multiple></select>
+        </div>
+        <div class="right-panel">
+            <h3>Video Player</h3>
+            <div class="video-container">
+                <div class="player-wrapper">
+                    <button class="fullscreen-btn" id="fullscreenBtn" title="Fullscreen">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                        </svg>
+                    </button>
+                    <iframe id="videoPlayer" frameborder="0" allowfullscreen title="Video Player"></iframe>
+                </div>
+            </div>
+            <div id="episodePicker" class="episode-picker"></div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize content data
+        const content = {
+            tvShows: [
+                // The Boys show (organized by seasons)
+                { 
+                    value: "#", 
+                    title: "The Boys", 
+                    isShow: true, 
+                    seasons: [
+                        {
+                            season: 1,
+                            episodes: [
+                                { value: "https://drive.google.com/file/d/1A3MxpBP92BV5ep6e7Xq6_pTXpXI9n7Yi/preview", episodeNum: 1, title: "The Name of the Game" },
+                                { value: "https://drive.google.com/file/d/1HtiIQHMzgQbSdoOe3Cj7OxuKmShP8d_I/preview", episodeNum: 2, title: "Cherry" },
+                                { value: "https://drive.google.com/file/d/19LEfUALsAQdrAPhRS2KYejgDqWTyzpoO/preview", episodeNum: 3, title: "Get Some" },
+                                { value: "https://drive.google.com/file/d/1TFFIb3th7LIWQAq2z6_FStusBPJ_B-1n/preview", episodeNum: 4, title: "The Female of the Species" },
+                                { value: "https://drive.google.com/file/d/1yeh_pcq_ifJZWZsMf21N1Q2wuZxPEXgd/preview", episodeNum: 5, title: "Good for the Soul" },
+                                { value: "https://drive.google.com/file/d/1Ww52tSqq3Vh4GxWZAV4ct1g11cdZu8yY/preview", episodeNum: 6, title: "The Innocents" },
+                                { value: "https://drive.google.com/file/d/1e6Gg5tOx4xamQOcOLdQ4LEUig0lt-T55/preview", episodeNum: 7, title: "The Self-Preservation Society" },
+                                { value: "https://drive.google.com/file/d/1vYREqLDFcl-RtaHOPYZ4hRR7j2NNGu-B/preview", episodeNum: 8, title: "You Found Me" }
+                            ]
+                        },
+                        {
+                            season: 2,
+                            episodes: [
+                                { value: "https://drive.google.com/file/d/1_weKxqD7nzznG9CvH-sToSxli12mNwh-/preview", episodeNum: 1, title: "The Big Ride" },
+                                { value: "https://drive.google.com/file/d/1gwJnjy2QML-pm6KwgEzLNgEjkuBcNCBA/preview", episodeNum: 2, title: "Proper Preparation" },
+                                { value: "https://drive.google.com/file/d/19op7cT5N0aBeVFyE6eiu7g6UPL4RocXn/preview", episodeNum: 3, title: "Over the Hill" },
+                                { value: "https://drive.google.com/file/d/1VZpu9mxWrQ6Ov9uldqt3EdJqxYEIlebC/preview", episodeNum: 4, title: "Nothing Like It" },
+                                { value: "https://drive.google.com/file/d/1nd4PTutWxM3LlzdYbrCf848S2Pfflzgn/preview", episodeNum: 5, title: "We Gotta Go Now" },
+                                { value: "https://drive.google.com/file/d/1XsNrV9LOQK50sf46xnvP5u4T2PFLxWG3/preview", episodeNum: 6, title: "The Bloody Doors Off" },
+                                { value: "https://drive.google.com/file/d/1ncWjNIIqFZzdRCV9PNClTU_JSXNoqs7H/preview", episodeNum: 7, title: "Butcher, Baker" },
+                                { value: "https://drive.google.com/file/d/1v__gLI6R3_YixR__9rvTvFUxeVSOV9hE/preview", episodeNum: 8, title: "What I Know" }
+                            ]
+                        },
+                        {
+                            season: 3,
+                            episodes: [
+                                { value: "https://drive.google.com/file/d/1lKKBhHjiOvXSFs5kyiiJ7EQ8R-L3jVJQ/preview", episodeNum: 1, title: "Payback" },
+                                { value: "https://drive.google.com/file/d/19aqLtizvmjJCKElLx_D0GmfdRbzpYwfk/preview", episodeNum: 2, title: "The Only Man" },
+                                { value: "https://drive.google.com/file/d/1LsCsOnQwdJXXe2mFHlmZx6mdv7rvBLWe/preview", episodeNum: 3, title: "Barbary Coast" },
+                                { value: "https://drive.google.com/file/d/1a5XhHw7-W0w7bHYSh72HLQG7MIsVyV3Q/preview", episodeNum: 4, title: "Glorious Five Year Plan" },
+                                { value: "https://drive.google.com/file/d/1k8D9XjISq6qII7AHlUBaH4nHvcLdTUb1/preview", episodeNum: 5, title: "The Last Time to Look" },
+                                { value: "https://drive.google.com/file/d/1EugbYvhRxME1EAFxB-x5QEetuKgjsbli/preview", episodeNum: 6, title: "Herogasm" },
+                                { value: "https://drive.google.com/file/d/1OFrwLqS6sOFKPZb4ReTyoASPfU12ww0Y/preview", episodeNum: 7, title: "Here Comes a Candle" },
+                                { value: "https://drive.google.com/file/d/1L6FXHGTLqDaVMorh9dbV78OouNsdFvdV/preview", episodeNum: 8, title: "The Instant White-Hot Wild" }
+                            ]
+                        }
+                    ]
+                },
+
+                // Breaking Bad
+                {
+                    value: "#",
+                    title: "Breaking Bad",
+                    isShow: true,
+                    seasons: [
+                        {
+                            season: 1,
+                            episodes: [
+                                { value: "https://drive.google.com/file/d/1Ww52tSqq3Vh4GxWZAV4ct1g11cdZu8yY/preview", episodeNum: 1, title: "Pilot" },
+                                { value: "https://drive.google.com/file/d/1e6Gg5tOx4xamQOcOLdQ4LEUig0lt-T55/preview", episodeNum: 2, title: "Cat's in the Bag..." },
+                                { value: "https://drive.google.com/file/d/1vYREqLDFcl-RtaHOPYZ4hRR7j2NNGu-B/preview", episodeNum: 3, title: "...And the Bag's in the River" },
+                                { value: "https://drive.google.com/file/d/1TFFIb3th7LIWQAq2z6_FStusBPJ_B-1n/preview", episodeNum: 4, title: "Cancer Man" },
+                                { value: "https://drive.google.com/file/d/1yeh_pcq_ifJZWZsMf21N1Q2wuZxPEXgd/preview", episodeNum: 5, title: "Gray Matter" },
+                                { value: "https://drive.google.com/file/d/1A3MxpBP92BV5ep6e7Xq6_pTXpXI9n7Yi/preview", episodeNum: 6, title: "Crazy Handful of Nothin'" },
+                                { value: "https://drive.google.com/file/d/1HtiIQHMzgQbSdoOe3Cj7OxuKmShP8d_I/preview", episodeNum: 7, title: "A No-Rough-Stuff-Type Deal" }
+                            ]
+                        },
+                        {
+                            season: 2,
+                            episodes: [
+                                { value: "https://drive.google.com/file/d/1_weKxqD7nzznG9CvH-sToSxli12mNwh-/preview", episodeNum: 1, title: "Seven Thirty-Seven" },
+                                { value: "https://drive.google.com/file/d/1gwJnjy2QML-pm6KwgEzLNgEjkuBcNCBA/preview", episodeNum: 2, title: "Grilled" },
+                                { value: "https://drive.google.com/file/d/19LEfUALsAQdrAPhRS2KYejgDqWTyzpoO/preview", episodeNum: 3, title: "Bit by a Dead Bee" },
+                                { value: "https://drive.google.com/file/d/1VZpu9mxWrQ6Ov9uldqt3EdJqxYEIlebC/preview", episodeNum: 4, title: "Down" },
+                                { value: "https://drive.google.com/file/d/1nd4PTutWxM3LlzdYbrCf848S2Pfflzgn/preview", episodeNum: 5, title: "Breakage" },
+                                { value: "https://drive.google.com/file/d/1XsNrV9LOQK50sf46xnvP5u4T2PFLxWG3/preview", episodeNum: 6, title: "Peekaboo" },
+                                { value: "https://drive.google.com/file/d/1ncWjNIIqFZzdRCV9PNClTU_JSXNoqs7H/preview", episodeNum: 7, title: "Negro y Azul" },
+                                { value: "https://drive.google.com/file/d/1v__gLI6R3_YixR__9rvTvFUxeVSOV9hE/preview", episodeNum: 8, title: "Better Call Saul" },
+                                { value: "https://drive.google.com/file/d/1lKKBhHjiOvXSFs5kyiiJ7EQ8R-L3jVJQ/preview", episodeNum: 9, title: "4 Days Out" },
+                                { value: "https://drive.google.com/file/d/19aqLtizvmjJCKElLx_D0GmfdRbzpYwfk/preview", episodeNum: 10, title: "Over" },
+                                { value: "https://drive.google.com/file/d/1LsCsOnQwdJXXe2mFHlmZx6mdv7rvBLWe/preview", episodeNum: 11, title: "Mandala" },
+                                { value: "https://drive.google.com/file/d/1a5XhHw7-W0w7bHYSh72HLQG7MIsVyV3Q/preview", episodeNum: 12, title: "Phoenix" },
+                                { value: "https://drive.google.com/file/d/1k8D9XjISq6qII7AHlUBaH4nHvcLdTUb1/preview", episodeNum: 13, title: "ABQ" }
+                            ]
+                        },
+                        {
+                            season: 3,
+                            episodes: [
+                                { value: "https://drive.google.com/file/d/1EugbYvhRxME1EAFxB-x5QEetuKgjsbli/preview", episodeNum: 1, title: "No Más" },
+                                { value: "https://drive.google.com/file/d/1OFrwLqS6sOFKPZb4ReTyoASPfU12ww0Y/preview", episodeNum: 2, title: "Caballo Sin Nombre" },
+                                { value: "https://drive.google.com/file/d/1L6FXHGTLqDaVMorh9dbV78OouNsdFvdV/preview", episodeNum: 3, title: "I.F.T." },
+                                { value: "https://drive.google.com/file/d/19op7cT5N0aBeVFyE6eiu7g6UPL4RocXn/preview", episodeNum: 4, title: "Green Light" },
+                                { value: "https://drive.google.com/file/d/1VZpu9mxWrQ6Ov9uldqt3EdJqxYEIlebC/preview", episodeNum: 5, title: "Más" },
+                                { value: "https://drive.google.com/file/d/1nd4PTutWxM3LlzdYbrCf848S2Pfflzgn/preview", episodeNum: 6, title: "Sunset" },
+                                { value: "https://drive.google.com/file/d/1XsNrV9LOQK50sf46xnvP5u4T2PFLxWG3/preview", episodeNum: 7, title: "One Minute" },
+                                { value: "https://drive.google.com/file/d/1ncWjNIIqFZzdRCV9PNClTU_JSXNoqs7H/preview", episodeNum: 8, title: "I See You" },
+                                { value: "https://drive.google.com/file/d/1v__gLI6R3_YixR__9rvTvFUxeVSOV9hE/preview", episodeNum: 9, title: "Kafkaesque" },
+                                { value: "https://drive.google.com/file/d/1lKKBhHjiOvXSFs5kyiiJ7EQ8R-L3jVJQ/preview", episodeNum: 10, title: "Fly" },
+                                { value: "https://drive.google.com/file/d/19aqLtizvmjJCKElLx_D0GmfdRbzpYwfk/preview", episodeNum: 11, title: "Abiquiu" },
+                                { value: "https://drive.google.com/file/d/1LsCsOnQwdJXXe2mFHlmZx6mdv7rvBLWe/preview", episodeNum: 12, title: "Half Measures" },
+                                { value: "https://drive.google.com/file/d/1a5XhHw7-W0w7bHYSh72HLQG7MIsVyV3Q/preview", episodeNum: 13, title: "Full Measure" }
+                            ]
+                        },
+                        {
+                            season: 4,
+                            episodes: [
+                                { value: "https://drive.google.com/file/d/1Ww52tSqq3Vh4GxWZAV4ct1g11cdZu8yY/preview", episodeNum: 1, title: "Box Cutter" },
+                                { value: "https://drive.google.com/file/d/1e6Gg5tOx4xamQOcOLdQ4LEUig0lt-T55/preview", episodeNum: 2, title: "Thirty-Eight Snub" },
+                                { value: "https://drive.google.com/file/d/1vYREqLDFcl-RtaHOPYZ4hRR7j2NNGu-B/preview", episodeNum: 3, title: "Open House" },
+                                { value: "https://drive.google.com/file/d/1TFFIb3th7LIWQAq2z6_FStusBPJ_B-1n/preview", episodeNum: 4, title: "Bullet Points" },
+                                { value: "https://drive.google.com/file/d/1yeh_pcq_ifJZWZsMf21N1Q2wuZxPEXgd/preview", episodeNum: 5, title: "Shotgun" },
+                                { value: "https://drive.google.com/file/d/1Ww52tSqq3Vh4GxWZAV4ct1g11cdZu8yY/preview", episodeNum: 6, title: "Cornered" },
+                                { value: "https://drive.google.com/file/d/1A3MxpBP92BV5ep6e7Xq6_pTXpXI9n7Yi/preview", episodeNum: 7, title: "Problem Dog" },
+                                { value: "https://drive.google.com/file/d/1HtiIQHMzgQbSdoOe3Cj7OxuKmShP8d_I/preview", episodeNum: 8, title: "Hermanos" },
+                                { value: "https://drive.google.com/file/d/19LEfUALsAQdrAPhRS2KYejgDqWTyzpoO/preview", episodeNum: 9, title: "Bug" },
+                                { value: "https://drive.google.com/file/d/1VZpu9mxWrQ6Ov9uldqt3EdJqxYEIlebC/preview", episodeNum: 10, title: "Salud" },
+                                { value: "https://drive.google.com/file/d/1nd4PTutWxM3LlzdYbrCf848S2Pfflzgn/preview", episodeNum: 11, title: "Crawl Space" },
+                                { value: "https://drive.google.com/file/d/1XsNrV9LOQK50sf46xnvP5u4T2PFLxWG3/preview", episodeNum: 12, title: "End Times" },
+                                { value: "https://drive.google.com/file/d/1ncWjNIIqFZzdRCV9PNClTU_JSXNoqs7H/preview", episodeNum: 13, title: "Face Off" }
+                            ]
+                        },
+                        {
+                            season: 5,
+                            episodes: [
+                                { value: "https://drive.google.com/file/d/1v__gLI6R3_YixR__9rvTvFUxeVSOV9hE/preview", episodeNum: 1, title: "Live Free or Die" },
+                                { value: "https://drive.google.com/file/d/1lKKBhHjiOvXSFs5kyiiJ7EQ8R-L3jVJQ/preview", episodeNum: 2, title: "Madrigal" },
+                                { value: "https://drive.google.com/file/d/19aqLtizvmjJCKElLx_D0GmfdRbzpYwfk/preview", episodeNum: 3, title: "Hazard Pay" },
+                                { value: "https://drive.google.com/file/d/1LsCsOnQwdJXXe2mFHlmZx6mdv7rvBLWe/preview", episodeNum: 4, title: "Fifty-One" },
+                                { value: "https://drive.google.com/file/d/1a5XhHw7-W0w7bHYSh72HLQG7MIsVyV3Q/preview", episodeNum: 5, title: "Dead Freight" },
+                                { value: "https://drive.google.com/file/d/1k8D9XjISq6qII7AHlUBaH4nHvcLdTUb1/preview", episodeNum: 6, title: "Buyout" },
+                                { value: "https://drive.google.com/file/d/1EugbYvhRxME1EAFxB-x5QEetuKgjsbli/preview", episodeNum: 7, title: "Say My Name" },
+                                { value: "https://drive.google.com/file/d/1OFrwLqS6sOFKPZb4ReTyoASPfU12ww0Y/preview", episodeNum: 8, title: "Gliding Over All" },
+                                { value: "https://drive.google.com/file/d/1L6FXHGTLqDaVMorh9dbV78OouNsdFvdV/preview", episodeNum: 9, title: "Blood Money" },
+                                { value: "https://drive.google.com/file/d/1Ww52tSqq3Vh4GxWZAV4ct1g11cdZu8yY/preview", episodeNum: 10, title: "Buried" },
+                                { value: "https://drive.google.com/file/d/1e6Gg5tOx4xamQOcOLdQ4LEUig0lt-T55/preview", episodeNum: 11, title: "Confessions" },
+                                { value: "https://drive.google.com/file/d/1vYREqLDFcl-RtaHOPYZ4hRR7j2NNGu-B/preview", episodeNum: 12, title: "Rabid Dog" },
+                                { value: "https://drive.google.com/file/d/1TFFIb3th7LIWQAq2z6_FStusBPJ_B-1n/preview", episodeNum: 13, title: "To'hajiilee" },
+                                { value: "https://drive.google.com/file/d/1yeh_pcq_ifJZWZsMf21N1Q2wuZxPEXgd/preview", episodeNum: 14, title: "Ozymandias" },
+                                { value: "https://drive.google.com/file/d/1A3MxpBP92BV5ep6e7Xq6_pTXpXI9n7Yi/preview", episodeNum: 15, title: "Granite State" },
+                                { value: "https://drive.google.com/file/d/1HtiIQHMzgQbSdoOe3Cj7OxuKmShP8d_I/preview", episodeNum: 16, title: "Felina" }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            movies: [
+                { value: "https://drive.google.com/file/d/1A3MxpBP92BV5ep6e7Xq6_pTXpXI9n7Yi/preview", title: "Terrifier (2016)" },
+                { value: "https://drive.google.com/file/d/1HtiIQHMzgQbSdoOe3Cj7OxuKmShP8d_I/preview", title: "Terrifier 2 (2022)" },
+                { value: "https://drive.google.com/file/d/19LEfUALsAQdrAPhRS2KYejgDqWTyzpoO/preview", title: "Terrifier 3 (2024)" },
+                { value: "https://drive.google.com/file/d/1TFFIb3th7LIWQAq2z6_FStusBPJ_B-1n/preview", title: "The Dark Knight" },
+                { value: "https://drive.google.com/file/d/1yeh_pcq_ifJZWZsMf21N1Q2wuZxPEXgd/preview", title: "Inception" },
+                { value: "https://drive.google.com/file/d/1Ww52tSqq3Vh4GxWZAV4ct1g11cdZu8yY/preview", title: "Pulp Fiction" },
+                { value: "https://drive.google.com/file/d/1e6Gg5tOx4xamQOcOLdQ4LEUig0lt-T55/preview", title: "The Matrix" },
+                { value: "https://drive.google.com/file/d/1vYREqLDFcl-RtaHOPYZ4hRR7j2NNGu-B/preview", title: "Interstellar" }
+            ],
+            shortFilms: [
+                { value: "https://drive.google.com/file/d/1_weKxqD7nzznG9CvH-sToSxli12mNwh-/preview", title: "Piper - Pixar" },
+                { value: "https://drive.google.com/file/d/1gwJnjy2QML-pm6KwgEzLNgEjkuBcNCBA/preview", title: "Bao - Pixar" },
+                { value: "https://drive.google.com/file/d/19op7cT5N0aBeVFyE6eiu7g6UPL4RocXn/preview", title: "Paperman - Disney" },
+                { value: "https://drive.google.com/file/d/1VZpu9mxWrQ6Ov9uldqt3EdJqxYEIlebC/preview", title: "Feast - Disney" },
+                { value: "https://drive.google.com/file/d/1nd4PTutWxM3LlzdYbrCf848S2Pfflzgn/preview", title: "La Luna - Pixar" },
+                { value: "https://drive.google.com/file/d/1XsNrV9LOQK50sf46xnvP5u4T2PFLxWG3/preview", title: "Day & Night - Pixar" }
+            ]
+        };
+
+        // DOM elements
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        const contentSelector = document.getElementById('contentSelector');
+        const videoPlayer = document.getElementById('videoPlayer');
+        let currentCategory = 'tvShows';
+
+        // Initialize particles.js background
+        if (window.particlesJS) {
+            window.particlesJS('particles-js', {
+                particles: {
+                    number: {
+                        value: 200,
+                        density: {
+                            enable: true,
+                            value_area: 800
+                        }
+                    },
+                    color: {
+                        value: '#8a2be2'
+                    },
+                    shape: {
+                        type: 'circle'
+                    },
+                    size: {
+                        value: 3,
+                        random: true
+                    },
+                    move: {
+                        enable: true,
+                        speed: 2,
+                        direction: 'bottom',
+                        straight: false
+                    }
+                }
+            });
+        }
+
+        // Function to populate content selector based on category
+        function populateContentSelector(category) {
+            contentSelector.innerHTML = '';
+            content[category].forEach((item, index) => {
+                const option = document.createElement('option');
+                option.value = item.value;
+                option.textContent = item.title;
+                contentSelector.appendChild(option);
+            });
+        }
+
+        // Set initial video to requested YouTube video
+        videoPlayer.src = "https://www.youtube.com/embed/sVYlkLauPlY";
+
+        // Populate initial content list
+        populateContentSelector(currentCategory);
+
+        // Add event listeners to category buttons
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Update active button
+                categoryButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Get selected category
+                const category = button.getAttribute('data-category');
+                currentCategory = category;
+                
+                // Hide episode picker when changing categories
+                const episodePicker = document.getElementById('episodePicker');
+                episodePicker.style.display = 'none';
+                
+                // Update content selector
+                populateContentSelector(category);
+                
+                // If TV Shows category is selected, show YouTube video
+                if (category === 'tvShows') {
+                    videoPlayer.src = "https://www.youtube.com/embed/sVYlkLauPlY";
+                }
+                // Otherwise set first video of the category
+                else if (content[category].length > 0) {
+                    videoPlayer.src = content[category][0].value;
+                }
+            });
+        });
+
+        // Function to create episode picker for a show
+        function createEpisodePicker(show) {
+            const episodePicker = document.getElementById('episodePicker');
+            episodePicker.innerHTML = '';
+            episodePicker.style.display = 'block';
+            
+            // Variable to track current video source
+            const currentVideoSrc = videoPlayer.src;
+            
+            // Create episode picker for each season
+            show.seasons.forEach(season => {
+                // Add season header
+                const seasonHeader = document.createElement('div');
+                seasonHeader.className = 'season-header';
+                seasonHeader.textContent = `Season ${season.season}`;
+                episodePicker.appendChild(seasonHeader);
+                
+                // Add episodes for this season
+                season.episodes.forEach(episode => {
+                    const episodeItem = document.createElement('div');
+                    episodeItem.className = 'episode-item';
+                    
+                    // Check if this episode is currently playing and mark it as active
+                    if (episode.value === currentVideoSrc) {
+                        episodeItem.classList.add('active');
+                    }
+                    
+                    const episodeNumber = document.createElement('div');
+                    episodeNumber.className = 'episode-number';
+                    episodeNumber.textContent = `S${season.season} E${episode.episodeNum}`;
+                    
+                    const episodeTitle = document.createElement('div');
+                    episodeTitle.className = 'episode-title';
+                    episodeTitle.textContent = episode.title;
+                    
+                    episodeItem.appendChild(episodeNumber);
+                    episodeItem.appendChild(episodeTitle);
+                    
+                    // Store episode data on the element itself for easy access
+                    episodeItem.dataset.episodeUrl = episode.value;
+                    
+                    // Add click event to play this episode
+                    episodeItem.addEventListener('click', () => {
+                        // Remove active class from all episode items
+                        document.querySelectorAll('.episode-item').forEach(item => {
+                            item.classList.remove('active');
+                        });
+                        
+                        // Add active class to the clicked episode
+                        episodeItem.classList.add('active');
+                        
+                        // Set flag to indicate user explicitly selected an episode
+                        userSelectedEpisode = true;
+                        
+                        // Play the episode
+                        videoPlayer.src = episode.value;
+                    });
+                    
+                    episodePicker.appendChild(episodeItem);
+                });
+            });
+        }
+        
+        // Add event listener to video player source change
+        const updateActiveEpisode = () => {
+            const currentSrc = videoPlayer.src;
+            let activeFound = false;
+            document.querySelectorAll('.episode-item').forEach(item => {
+                if (item.dataset.episodeUrl === currentSrc) {
+                    item.classList.add('active');
+                    activeFound = true;
+                    // Only scroll if user explicitly selected an episode, not on initial load
+                    if (userSelectedEpisode) {
+                        item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Reset the flag after handling the active episode
+            userSelectedEpisode = false;
+        };
+        
+        // Flag to track if user explicitly selected an episode
+        let userSelectedEpisode = false;
+        
+        // Add event listener to content selector
+        contentSelector.addEventListener('change', function() {
+            const episodePicker = document.getElementById('episodePicker');
+            episodePicker.style.display = 'none';
+            
+            const selectedIndex = this.selectedIndex;
+            const selectedItem = content[currentCategory][selectedIndex];
+            
+            // Check if selected item is a show with seasons
+            if (selectedItem.isShow && selectedItem.seasons) {
+                // Set first episode of first season as initial video
+                if (selectedItem.seasons[0].episodes.length > 0) {
+                    videoPlayer.src = selectedItem.seasons[0].episodes[0].value;
+                }
+                
+                // Create episode picker after setting the video source
+                createEpisodePicker(selectedItem);
+                
+                // Update active episode highlight
+                setTimeout(updateActiveEpisode, 100);
+            } else {
+                videoPlayer.src = this.value;
+            }
+        });
+        
+        // Fullscreen functionality
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        let isFullScreen = false;
+        
+        // Function to update fullscreen button icon
+        function updateFullscreenButton() {
+            if (isFullScreen) {
+                fullscreenBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 14h6m0 0v6m0-6l-7 7m17-11h-6m0 0V4m0 6l7-7"></path>
+                    </svg>
+                `;
+                fullscreenBtn.title = "Exit Fullscreen";
+            } else {
+                fullscreenBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                    </svg>
+                `;
+                fullscreenBtn.title = "Fullscreen";
+            }
+        }
+        
+        // Listen for fullscreen change events
+        document.addEventListener('fullscreenchange', function() {
+            isFullScreen = !!document.fullscreenElement;
+            updateFullscreenButton();
+        });
+        document.addEventListener('webkitfullscreenchange', function() {
+            isFullScreen = !!document.webkitFullscreenElement;
+            updateFullscreenButton();
+        });
+        document.addEventListener('mozfullscreenchange', function() {
+            isFullScreen = !!document.mozFullScreenElement;
+            updateFullscreenButton();
+        });
+        document.addEventListener('MSFullscreenChange', function() {
+            isFullScreen = !!document.msFullscreenElement;
+            updateFullscreenButton();
+        });
+        
+        // Fullscreen button click handler
+        fullscreenBtn.addEventListener('click', function() {
+            // Get the video player
+            const videoContainer = document.querySelector('.video-container');
+            
+            if (!isFullScreen) {
+                // Enter fullscreen
+                if (videoContainer.requestFullscreen) {
+                    videoContainer.requestFullscreen();
+                } else if (videoContainer.mozRequestFullScreen) { // Firefox
+                    videoContainer.mozRequestFullScreen();
+                } else if (videoContainer.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                    videoContainer.webkitRequestFullscreen();
+                } else if (videoContainer.msRequestFullscreen) { // IE/Edge
+                    videoContainer.msRequestFullscreen();
+                }
+            } else {
+                // Exit fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.mozCancelFullScreen) { // Firefox
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) { // IE/Edge
+                    document.msExitFullscreen();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
