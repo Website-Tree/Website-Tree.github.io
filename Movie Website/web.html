@@ -8,17 +8,20 @@
     <style>
         body {
             margin: 0;
+            padding: 0;
             color: white;
-            min-height: 100vh;
             font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
         }
         
         #particles-js {
-            position: absolute;
+            position: fixed;
             width: 100%;
             height: 100%;
             background: linear-gradient(to bottom, #1a0033, #000000);
             z-index: -1;
+            top: 0;
+            left: 0;
         }
         
         .container {
@@ -27,7 +30,7 @@
             padding: 30px;
             position: relative;
             z-index: 1;
-            height: 90vh;
+            min-height: calc(100vh - 60px);
         }
         
         @media (max-width: 768px) {
@@ -285,8 +288,43 @@
             background: #000;
         }
         
+        .no-content-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 600px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            text-align: center;
+            padding: 0 20px;
+        }
+        
+        .no-content-message svg {
+            width: 80px;
+            height: 80px;
+            stroke: #8a2be2;
+            margin-bottom: 20px;
+        }
+        
+        .no-content-message h4 {
+            font-size: 24px;
+            color: #bf00ff;
+            margin: 10px 0;
+        }
+        
+        .no-content-message p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+            max-width: 400px;
+        }
+        
         @media (max-width: 768px) {
             iframe {
+                height: 400px;
+            }
+            
+            .no-content-message {
                 height: 400px;
             }
         }
@@ -314,15 +352,23 @@
             <select id="contentSelector" class="content-selector" multiple></select>
         </div>
         <div class="right-panel">
-            <h3>Video Player</h3>
-            <div class="video-container">
+            <h3 id="playerTitle">Select Content to Watch</h3>
+            <div class="video-container" id="videoContainer">
                 <div class="player-wrapper">
                     <button class="fullscreen-btn" id="fullscreenBtn" title="Fullscreen">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
                         </svg>
                     </button>
-                    <iframe id="videoPlayer" frameborder="0" allowfullscreen title="Video Player"></iframe>
+                    <div id="videoPlayerWrapper"></div>
+                    <div id="noContentMessage" class="no-content-message">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                        </svg>
+                        <h4>No Content Selected</h4>
+                        <p>Please select a show, movie, or short film from the left panel to start watching</p>
+                    </div>
                 </div>
             </div>
             <div id="episodePicker" class="episode-picker"></div>
@@ -335,7 +381,7 @@
             tvShows: [
                 // The Boys show (organized by seasons)
                 { 
-                    value: "#", 
+                    value: "1", 
                     title: "The Boys", 
                     isShow: true, 
                     seasons: [
@@ -361,29 +407,15 @@
                                 { value: "https://drive.google.com/file/d/1VZpu9mxWrQ6Ov9uldqt3EdJqxYEIlebC/preview", episodeNum: 4, title: "Nothing Like It" },
                                 { value: "https://drive.google.com/file/d/1nd4PTutWxM3LlzdYbrCf848S2Pfflzgn/preview", episodeNum: 5, title: "We Gotta Go Now" },
                                 { value: "https://drive.google.com/file/d/1XsNrV9LOQK50sf46xnvP5u4T2PFLxWG3/preview", episodeNum: 6, title: "The Bloody Doors Off" },
-                                { value: "https://drive.google.com/file/d/1ncWjNIIqFZzdRCV9PNClTU_JSXNoqs7H/preview", episodeNum: 7, title: "Butcher, Baker" },
-                                { value: "https://drive.google.com/file/d/1v__gLI6R3_YixR__9rvTvFUxeVSOV9hE/preview", episodeNum: 8, title: "What I Know" }
-                            ]
-                        },
-                        {
-                            season: 3,
-                            episodes: [
-                                { value: "https://drive.google.com/file/d/1lKKBhHjiOvXSFs5kyiiJ7EQ8R-L3jVJQ/preview", episodeNum: 1, title: "Payback" },
-                                { value: "https://drive.google.com/file/d/19aqLtizvmjJCKElLx_D0GmfdRbzpYwfk/preview", episodeNum: 2, title: "The Only Man" },
-                                { value: "https://drive.google.com/file/d/1LsCsOnQwdJXXe2mFHlmZx6mdv7rvBLWe/preview", episodeNum: 3, title: "Barbary Coast" },
-                                { value: "https://drive.google.com/file/d/1a5XhHw7-W0w7bHYSh72HLQG7MIsVyV3Q/preview", episodeNum: 4, title: "Glorious Five Year Plan" },
-                                { value: "https://drive.google.com/file/d/1k8D9XjISq6qII7AHlUBaH4nHvcLdTUb1/preview", episodeNum: 5, title: "The Last Time to Look" },
-                                { value: "https://drive.google.com/file/d/1EugbYvhRxME1EAFxB-x5QEetuKgjsbli/preview", episodeNum: 6, title: "Herogasm" },
-                                { value: "https://drive.google.com/file/d/1OFrwLqS6sOFKPZb4ReTyoASPfU12ww0Y/preview", episodeNum: 7, title: "Here Comes a Candle" },
-                                { value: "https://drive.google.com/file/d/1L6FXHGTLqDaVMorh9dbV78OouNsdFvdV/preview", episodeNum: 8, title: "The Instant White-Hot Wild" }
+                                { value: "https://drive.google.com/file/d/1XHQ9AyxHF4p9GJSyDdWU10CovFoGlR73/preview", episodeNum: 7, title: "Butcher, Baker, Candlestick Maker" },
+                                { value: "https://drive.google.com/file/d/1g7KMJdJBZxrtRdMNlNDH2iLb1NWi4ePE/preview", episodeNum: 8, title: "What I Know" }
                             ]
                         }
                     ]
                 },
-
                 // Breaking Bad
                 {
-                    value: "#",
+                    value: "2",
                     title: "Breaking Bad",
                     isShow: true,
                     seasons: [
@@ -475,293 +507,282 @@
                             ]
                         }
                     ]
-                }
+                },
+
             ],
             movies: [
-                { value: "https://drive.google.com/file/d/1A3MxpBP92BV5ep6e7Xq6_pTXpXI9n7Yi/preview", title: "Terrifier (2016)" },
-                { value: "https://drive.google.com/file/d/1HtiIQHMzgQbSdoOe3Cj7OxuKmShP8d_I/preview", title: "Terrifier 2 (2022)" },
-                { value: "https://drive.google.com/file/d/19LEfUALsAQdrAPhRS2KYejgDqWTyzpoO/preview", title: "Terrifier 3 (2024)" },
-                { value: "https://drive.google.com/file/d/1TFFIb3th7LIWQAq2z6_FStusBPJ_B-1n/preview", title: "The Dark Knight" },
-                { value: "https://drive.google.com/file/d/1yeh_pcq_ifJZWZsMf21N1Q2wuZxPEXgd/preview", title: "Inception" },
-                { value: "https://drive.google.com/file/d/1Ww52tSqq3Vh4GxWZAV4ct1g11cdZu8yY/preview", title: "Pulp Fiction" },
-                { value: "https://drive.google.com/file/d/1e6Gg5tOx4xamQOcOLdQ4LEUig0lt-T55/preview", title: "The Matrix" },
-                { value: "https://drive.google.com/file/d/1vYREqLDFcl-RtaHOPYZ4hRR7j2NNGu-B/preview", title: "Interstellar" }
             ],
             shortFilms: [
-                { value: "https://drive.google.com/file/d/1_weKxqD7nzznG9CvH-sToSxli12mNwh-/preview", title: "Piper - Pixar" },
-                { value: "https://drive.google.com/file/d/1gwJnjy2QML-pm6KwgEzLNgEjkuBcNCBA/preview", title: "Bao - Pixar" },
-                { value: "https://drive.google.com/file/d/19op7cT5N0aBeVFyE6eiu7g6UPL4RocXn/preview", title: "Paperman - Disney" },
-                { value: "https://drive.google.com/file/d/1VZpu9mxWrQ6Ov9uldqt3EdJqxYEIlebC/preview", title: "Feast - Disney" },
-                { value: "https://drive.google.com/file/d/1nd4PTutWxM3LlzdYbrCf848S2Pfflzgn/preview", title: "La Luna - Pixar" },
-                { value: "https://drive.google.com/file/d/1XsNrV9LOQK50sf46xnvP5u4T2PFLxWG3/preview", title: "Day & Night - Pixar" }
             ]
         };
 
-        // DOM elements
-        const categoryButtons = document.querySelectorAll('.category-btn');
-        const contentSelector = document.getElementById('contentSelector');
-        const videoPlayer = document.getElementById('videoPlayer');
+        // Global app state variables
         let currentCategory = 'tvShows';
+        let selectedContent = null;
+        let episodeUrl = '';
+        let episodeTitle = '';
 
-        // Initialize particles.js background
-        if (window.particlesJS) {
-            window.particlesJS('particles-js', {
-                particles: {
-                    number: {
-                        value: 200,
-                        density: {
+        // DOM Elements
+        const contentSelector = document.getElementById('contentSelector');
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        const episodePicker = document.getElementById('episodePicker');
+        const playerTitle = document.getElementById('playerTitle');
+        const noContentMessage = document.getElementById('noContentMessage');
+        const videoPlayerWrapper = document.getElementById('videoPlayerWrapper');
+        const videoContainer = document.getElementById('videoContainer');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeParticles();
+            populateContentSelector();
+            setupEventListeners();
+        });
+
+        // Initialize particles.js
+        function initializeParticles() {
+            if (window.particlesJS) {
+                window.particlesJS('particles-js', {
+                    particles: {
+                        number: { value: 80, density: { enable: true, value_area: 800 } },
+                        color: { value: "#8a2be2" },
+                        shape: { type: "circle" },
+                        opacity: { value: 0.5, random: true },
+                        size: { value: 3, random: true },
+                        line_linked: {
                             enable: true,
-                            value_area: 800
+                            distance: 150,
+                            color: "#8a2be2",
+                            opacity: 0.4,
+                            width: 1
+                        },
+                        move: {
+                            enable: true,
+                            speed: 2,
+                            direction: "none",
+                            random: true,
+                            out_mode: "out"
                         }
                     },
-                    color: {
-                        value: '#8a2be2'
-                    },
-                    shape: {
-                        type: 'circle'
-                    },
-                    size: {
-                        value: 3,
-                        random: true
-                    },
-                    move: {
-                        enable: true,
-                        speed: 2,
-                        direction: 'bottom',
-                        straight: false
+                    interactivity: {
+                        detect_on: "canvas",
+                        events: {
+                            onhover: { enable: true, mode: "grab" },
+                            onclick: { enable: true, mode: "push" }
+                        },
+                        modes: {
+                            grab: { distance: 140, line_linked: { opacity: 1 } },
+                            push: { particles_nb: 4 }
+                        }
                     }
-                }
-            });
+                });
+            }
         }
 
-        // Function to populate content selector based on category
-        function populateContentSelector(category) {
+        // Set up event listeners
+        function setupEventListeners() {
+            // Category button click listeners
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    changeCategory(category);
+                });
+            });
+
+            // Content selection change listener
+            contentSelector.addEventListener('change', function() {
+                if (this.selectedIndex >= 0) {
+                    const selectedItem = content[currentCategory][this.selectedIndex];
+                    handleContentSelect(selectedItem);
+                }
+            });
+
+            // Fullscreen button listener
+            fullscreenBtn.addEventListener('click', toggleFullscreen);
+        }
+
+        // Populate content selector with items from current category
+        function populateContentSelector() {
             contentSelector.innerHTML = '';
-            content[category].forEach((item, index) => {
+            content[currentCategory].forEach(item => {
                 const option = document.createElement('option');
-                option.value = item.value;
+                option.value = item.title;
                 option.textContent = item.title;
                 contentSelector.appendChild(option);
             });
         }
 
-        // Set initial video to requested YouTube video
-        videoPlayer.src = "https://www.youtube.com/embed/sVYlkLauPlY";
-
-        // Populate initial content list
-        populateContentSelector(currentCategory);
-
-        // Add event listeners to category buttons
-        categoryButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                // Update active button
-                categoryButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                
-                // Get selected category
-                const category = button.getAttribute('data-category');
-                currentCategory = category;
-                
-                // Hide episode picker when changing categories
-                const episodePicker = document.getElementById('episodePicker');
-                episodePicker.style.display = 'none';
-                
-                // Update content selector
-                populateContentSelector(category);
-                
-                // If TV Shows category is selected, show YouTube video
-                if (category === 'tvShows') {
-                    videoPlayer.src = "https://www.youtube.com/embed/sVYlkLauPlY";
-                }
-                // Otherwise set first video of the category
-                else if (content[category].length > 0) {
-                    videoPlayer.src = content[category][0].value;
+        // Change category and update UI
+        function changeCategory(category) {
+            currentCategory = category;
+            
+            // Update active button
+            categoryButtons.forEach(button => {
+                if (button.getAttribute('data-category') === category) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
                 }
             });
-        });
-
-        // Function to create episode picker for a show
-        function createEpisodePicker(show) {
-            const episodePicker = document.getElementById('episodePicker');
-            episodePicker.innerHTML = '';
-            episodePicker.style.display = 'block';
             
-            // Variable to track current video source
-            const currentVideoSrc = videoPlayer.src;
+            // Reset selected content when changing categories
+            selectedContent = null;
+            episodeUrl = '';
+            episodeTitle = '';
             
-            // Create episode picker for each season
-            show.seasons.forEach(season => {
-                // Add season header
-                const seasonHeader = document.createElement('div');
-                seasonHeader.className = 'season-header';
-                seasonHeader.textContent = `Season ${season.season}`;
-                episodePicker.appendChild(seasonHeader);
-                
-                // Add episodes for this season
-                season.episodes.forEach(episode => {
-                    const episodeItem = document.createElement('div');
-                    episodeItem.className = 'episode-item';
-                    
-                    // Check if this episode is currently playing and mark it as active
-                    if (episode.value === currentVideoSrc) {
-                        episodeItem.classList.add('active');
-                    }
-                    
-                    const episodeNumber = document.createElement('div');
-                    episodeNumber.className = 'episode-number';
-                    episodeNumber.textContent = `S${season.season} E${episode.episodeNum}`;
-                    
-                    const episodeTitle = document.createElement('div');
-                    episodeTitle.className = 'episode-title';
-                    episodeTitle.textContent = episode.title;
-                    
-                    episodeItem.appendChild(episodeNumber);
-                    episodeItem.appendChild(episodeTitle);
-                    
-                    // Store episode data on the element itself for easy access
-                    episodeItem.dataset.episodeUrl = episode.value;
-                    
-                    // Add click event to play this episode
-                    episodeItem.addEventListener('click', () => {
-                        // Remove active class from all episode items
-                        document.querySelectorAll('.episode-item').forEach(item => {
-                            item.classList.remove('active');
-                        });
-                        
-                        // Add active class to the clicked episode
-                        episodeItem.classList.add('active');
-                        
-                        // Set flag to indicate user explicitly selected an episode
-                        userSelectedEpisode = true;
-                        
-                        // Play the episode
-                        videoPlayer.src = episode.value;
-                    });
-                    
-                    episodePicker.appendChild(episodeItem);
-                });
-            });
+            // Update content selector
+            populateContentSelector();
+            
+            // Update UI
+            updateVideoPlayer();
+            updateEpisodePicker();
         }
-        
-        // Add event listener to video player source change
-        const updateActiveEpisode = () => {
-            const currentSrc = videoPlayer.src;
-            let activeFound = false;
-            document.querySelectorAll('.episode-item').forEach(item => {
-                if (item.dataset.episodeUrl === currentSrc) {
+
+        // Handle content selection
+        function handleContentSelect(item) {
+            selectedContent = item;
+            
+            // Clear episode selector when changing content
+            episodePicker.style.display = 'none';
+            
+            // If it's not a TV show, load the content directly
+            if (!item.isShow) {
+                episodeUrl = item.value;
+                episodeTitle = '';
+            } else {
+                // For TV shows, don't load any episode yet, reset the episode URL
+                episodeUrl = '';
+                episodeTitle = '';
+                
+                // Display episode picker for TV shows with seasons
+                if (item.seasons && item.seasons.length > 0) {
+                    updateEpisodePicker();
+                    episodePicker.style.display = 'block';
+                }
+            }
+            
+            // Update video player
+            updateVideoPlayer();
+        }
+
+        // Handle episode selection
+        function handleEpisodeSelect(url, title) {
+            episodeUrl = url;
+            episodeTitle = title;
+            
+            // Update active episode in UI
+            const episodeItems = document.querySelectorAll('.episode-item');
+            episodeItems.forEach(item => {
+                if (item.getAttribute('data-url') === url) {
                     item.classList.add('active');
-                    activeFound = true;
-                    // Only scroll if user explicitly selected an episode, not on initial load
-                    if (userSelectedEpisode) {
-                        item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    }
                 } else {
                     item.classList.remove('active');
                 }
             });
             
-            // Reset the flag after handling the active episode
-            userSelectedEpisode = false;
-        };
-        
-        // Flag to track if user explicitly selected an episode
-        let userSelectedEpisode = false;
-        
-        // Add event listener to content selector
-        contentSelector.addEventListener('change', function() {
-            const episodePicker = document.getElementById('episodePicker');
-            episodePicker.style.display = 'none';
+            // Update video player
+            updateVideoPlayer();
+        }
+
+        // Update video player with current content
+        function updateVideoPlayer() {
+            // Update the title display
+            const displayTitle = episodeTitle 
+                ? `${selectedContent?.title} - ${episodeTitle}` 
+                : selectedContent?.title || 'Select Content to Watch';
+            playerTitle.textContent = displayTitle;
             
-            const selectedIndex = this.selectedIndex;
-            const selectedItem = content[currentCategory][selectedIndex];
-            
-            // Check if selected item is a show with seasons
-            if (selectedItem.isShow && selectedItem.seasons) {
-                // Set first episode of first season as initial video
-                if (selectedItem.seasons[0].episodes.length > 0) {
-                    videoPlayer.src = selectedItem.seasons[0].episodes[0].value;
+            // Show/hide elements based on content selection
+            if (episodeUrl) {
+                // Hide no content message
+                noContentMessage.style.display = 'none';
+                
+                // Create iframe for video if it doesn't exist
+                let videoPlayer = document.getElementById('videoPlayer');
+                if (!videoPlayer) {
+                    videoPlayer = document.createElement('iframe');
+                    videoPlayer.id = 'videoPlayer';
+                    videoPlayer.frameBorder = '0';
+                    videoPlayer.allowFullscreen = true;
+                    videoPlayer.title = 'Video Player';
+                    videoPlayerWrapper.appendChild(videoPlayer);
                 }
                 
-                // Create episode picker after setting the video source
-                createEpisodePicker(selectedItem);
+                // Update iframe source
+                videoPlayer.src = episodeUrl;
+            } else {
+                // Show no content message
+                noContentMessage.style.display = 'flex';
                 
-                // Update active episode highlight
-                setTimeout(updateActiveEpisode, 100);
-            } else {
-                videoPlayer.src = this.value;
-            }
-        });
-        
-        // Fullscreen functionality
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
-        let isFullScreen = false;
-        
-        // Function to update fullscreen button icon
-        function updateFullscreenButton() {
-            if (isFullScreen) {
-                fullscreenBtn.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 14h6m0 0v6m0-6l-7 7m17-11h-6m0 0V4m0 6l7-7"></path>
-                    </svg>
-                `;
-                fullscreenBtn.title = "Exit Fullscreen";
-            } else {
-                fullscreenBtn.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
-                    </svg>
-                `;
-                fullscreenBtn.title = "Fullscreen";
+                // Remove iframe if it exists
+                const videoPlayer = document.getElementById('videoPlayer');
+                if (videoPlayer) {
+                    videoPlayer.remove();
+                }
             }
         }
-        
-        // Listen for fullscreen change events
-        document.addEventListener('fullscreenchange', function() {
-            isFullScreen = !!document.fullscreenElement;
-            updateFullscreenButton();
-        });
-        document.addEventListener('webkitfullscreenchange', function() {
-            isFullScreen = !!document.webkitFullscreenElement;
-            updateFullscreenButton();
-        });
-        document.addEventListener('mozfullscreenchange', function() {
-            isFullScreen = !!document.mozFullScreenElement;
-            updateFullscreenButton();
-        });
-        document.addEventListener('MSFullscreenChange', function() {
-            isFullScreen = !!document.msFullscreenElement;
-            updateFullscreenButton();
-        });
-        
-        // Fullscreen button click handler
-        fullscreenBtn.addEventListener('click', function() {
-            // Get the video player
-            const videoContainer = document.querySelector('.video-container');
+
+        // Update episode picker with episodes from selected TV show
+        function updateEpisodePicker() {
+            episodePicker.innerHTML = '';
             
-            if (!isFullScreen) {
-                // Enter fullscreen
+            if (!selectedContent || !selectedContent.isShow || !selectedContent.seasons) {
+                episodePicker.style.display = 'none';
+                return;
+            }
+            
+            selectedContent.seasons.forEach(season => {
+                const seasonDiv = document.createElement('div');
+                
+                // Create season header
+                const seasonHeader = document.createElement('div');
+                seasonHeader.className = 'season-header';
+                seasonHeader.textContent = `Season ${season.season}`;
+                seasonDiv.appendChild(seasonHeader);
+                
+                // Create episode items
+                season.episodes.forEach(episode => {
+                    const episodeItem = document.createElement('div');
+                    episodeItem.className = `episode-item ${episodeUrl === episode.value ? 'active' : ''}`;
+                    episodeItem.setAttribute('data-url', episode.value);
+                    episodeItem.innerHTML = `
+                        <div class="episode-number">Ep ${episode.episodeNum}</div>
+                        <div class="episode-title">${episode.title}</div>
+                    `;
+                    episodeItem.addEventListener('click', () => handleEpisodeSelect(episode.value, episode.title));
+                    seasonDiv.appendChild(episodeItem);
+                });
+                
+                episodePicker.appendChild(seasonDiv);
+            });
+            
+            episodePicker.style.display = selectedContent.isShow ? 'block' : 'none';
+        }
+
+        // Toggle fullscreen
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
                 if (videoContainer.requestFullscreen) {
                     videoContainer.requestFullscreen();
-                } else if (videoContainer.mozRequestFullScreen) { // Firefox
+                } else if (videoContainer.mozRequestFullScreen) {
                     videoContainer.mozRequestFullScreen();
-                } else if (videoContainer.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                } else if (videoContainer.webkitRequestFullscreen) {
                     videoContainer.webkitRequestFullscreen();
-                } else if (videoContainer.msRequestFullscreen) { // IE/Edge
+                } else if (videoContainer.msRequestFullscreen) {
                     videoContainer.msRequestFullscreen();
                 }
             } else {
-                // Exit fullscreen
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
-                } else if (document.mozCancelFullScreen) { // Firefox
+                } else if (document.mozCancelFullScreen) {
                     document.mozCancelFullScreen();
-                } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+                } else if (document.webkitExitFullscreen) {
                     document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) { // IE/Edge
+                } else if (document.msExitFullscreen) {
                     document.msExitFullscreen();
                 }
             }
-        });
+        }
     </script>
 </body>
 </html>
