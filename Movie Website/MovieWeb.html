@@ -301,12 +301,14 @@
         }
         
         .episode-item {
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
         }
         
         .episode-item:hover {
@@ -316,6 +318,28 @@
         .episode-item.active {
             background: rgba(138, 43, 226, 0.3);
             box-shadow: 0 0 8px rgba(191, 0, 255, 0.3);
+        }
+        
+        .episode-thumbnail {
+            flex: 0 0 50px;
+            height: 75px;
+            border-radius: 4px;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.3);
+            position: relative;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .episode-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .episode-item:hover .episode-thumbnail img {
+            transform: scale(1.1);
         }
         
         .episode-number {
@@ -464,40 +488,40 @@
                         {
                             season: 1,
                             episodes: [
-                                { value: "https://drive.google.com/file/d/1A3MxpBP92BV5ep6e7Xq6_pTXpXI9n7Yi/preview", episodeNum: 1, title: "The Name of the Game" },
-                                { value: "https://drive.google.com/file/d/1HtiIQHMzgQbSdoOe3Cj7OxuKmShP8d_I/preview", episodeNum: 2, title: "Cherry" },
-                                { value: "https://drive.google.com/file/d/19LEfUALsAQdrAPhRS2KYejgDqWTyzpoO/preview", episodeNum: 3, title: "Get Some" },
-                                { value: "https://drive.google.com/file/d/1TFFIb3th7LIWQAq2z6_FStusBPJ_B-1n/preview", episodeNum: 4, title: "The Female of the Species" },
-                                { value: "https://drive.google.com/file/d/1yeh_pcq_ifJZWZsMf21N1Q2wuZxPEXgd/preview", episodeNum: 5, title: "Good for the Soul" },
-                                { value: "https://drive.google.com/file/d/1Ww52tSqq3Vh4GxWZAV4ct1g11cdZu8yY/preview", episodeNum: 6, title: "The Innocents" },
-                                { value: "https://drive.google.com/file/d/1e6Gg5tOx4xamQOcOLdQ4LEUig0lt-T55/preview", episodeNum: 7, title: "The Self-Preservation Society" },
-                                { value: "https://drive.google.com/file/d/1vYREqLDFcl-RtaHOPYZ4hRR7j2NNGu-B/preview", episodeNum: 8, title: "You Found Me" }
+                                { value: "https://drive.google.com/file/d/1A3MxpBP92BV5ep6e7Xq6_pTXpXI9n7Yi/preview", episodeNum: 1, title: "The Name of the Game", thumbnail: "https://m.media-amazon.com/images/M/MV5BODg5NDJhMjYtMTQyNS00OTg4LWIwYmYtMWQ1ZTVjZTZiNDcwXkEyXkFqcGdeQXVyNjg4NzAyOTA@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1HtiIQHMzgQbSdoOe3Cj7OxuKmShP8d_I/preview", episodeNum: 2, title: "Cherry", thumbnail: "https://m.media-amazon.com/images/M/MV5BOWM5NWI1Y2ItNDYwNy00ZmYxLWE0MWUtZmZkMzJhZWY4YmNlXkEyXkFqcGdeQXVyNjg4NzAyOTA@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/19LEfUALsAQdrAPhRS2KYejgDqWTyzpoO/preview", episodeNum: 3, title: "Get Some", thumbnail: "https://m.media-amazon.com/images/M/MV5BODE0ZjM5Y2ItYjllZi00YmZhLTljMjktNzZhNTRkYzFkZDkwXkEyXkFqcGdeQXVyNjg4NzAyOTA@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1TFFIb3th7LIWQAq2z6_FStusBPJ_B-1n/preview", episodeNum: 4, title: "The Female of the Species", thumbnail: "https://m.media-amazon.com/images/M/MV5BZDk5MjE3ZTItYTFiMC00ZDY5LTkzMTgtZDQwMWUwZDZlNWNhXkEyXkFqcGdeQXVyNjg4NzAyOTA@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1yeh_pcq_ifJZWZsMf21N1Q2wuZxPEXgd/preview", episodeNum: 5, title: "Good for the Soul", thumbnail: "https://m.media-amazon.com/images/M/MV5BNGI3NDgwOWItZWM1MC00YWNkLTkyYjItMjcyZmJjOTVjMmVlXkEyXkFqcGdeQXVyNjg4NzAyOTA@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1Ww52tSqq3Vh4GxWZAV4ct1g11cdZu8yY/preview", episodeNum: 6, title: "The Innocents", thumbnail: "https://m.media-amazon.com/images/M/MV5BNWNmYzQ0ZWMtYThmZC00MWEzLTlmOWQtNjBmNjU1MzA4MWYxXkEyXkFqcGdeQXVyNjg4NzAyOTA@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1e6Gg5tOx4xamQOcOLdQ4LEUig0lt-T55/preview", episodeNum: 7, title: "The Self-Preservation Society", thumbnail: "https://m.media-amazon.com/images/M/MV5BYTQyNDc5YjctZTQ2Mi00ZmU0LTk4MzUtOWY2MzI2ZGM0YTY2XkEyXkFqcGdeQXVyNjg4NzAyOTA@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1vYREqLDFcl-RtaHOPYZ4hRR7j2NNGu-B/preview", episodeNum: 8, title: "You Found Me", thumbnail: "https://m.media-amazon.com/images/M/MV5BODU1ODZhOTctZGI1Yi00YzM0LTk1YWItN2JiZjEzZDkzNTY1XkEyXkFqcGdeQXVyNjg4NzAyOTA@._V1_.jpg" }
                             ]
                         },
                         {
                             season: 2,
                             episodes: [
-                                { value: "https://drive.google.com/file/d/1_weKxqD7nzznG9CvH-sToSxli12mNwh-/preview", episodeNum: 1, title: "The Big Ride" },
-                                { value: "https://drive.google.com/file/d/1gwJnjy2QML-pm6KwgEzLNgEjkuBcNCBA/preview", episodeNum: 2, title: "Proper Preparation" },
-                                { value: "https://drive.google.com/file/d/19op7cT5N0aBeVFyE6eiu7g6UPL4RocXn/preview", episodeNum: 3, title: "Over the Hill" },
-                                { value: "https://drive.google.com/file/d/1VZpu9mxWrQ6Ov9uldqt3EdJqxYEIlebC/preview", episodeNum: 4, title: "Nothing Like It" },
-                                { value: "https://drive.google.com/file/d/1nd4PTutWxM3LlzdYbrCf848S2Pfflzgn/preview", episodeNum: 5, title: "We Gotta Go Now" },
-                                { value: "https://drive.google.com/file/d/1XsNrV9LOQK50sf46xnvP5u4T2PFLxWG3/preview", episodeNum: 6, title: "The Bloody Doors Off" },
-                                { value: "https://drive.google.com/file/d/1XHQ9AyxHF4p9GJSyDdWU10CovFoGlR73/preview", episodeNum: 7, title: "Butcher, Baker, Candlestick Maker" },
-                                { value: "https://drive.google.com/file/d/1g7KMJdJBZxrtRdMNlNDH2iLb1NWi4ePE/preview", episodeNum: 8, title: "What I Know" }
+                                { value: "https://drive.google.com/file/d/1_weKxqD7nzznG9CvH-sToSxli12mNwh-/preview", episodeNum: 1, title: "The Big Ride", thumbnail: "https://m.media-amazon.com/images/M/MV5BODYyMjk4MmQtYTIwNC00MmQ1LWIxNDAtYThjMGNlZDY2YTkzXkEyXkFqcGdeQXVyNjI5NTI0Nzc@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1gwJnjy2QML-pm6KwgEzLNgEjkuBcNCBA/preview", episodeNum: 2, title: "Proper Preparation", thumbnail: "https://m.media-amazon.com/images/M/MV5BYzNjN2U1MmMtYzA2NS00MTk4LWIzMTQtMzA5Yzk5YTU4MjgxXkEyXkFqcGdeQXVyNjI5NTI0Nzc@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/19op7cT5N0aBeVFyE6eiu7g6UPL4RocXn/preview", episodeNum: 3, title: "Over the Hill", thumbnail: "https://m.media-amazon.com/images/M/MV5BM2ZlYTQyMTgtYmQ5ZC00Njc0LWFiMGUtNmJkNWI0YzQzN2I1XkEyXkFqcGdeQXVyNjI5NTI0Nzc@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1VZpu9mxWrQ6Ov9uldqt3EdJqxYEIlebC/preview", episodeNum: 4, title: "Nothing Like It", thumbnail: "https://m.media-amazon.com/images/M/MV5BYzhjNDYyY2UtMmY1Mi00OTcxLTk1MWUtMmI4ZTkxNDUwZWRhXkEyXkFqcGdeQXVyMjQwMDg0Ng@@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1nd4PTutWxM3LlzdYbrCf848S2Pfflzgn/preview", episodeNum: 5, title: "We Gotta Go Now", thumbnail: "https://m.media-amazon.com/images/M/MV5BYTJhZjYzZGEtNTg4Yi00MTQyLThlMmUtOWYxNDY4Yjg0MmNiXkEyXkFqcGdeQXVyMjQwMDg0Ng@@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1XsNrV9LOQK50sf46xnvP5u4T2PFLxWG3/preview", episodeNum: 6, title: "The Bloody Doors Off", thumbnail: "https://m.media-amazon.com/images/M/MV5BOTg1NzllNzctZjE1Ni00ZjdiLTk4ZTYtZjc1MmNjMjRiYmM2XkEyXkFqcGdeQXVyMjQwMDg0Ng@@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1XHQ9AyxHF4p9GJSyDdWU10CovFoGlR73/preview", episodeNum: 7, title: "Butcher, Baker, Candlestick Maker", thumbnail: "https://m.media-amazon.com/images/M/MV5BYjViZGY0ZTUtZGVkYS00MjRkLWI4MzUtMTEyZGRjNDNkYTkxXkEyXkFqcGdeQXVyMjQwMDg0Ng@@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1g7KMJdJBZxrtRdMNlNDH2iLb1NWi4ePE/preview", episodeNum: 8, title: "What I Know", thumbnail: "https://m.media-amazon.com/images/M/MV5BNWZiOTY2MWUtYzY2ZC00MzU4LTliOGMtMWQ5MzM0OWZmMjc0XkEyXkFqcGdeQXVyMjQwMDg0Ng@@._V1_.jpg" }
                             ]
                         },
                         {
                             season: 3,
                             episodes: [
-                                { value: "https://drive.google.com/file/d/1lKKBhHjiOvXSFs5kyiiJ7EQ8R-L3jVJQ/preview", episodeNum: 1, title: "Payback" },
-                                { value: "https://drive.google.com/file/d/19aqLtizvmjJCKElLx_D0GmfdRbzpYwfk/preview", episodeNum: 2, title: "The Only Man in the Sky" },
-                                { value: "https://drive.google.com/file/d/1LsCsOnQwdJXXe2mFHlmZx6mdv7rvBLWe/preview", episodeNum: 3, title: "Barbary Coast" },
-                                { value: "https://drive.google.com/file/d/1a5XhHw7-W0w7bHYSh72HLQG7MIsVyV3Q/preview", episodeNum: 4, title: "Glorious Five Year Plan" },
-                                { value: "https://drive.google.com/file/d/1k8D9XjISq6qII7AHlUBaH4nHvcLdTUb1/preview", episodeNum: 5, title: "The Last Time to Look on This World of Lies" },
-                                { value: "https://drive.google.com/file/d/1EugbYvhRxME1EAFxB-x5QEetuKgjsbli/preview", episodeNum: 6, title: "Herogasm" },
-                                { value: "https://drive.google.com/file/d/1OFrwLqS6sOFKPZb4ReTyoASPfU12ww0Y/preview", episodeNum: 7, title: "Here Comes a Candle to Light You to Bed" },
-                                { value: "https://drive.google.com/file/d/1L6FXHGTLqDaVMorh9dbV78OouNsdFvdV/preview", episodeNum: 8, title: "The Instant White-Hot Wild" }
+                                { value: "https://drive.google.com/file/d/1lKKBhHjiOvXSFs5kyiiJ7EQ8R-L3jVJQ/preview", episodeNum: 1, title: "Payback", thumbnail: "https://m.media-amazon.com/images/M/MV5BNzM4ZGZkZWMtODYwNi00MmIyLTkxOWYtOWYxZDQ2ZjY4MjgyXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/19aqLtizvmjJCKElLx_D0GmfdRbzpYwfk/preview", episodeNum: 2, title: "The Only Man in the Sky", thumbnail: "https://m.media-amazon.com/images/M/MV5BYTIyYzZkYTgtM2FlYy00ZGEwLWE3ZWEtMTQ3ZWE5YWMzYjRkXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1LsCsOnQwdJXXe2mFHlmZx6mdv7rvBLWe/preview", episodeNum: 3, title: "Barbary Coast", thumbnail: "https://m.media-amazon.com/images/M/MV5BNDZkNTRjMDctMjY2ZC00YTE0LWFiYmQtOTRiMTc0OGVjNGFjXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1a5XhHw7-W0w7bHYSh72HLQG7MIsVyV3Q/preview", episodeNum: 4, title: "Glorious Five Year Plan", thumbnail: "https://m.media-amazon.com/images/M/MV5BZDc1ZGM2ODEtNDc4Ni00ZjA0LTg5NGMtZjdjNDE3Y2M0OGM2XkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1k8D9XjISq6qII7AHlUBaH4nHvcLdTUb1/preview", episodeNum: 5, title: "The Last Time to Look on This World of Lies", thumbnail: "https://m.media-amazon.com/images/M/MV5BZmQwNmVjYzMtZWU4ZC00YWM2LTgxZTUtZWYwMTc5ZGZjNDFiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1EugbYvhRxME1EAFxB-x5QEetuKgjsbli/preview", episodeNum: 6, title: "Herogasm", thumbnail: "https://m.media-amazon.com/images/M/MV5BNjhmYjBkNGItYTJiYi00OTkyLThlODEtZjljY2MzNmJlZTg2XkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1OFrwLqS6sOFKPZb4ReTyoASPfU12ww0Y/preview", episodeNum: 7, title: "Here Comes a Candle to Light You to Bed", thumbnail: "https://m.media-amazon.com/images/M/MV5BMDU3MmUzZGMtNWY0NS00YzRlLWJkZjctNWYyNjI0ZGRjZGU2XkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1L6FXHGTLqDaVMorh9dbV78OouNsdFvdV/preview", episodeNum: 8, title: "The Instant White-Hot Wild", thumbnail: "https://m.media-amazon.com/images/M/MV5BNTVjNDI1MzAtZGRmZi00ZmZhLTlmYjktYmYzNGM5ZjM0ZDAyXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg" }
                             ]
                         }
                     ]
@@ -511,19 +535,22 @@
                         {
                             season: 1,
                             episodes: [
-                                { value: "https://drive.google.com/file/d/1iamnPUcDciyB2cK8sXxIrGSTE_pR_UHY/preview", episodeNum: 1, title: "Pilot" },
-                                { value: "https://drive.google.com/file/d/11cqyh8LomvCMAtTCcPKnqkzI8ueO0skR/preview", episodeNum: 2, title: "Cat's in the Bag..." },
-                                { value: "https://drive.google.com/file/d/1rPCR_mtzPNE1pJ58BQSuQufAUJSvtUAj/preview", episodeNum: 3, title: "...And the Bag's in the River" },
-                                { value: "https://drive.google.com/file/d/1LiI7carGs3Z5ws53zlh7P1Q0WywVxk1d/preview", episodeNum: 4, title: "Cancer Man" },
-                                { value: "https://drive.google.com/file/d/1qiXG0yaUhzoqTU8h0v9UmM2T55lqRmx6/preview", episodeNum: 5, title: "Gray Matter" },
-                                { value: "https://drive.google.com/file/d/1pUSZqIwKzTdS9hNMQMNHZ0Iuz90F6tJU/preview", episodeNum: 6, title: "Crazy Handful of Nothin'" },
-                                { value: "https://drive.google.com/file/d/1SNou8WtgWzInRexMOd1KLUr5PA1s0OkJ/preview", episodeNum: 7, title: "A No-Rough-Stuff-Type Deal" }
+                                { value: "https://drive.google.com/file/d/1iamnPUcDciyB2cK8sXxIrGSTE_pR_UHY/preview", episodeNum: 1, title: "Pilot", thumbnail: "https://m.media-amazon.com/images/M/MV5BNTEwMDhmNmUtNGJmNi00NGUwLTkxOTAtOGQzZTQzOWVmNTQyXkEyXkFqcGdeQXVyNjg2NjQwMDQ@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/11cqyh8LomvCMAtTCcPKnqkzI8ueO0skR/preview", episodeNum: 2, title: "Cat's in the Bag...", thumbnail: "https://m.media-amazon.com/images/M/MV5BMTMzOTgwMDkzOF5BMl5BanBnXkFtZTcwODYzMTU1Mg@@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1rPCR_mtzPNE1pJ58BQSuQufAUJSvtUAj/preview", episodeNum: 3, title: "...And the Bag's in the River", thumbnail: "https://m.media-amazon.com/images/M/MV5BMTU0Mzc1NzU2NF5BMl5BanBnXkFtZTcwOTYzMTU1Mg@@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1LiI7carGs3Z5ws53zlh7P1Q0WywVxk1d/preview", episodeNum: 4, title: "Cancer Man", thumbnail: "https://m.media-amazon.com/images/M/MV5BMjA5MTgxODkyM15BMl5BanBnXkFtZTcwMDczMTU1Mg@@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1qiXG0yaUhzoqTU8h0v9UmM2T55lqRmx6/preview", episodeNum: 5, title: "Gray Matter", thumbnail: "https://m.media-amazon.com/images/M/MV5BMTUzMjI0Njc5NF5BMl5BanBnXkFtZTcwNzQzMTU1Mg@@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1pUSZqIwKzTdS9hNMQMNHZ0Iuz90F6tJU/preview", episodeNum: 6, title: "Crazy Handful of Nothin'", thumbnail: "https://m.media-amazon.com/images/M/MV5BMTM2ODk1MzE4OV5BMl5BanBnXkFtZTcwOTQzMTU1Mg@@._V1_.jpg" },
+                                { value: "https://drive.google.com/file/d/1SNou8WtgWzInRexMOd1KLUr5PA1s0OkJ/preview", episodeNum: 7, title: "A No-Rough-Stuff-Type Deal", thumbnail: "https://m.media-amazon.com/images/M/MV5BMTcwMTM5NjUwNF5BMl5BanBnXkFtZTcwMTUzMTU1Mg@@._V1_.jpg" }
                             ]
                         }
                     ]
                 }
             ],
-            movies: [],
+            movies: [
+                { value: "https://drive.google.com/file/d/1czrvF08FZ9z60LMEzOJeoKXUfWBBWmIW/preview", title: "Boss Level", isShow: false },
+                { value: "https://drive.google.com/file/d/1czrvF08FZ9z60LMEzOJeoKXUfWBBWmIW/preview", title: "Minecraft Movie", isShow: false }
+            ],
             shortFilms: []
         };
         
@@ -735,6 +762,9 @@
                     episodeItem.className = 'episode-item';
                     episodeItem.dataset.id = `${season.season}-${episode.episodeNum}`;
                     episodeItem.innerHTML = `
+                        <div class="episode-thumbnail">
+                            <img src="${episode.thumbnail || 'https://via.placeholder.com/120x70?text=No+Preview'}" alt="${episode.title}" />
+                        </div>
                         <div class="episode-number">E${episode.episodeNum}</div>
                         <div class="episode-title">${episode.title}</div>
                     `;
