@@ -748,291 +748,365 @@
         <p>Roblox Key Generator &copy; 2025 | All rights reserved</p>
     </footer>
     
-    <script src="generated-keys.js"></script>
     <script>
+        // Key generation system
+        function initKeyStore() {
+            if (!localStorage.getItem('generatedKeys')) {
+                localStorage.setItem('generatedKeys', JSON.stringify([]));
+            }
+        }
+
+        function storeKey(key) {
+            initKeyStore();
+            const keys = JSON.parse(localStorage.getItem('generatedKeys'));
+            keys.push({
+                key: key,
+                generatedAt: new Date().toISOString(),
+                validated: false
+            });
+            localStorage.setItem('generatedKeys', JSON.stringify(keys));
+            updateKeysJson();
+        }
+
+        function keyExists(key) {
+            initKeyStore();
+            const keys = JSON.parse(localStorage.getItem('generatedKeys'));
+            return keys.some(entry => entry.key === key);
+        }
+
+        function validateKey(key) {
+            initKeyStore();
+            const keys = JSON.parse(localStorage.getItem('generatedKeys'));
+            
+            for (let i = 0; i < keys.length; i++) {
+                if (keys[i].key === key) {
+                    keys[i].validated = true;
+                    keys[i].lastValidated = new Date().toISOString();
+                    localStorage.setItem('generatedKeys', JSON.stringify(keys));
+                    updateKeysJson();
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        function getAllKeys() {
+            initKeyStore();
+            return JSON.parse(localStorage.getItem('generatedKeys'));
+        }
+
+        function updateKeysJson() {
+            const keys = getAllKeys();
+            const validKeys = keys.map(entry => entry.key);
+            
+            // Create the keys JSON structure
+            const keysJson = {
+                validKeys: validKeys,
+                lastUpdated: new Date().toISOString()
+            };
+            
+            // Save to localStorage as a backup for the JSON file
+            localStorage.setItem('keysJson', JSON.stringify(keysJson));
+            
+            // Create a downloadable file with the latest keys
+            const blob = new Blob([JSON.stringify(keysJson, null, 2)], {type: 'application/json'});
+            const downloadUrl = URL.createObjectURL(blob);
+            
+            // Update download link if it exists
+            const downloadLink = document.getElementById('downloadKeysJson');
+            if (downloadLink) {
+                downloadLink.href = downloadUrl;
+                downloadLink.download = 'keys.json';
+            }
+        }
+
+        // Initialize the key store when the script loads
+        initKeyStore();
+
         document.addEventListener('DOMContentLoaded', function() {
-        // DOM elements
-        const keyValue = document.getElementById('keyValue');
-        const copyBtn = document.getElementById('copyBtn');
-        const copyMessage = document.getElementById('copyMessage');
-        const generateBtn = document.getElementById('generateBtn');
-        const validateBtn = document.getElementById('validateBtn');
-        const saveBtn = document.getElementById('saveBtn');
-        const validationStatusEl = document.getElementById('validationStatus');
-        const toast = document.getElementById('toast');
-        const navLinks = document.querySelectorAll('.nav-link');
-        const tabContents = document.querySelectorAll('.tab-content');
-        const keysTableBody = document.getElementById('keysTableBody');
-        const noKeysMessage = document.getElementById('noKeysMessage');
-        const keysTableContainer = document.getElementById('keysTableContainer');
-        
-        // State
-        let generatedKey = '';
-        
-        // Functions
-        function switchTab(tabId) {
-            // Update nav links
-            navLinks.forEach(link => {
-                if (link.getAttribute('data-tab') === tabId) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
-                }
-            });
+            // DOM elements
+            const keyValue = document.getElementById('keyValue');
+            const copyBtn = document.getElementById('copyBtn');
+            const copyMessage = document.getElementById('copyMessage');
+            const generateBtn = document.getElementById('generateBtn');
+            const validateBtn = document.getElementById('validateBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            const validationStatusEl = document.getElementById('validationStatus');
+            const toast = document.getElementById('toast');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const keysTableBody = document.getElementById('keysTableBody');
+            const noKeysMessage = document.getElementById('noKeysMessage');
+            const keysTableContainer = document.getElementById('keysTableContainer');
             
-            // Update tab content
-            tabContents.forEach(content => {
-                if (content.id === tabId) {
-                    content.classList.add('active');
-                    
-                    // Refresh keys table if switching to keys tab
-                    if (tabId === 'keys') {
-                        refreshKeysTable();
+            // State
+            let generatedKey = '';
+            
+            // Functions
+            function switchTab(tabId) {
+                // Update nav links
+                navLinks.forEach(link => {
+                    if (link.getAttribute('data-tab') === tabId) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
                     }
-                } else {
-                    content.classList.remove('active');
+                });
+                
+                // Update tab content
+                tabContents.forEach(content => {
+                    if (content.id === tabId) {
+                        content.classList.add('active');
+                        
+                        // Refresh keys table if switching to keys tab
+                        if (tabId === 'keys') {
+                            refreshKeysTable();
+                        }
+                    } else {
+                        content.classList.remove('active');
+                    }
+                });
+            }
+            
+            function showToast(title, message, type = 'success') {
+                const toastEl = document.getElementById('toast');
+                toastEl.querySelector('.toast-title').textContent = title;
+                toastEl.querySelector('.toast-message').textContent = message;
+                
+                toastEl.className = 'toast';
+                if (type) {
+                    toastEl.classList.add(type);
                 }
-            });
-        }
-        
-        function showToast(title, message, type = 'success') {
-            const toastEl = document.getElementById('toast');
-            toastEl.querySelector('.toast-title').textContent = title;
-            toastEl.querySelector('.toast-message').textContent = message;
-            
-            toastEl.className = 'toast';
-            if (type) {
-                toastEl.classList.add(type);
+                
+                toastEl.style.display = 'flex';
+                
+                // Auto hide after 5 seconds
+                setTimeout(() => {
+                    toastEl.style.display = 'none';
+                }, 5000);
             }
             
-            toastEl.style.display = 'flex';
-            
-            // Auto hide after 5 seconds
-            setTimeout(() => {
-                toastEl.style.display = 'none';
-            }, 5000);
-        }
-        
-        function generateRandomKey() {
-            const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            const keyFormat = 'xxxx-xxxx-xxxx-xxxx-xxxx-xxxx';
-            
-            return keyFormat.replace(/x/g, () => {
-                return characters.charAt(Math.floor(Math.random() * characters.length));
-            });
-        }
-        
-        // Validate key
-        validateBtn.addEventListener('click', async () => {
-            if (!generatedKey) {
-                showToast('No key to validate', 'Please generate a key first', 'error');
-                return;
+            function generateRandomKey() {
+                const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+                const keyFormat = 'xxxx-xxxx-xxxx-xxxx-xxxx-xxxx';
+                
+                return keyFormat.replace(/x/g, () => {
+                    return characters.charAt(Math.floor(Math.random() * characters.length));
+                });
             }
             
-            try {
-                validateBtn.disabled = true;
-                validateBtn.innerHTML = '<i class="fas fa-spinner spinner"></i> Validating...';
+            // Validate key
+            validateBtn.addEventListener('click', async () => {
+                if (!generatedKey) {
+                    showToast('No key to validate', 'Please generate a key first', 'error');
+                    return;
+                }
                 
-                // Real key validation
-                let isValid = false;
-                
-                // Check if the key exists in our storage
-                isValid = keyExists(generatedKey);
-                
-                // Show validation result
-                validationStatusEl.innerHTML = '';
-                validationStatusEl.style.display = 'flex';
-                
-                if (isValid) {
-                    validationStatusEl.classList.add('valid');
-                    validationStatusEl.classList.remove('invalid');
-                    validationStatusEl.innerHTML = `
-                        <i class="fas fa-check-circle"></i>
-                        <p>Key is valid! This key will work in your Roblox game.</p>
-                    `;
-                    showToast('Key Valid', 'This key will work in your Roblox game.', 'success');
+                try {
+                    validateBtn.disabled = true;
+                    validateBtn.innerHTML = '<i class="fas fa-spinner spinner"></i> Validating...';
                     
-                    // Mark the key as validated
-                    validateKey(generatedKey);
-                } else {
+                    // Real key validation
+                    let isValid = false;
+                    
+                    // Check if the key exists in our storage
+                    isValid = keyExists(generatedKey);
+                    
+                    // Show validation result
+                    validationStatusEl.innerHTML = '';
+                    validationStatusEl.style.display = 'flex';
+                    
+                    if (isValid) {
+                        validationStatusEl.classList.add('valid');
+                        validationStatusEl.classList.remove('invalid');
+                        validationStatusEl.innerHTML = `
+                            <i class="fas fa-check-circle"></i>
+                            <p>Key is valid! This key will work in your Roblox game.</p>
+                        `;
+                        showToast('Key Valid', 'This key will work in your Roblox game.', 'success');
+                        
+                        // Mark the key as validated
+                        validateKey(generatedKey);
+                    } else {
+                        validationStatusEl.classList.add('invalid');
+                        validationStatusEl.classList.remove('valid');
+                        validationStatusEl.innerHTML = `
+                            <i class="fas fa-times-circle"></i>
+                            <p>Invalid key. This key doesn't exist in your database and won't work in your game.</p>
+                        `;
+                        showToast('Key Invalid', 'This key doesn\'t exist in your database.', 'error');
+                    }
+                    
+                    validateBtn.disabled = false;
+                    validateBtn.innerHTML = '<i class="fas fa-check-circle"></i> Test Key';
+                } catch (error) {
+                    showToast('Error validating key', error.message || 'Unknown error', 'error');
+                    
                     validationStatusEl.classList.add('invalid');
                     validationStatusEl.classList.remove('valid');
                     validationStatusEl.innerHTML = `
                         <i class="fas fa-times-circle"></i>
-                        <p>Invalid key. This key doesn't exist in your database and won't work in your game.</p>
+                        <p>Error validating key: ${error.message || 'Unknown error'}</p>
                     `;
-                    showToast('Key Invalid', 'This key doesn\'t exist in your database.', 'error');
+                    
+                    validateBtn.disabled = false;
+                    validateBtn.innerHTML = '<i class="fas fa-check-circle"></i> Test Key';
+                }
+            });
+            
+            // Save key
+            saveBtn.addEventListener('click', () => {
+                if (!generatedKey) {
+                    showToast('No key to save', 'Please generate a key first', 'error');
+                    return;
                 }
                 
-                validateBtn.disabled = false;
-                validateBtn.innerHTML = '<i class="fas fa-check-circle"></i> Test Key';
-            } catch (error) {
-                showToast('Error validating key', error.message || 'Unknown error', 'error');
-                
-                validationStatusEl.classList.add('invalid');
-                validationStatusEl.classList.remove('valid');
-                validationStatusEl.innerHTML = `
-                    <i class="fas fa-times-circle"></i>
-                    <p>Error validating key: ${error.message || 'Unknown error'}</p>
-                `;
-                
-                validateBtn.disabled = false;
-                validateBtn.innerHTML = '<i class="fas fa-check-circle"></i> Test Key';
-            }
-        });
-        
-        // Save key
-        saveBtn.addEventListener('click', () => {
-            if (!generatedKey) {
-                showToast('No key to save', 'Please generate a key first', 'error');
-                return;
-            }
-            
-            try {
-                // Save the key
-                storeKey(generatedKey);
-                
-                showToast('Key Saved', 'Your key has been saved successfully.', 'success');
-                
-                // Update keys.json for download
-                updateKeysJson();
-            } catch (error) {
-                showToast('Error saving key', error.message || 'Unknown error', 'error');
-            }
-        });
-        
-        // Generate key
-        generateBtn.addEventListener('click', () => {
-            try {
-                // Generate a new random key
-                const key = generateRandomKey();
-                generatedKey = key;
-                keyValue.textContent = key;
-                
-                // Hide validation status if shown
-                validationStatusEl.style.display = 'none';
-                
-                showToast('Key Generated', 'A new key has been generated.', 'success');
-            } catch (error) {
-                showToast('Error generating key', error.message || 'Unknown error', 'error');
-            }
-        });
-        
-        // Copy key
-        copyBtn.addEventListener('click', async () => {
-            if (!generatedKey) {
-                showToast('No key to copy', 'Please generate a key first', 'error');
-                return;
-            }
-            
-            try {
-                await navigator.clipboard.writeText(generatedKey);
-                
-                copyMessage.style.display = 'flex';
-                setTimeout(() => {
-                    copyMessage.style.display = 'none';
-                }, 2000);
-            } catch (error) {
-                showToast('Error copying key', error.message || 'Unknown error', 'error');
-            }
-        });
-        
-        // Close toast
-        document.querySelector('.toast-close').addEventListener('click', () => {
-            toast.style.display = 'none';
-        });
-        
-        // Nav links
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const tabId = link.getAttribute('data-tab');
-                switchTab(tabId);
-                
-                // Update URL hash without scrolling
-                const scrollPosition = window.scrollY;
-                window.location.hash = tabId;
-                window.scrollTo(0, scrollPosition);
-            });
-        });
-        
-        // Refresh keys table
-        function refreshKeysTable() {
-            const keys = getAllKeys();
-            
-            if (keys.length === 0) {
-                keysTableContainer.style.display = 'none';
-                noKeysMessage.style.display = 'block';
-                return;
-            }
-            
-            keysTableContainer.style.display = 'block';
-            noKeysMessage.style.display = 'none';
-            
-            keysTableBody.innerHTML = '';
-            
-            keys.forEach(keyEntry => {
-                const row = document.createElement('tr');
-                
-                // Format date
-                const generatedDate = new Date(keyEntry.generatedAt);
-                const formattedDate = generatedDate.toLocaleDateString() + ' ' + 
-                                     generatedDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                
-                row.innerHTML = `
-                    <td>${keyEntry.key}</td>
-                    <td>${formattedDate}</td>
-                    <td>${keyEntry.validated ? '<span style="color: var(--success);">Yes</span>' : 'No'}</td>
-                    <td class="table-actions">
-                        <button class="btn btn-gray btn-sm copy-key" data-key="${keyEntry.key}">
-                            <i class="fas fa-copy"></i>
-                        </button>
-                    </td>
-                `;
-                
-                keysTableBody.appendChild(row);
+                try {
+                    // Save the key
+                    storeKey(generatedKey);
+                    
+                    showToast('Key Saved', 'Your key has been saved successfully.', 'success');
+                    
+                    // Update keys.json for download
+                    updateKeysJson();
+                } catch (error) {
+                    showToast('Error saving key', error.message || 'Unknown error', 'error');
+                }
             });
             
-            // Add event listeners to copy buttons
-            document.querySelectorAll('.copy-key').forEach(button => {
-                button.addEventListener('click', async () => {
-                    const key = button.getAttribute('data-key');
-                    try {
-                        await navigator.clipboard.writeText(key);
-                        showToast('Key Copied', 'Key has been copied to clipboard.', 'success');
-                    } catch (error) {
-                        showToast('Error copying key', error.message || 'Unknown error', 'error');
-                    }
+            // Generate key
+            generateBtn.addEventListener('click', () => {
+                try {
+                    // Generate a new random key
+                    const key = generateRandomKey();
+                    generatedKey = key;
+                    keyValue.textContent = key;
+                    
+                    // Hide validation status if shown
+                    validationStatusEl.style.display = 'none';
+                    
+                    showToast('Key Generated', 'A new key has been generated.', 'success');
+                } catch (error) {
+                    showToast('Error generating key', error.message || 'Unknown error', 'error');
+                }
+            });
+            
+            // Copy key
+            copyBtn.addEventListener('click', async () => {
+                if (!generatedKey) {
+                    showToast('No key to copy', 'Please generate a key first', 'error');
+                    return;
+                }
+                
+                try {
+                    await navigator.clipboard.writeText(generatedKey);
+                    
+                    copyMessage.style.display = 'flex';
+                    setTimeout(() => {
+                        copyMessage.style.display = 'none';
+                    }, 2000);
+                } catch (error) {
+                    showToast('Error copying key', error.message || 'Unknown error', 'error');
+                }
+            });
+            
+            // Close toast
+            document.querySelector('.toast-close').addEventListener('click', () => {
+                toast.style.display = 'none';
+            });
+            
+            // Nav links
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tabId = link.getAttribute('data-tab');
+                    switchTab(tabId);
+                    
+                    // Update URL hash without scrolling
+                    const scrollPosition = window.scrollY;
+                    window.location.hash = tabId;
+                    window.scrollTo(0, scrollPosition);
                 });
             });
-        }
-        
-        // Initialize
-        function init() {
-            // Generate initial key
-            generateBtn.click();
             
-            // Check if URL has a hash and switch to that tab
-            const hash = window.location.hash.substring(1);
-            if (hash && document.getElementById(hash)) {
-                switchTab(hash);
+            // Refresh keys table
+            function refreshKeysTable() {
+                const keys = getAllKeys();
+                
+                if (keys.length === 0) {
+                    keysTableContainer.style.display = 'none';
+                    noKeysMessage.style.display = 'block';
+                    return;
+                }
+                
+                keysTableContainer.style.display = 'block';
+                noKeysMessage.style.display = 'none';
+                
+                keysTableBody.innerHTML = '';
+                
+                keys.forEach(keyEntry => {
+                    const row = document.createElement('tr');
+                    
+                    // Format date
+                    const generatedDate = new Date(keyEntry.generatedAt);
+                    const formattedDate = generatedDate.toLocaleDateString() + ' ' + 
+                                         generatedDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    row.innerHTML = `
+                        <td>${keyEntry.key}</td>
+                        <td>${formattedDate}</td>
+                        <td>${keyEntry.validated ? '<span style="color: var(--success);">Yes</span>' : 'No'}</td>
+                        <td class="table-actions">
+                            <button class="btn btn-gray btn-sm copy-key" data-key="${keyEntry.key}">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </td>
+                    `;
+                    
+                    keysTableBody.appendChild(row);
+                });
+                
+                // Add event listeners to copy buttons
+                document.querySelectorAll('.copy-key').forEach(button => {
+                    button.addEventListener('click', async () => {
+                        const key = button.getAttribute('data-key');
+                        try {
+                            await navigator.clipboard.writeText(key);
+                            showToast('Key Copied', 'Key has been copied to clipboard.', 'success');
+                        } catch (error) {
+                            showToast('Error copying key', error.message || 'Unknown error', 'error');
+                        }
+                    });
+                });
             }
             
-            // Init download link
-            updateKeysJson();
-            
-            // Watch for hash changes
-            window.addEventListener('hashchange', () => {
+            // Initialize
+            function init() {
+                // Generate initial key
+                generateBtn.click();
+                
+                // Check if URL has a hash and switch to that tab
                 const hash = window.location.hash.substring(1);
                 if (hash && document.getElementById(hash)) {
                     switchTab(hash);
                 }
-            });
-        }
-        
-        // Start the app
-        init();
-    });
+                
+                // Init download link
+                updateKeysJson();
+                
+                // Watch for hash changes
+                window.addEventListener('hashchange', () => {
+                    const hash = window.location.hash.substring(1);
+                    if (hash && document.getElementById(hash)) {
+                        switchTab(hash);
+                    }
+                });
+            }
+            
+            // Start the app
+            init();
+        });
     </script>
 </body>
 </html>
