@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox Key Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00A2FF;
+            --primary-darker: #0088D1;
+            --secondary: #FF4742;
+            --secondary-darker: #E53E3E;
+            --background: #121212;
+            --card-bg: #2D2D2D;
+            --key-bg: #1E1E1E;
+            --success: #4CAF50;
+            --error: #F44336;
+            --text: #FFFFFF;
+            --text-muted: #A0A0A0;
+            --border: #3A3A3A;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background-color: #1A1A1A;
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        nav a:hover, nav a.active {
+            color: var(--text);
+        }
+        
+        main {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            width: 100%;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-title p {
+            color: var(--text-muted);
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .card-footer {
+            padding: 1rem 1.5rem;
+        }
+        
+        .key-display {
+            margin-bottom: 1.5rem;
+        }
+        
+        .key-display label {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .key-field {
+            position: relative;
+        }
+        
+        .key-value {
+            background-color: var(--key-bg);
+            color: #FFD700;
+            font-family: monospace;
+            padding: 0.75rem 1rem;
+            border-radius: 0.25rem;
+            border: 1px solid var(--border);
+            width: 100%;
+            overflow-x: auto;
+            min-height: 2.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .copy-btn:hover {
+            color: var(--text);
+        }
+        
+        .copy-message {
+            margin-top: 0.5rem;
+            color: var(--success);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s, transform 0.1s;
+            cursor: pointer;
+            border: none;
+            font-size: 0.875rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--primary);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-darker);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            background-color: var(--secondary-darker);
+        }
+        
+        .btn-gray {
+            background-color: #4A4A4A;
+            color: white;
+        }
+        
+        .btn-gray:hover:not(:disabled) {
+            background-color: #5A5A5A;
+        }
+        
+        .btn-lg {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .action-group {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .validation-status {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+        }
+        
+        .validation-status.valid {
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+        
+        .validation-status.invalid {
+            background-color: rgba(244, 67, 54, 0.1);
+        }
+        
+        .validation-status i {
+            font-size: 1.25rem;
+            margin-right: 0.75rem;
+        }
+        
+        .validation-status.valid i {
+            color: var(--success);
+        }
+        
+        .validation-status.invalid i {
+            color: var(--error);
+        }
+        
+        .validation-status p {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .validation-status.valid p {
+            color: var(--success);
+        }
+        
+        .validation-status.invalid p {
+            color: var(--error);
+        }
+        
+        .instructions-container {
+            background-color: var(--card-bg);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+        }
+        
+        .instructions-step {
+            margin-bottom: 2rem;
+        }
+        
+        .instructions-step:last-child {
+            margin-bottom: 0;
+        }
+        
+        .instructions-step h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .step-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+        
+        .code-block {
+            background-color: var(--key-bg);
+            border-radius: 0.25rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            font-family: monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            border: 1px solid var(--border);
+            white-space: pre;
+        }
+        
+        .code-block .comment {
+            color: #6A9955;
+        }
+        
+        .code-block .keyword {
+            color: #569CD6;
+        }
+        
+        .code-block .string {
+            color: #CE9178;
+        }
+        
+        .code-block .function {
+            color: #DCDCAA;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--key-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.25rem;
+            color: var(--text);
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 162, 255, 0.2);
+        }
+        
+        footer {
+            background-color: #1A1A1A;
+            border-top: 1px solid var(--border);
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .action-group {
+                justify-content: center;
+            }
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background-color: #333;
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 0.25rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 1000;
+            animation: slideInRight 0.3s ease-out;
+        }
+        
+        .toast.success {
+            background-color: var(--success);
+        }
+        
+        .toast.error {
+            background-color: var(--error);
+        }
+        
+        .toast-title {
+            font-weight: 600;
+        }
+        
+        .toast-close {
+            background: none;
+            border: none;
+            color: white;
+            opacity: 0.7;
+            cursor: pointer;
+            margin-left: 0.5rem;
+        }
+        
+        .toast-close:hover {
+            opacity: 1;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .spinner {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-key"></i> Roblox Key Generator
+            </div>
+            <nav>
+                <a href="#home" class="nav-link active" data-tab="home">Home</a>
+                <a href="#generator" class="nav-link" data-tab="generator">Key Generator</a>
+                <a href="#instructions" class="nav-link" data-tab="instructions">Instructions</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Home Tab -->
+        <div id="home" class="tab-content active">
+            <div class="section-title">
+                <h2>Secure Your Roblox Scripts</h2>
+                <p>Generate unique keys and implement key authentication for your Roblox experiences</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <div style="text-align: center;">
+                        <i class="fas fa-shield-alt" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <h3 style="margin-bottom: 1rem;">Why Use Key Authentication?</h3>
+                        <p style="margin-bottom: 1.5rem;">Key authentication allows you to control access to your Roblox scripts, ensuring only authorized users can use your premium features or services.</p>
+                        
+                        <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; margin: 2rem 0;">
+                            <div style="flex: 1; min-width: 200px; background-color: #1E1E1E; padding: 1.5rem; border-radius: 0.5rem; text-align: left;">
+                                <i class="fas fa-lock" style="font-size: 1.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                                <h4 style="margin-bottom: 0.5rem;">Secure Access</h4>
+                                <p style="color: var(--text-muted);">Control who can use your scripts with unique, generated keys</p>
+                            </div>
+                            <div style="flex: 1; min-width: 200px; background-color: #1E1E1E; padding: 1.5rem; border-radius: 0.5rem; text-align: left;">
+                                <i class="fas fa-code" style="font-size: 1.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                                <h4 style="margin-bottom: 0.5rem;">Easy Implementation</h4>
+                                <p style="color: var(--text-muted);">Simple API and Lua script examples to get you started quickly</p>
+                            </div>
+                            <div style="flex: 1; min-width: 200px; background-color: #1E1E1E; padding: 1.5rem; border-radius: 0.5rem; text-align: left;">
+                                <i class="fas fa-sync-alt" style="font-size: 1.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                                <h4 style="margin-bottom: 0.5rem;">Validation Tracking</h4>
+                                <p style="color: var(--text-muted);">Monitor how many times a key has been validated</p>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary btn-lg" onclick="switchTab('generator')">
+                            Generate Your Key Now <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Generator Tab -->
+        <div id="generator" class="tab-content">
+            <div class="section-title">
+                <h2>Generate Your Script Key</h2>
+                <p>Create a unique key for your Roblox script authentication</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <div class="key-display">
+                        <label>Your Generated Key:</label>
+                        <div class="key-field">
+                            <div id="keyValue" class="key-value"></div>
+                            <button id="copyBtn" class="copy-btn" aria-label="Copy key">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div id="copyMessage" class="copy-message" style="display: none;">
+                            <i class="fas fa-check-circle"></i> Key copied to clipboard!
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button id="generateBtn" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-sync-alt"></i> Generate New Key
+                        </button>
+                        <div class="action-group">
+                            <button id="saveBtn" class="btn btn-gray">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button id="validateBtn" class="btn btn-primary">
+                                <i class="fas fa-check-circle"></i> Test Key
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="validationStatus" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <!-- Instructions Tab -->
+        <div id="instructions" class="tab-content">
+            <div class="section-title">
+                <h2>Implementation Instructions</h2>
+                <p>How to use the key authentication in your Roblox scripts</p>
+            </div>
+            
+            <div class="instructions-container">
+                <div class="instructions-step">
+                    <h3><span class="step-number">1</span> Generate a Key</h3>
+                    <p>First, generate a unique key using the Key Generator tab. This key will be used to authorize your Roblox script.</p>
+                </div>
+                
+                <div class="instructions-step">
+                    <h3><span class="step-number">2</span> Implement the Script</h3>
+                    <p>Copy the following Lua script into your Roblox project and replace <code>YOUR_KEY_HERE</code> with your generated key:</p>
+                    <div class="code-block">
+<span class="comment">-- Key Authentication Module</span>
+<span class="keyword">local</span> KeyAuth = {}
+
+<span class="comment">-- Replace with your generated key</span>
+<span class="keyword">local</span> key = <span class="string">"YOUR_KEY_HERE"</span>
+
+<span class="comment">-- Validation URL (keep this URL)</span>
+<span class="keyword">local</span> validationUrl = <span class="string">"https://your-replit-url.repl.co/api/keys/validate"</span>
+
+<span class="keyword">function</span> <span class="function">KeyAuth.ValidateKey</span>()
+    <span class="keyword">local</span> success, isValid = <span class="keyword">pcall</span>(<span class="keyword">function</span>()
+        <span class="keyword">local</span> HttpService = game:GetService(<span class="string">"HttpService"</span>)
+        
+        <span class="comment">-- Prepare the request data</span>
+        <span class="keyword">local</span> requestData = {
+            key = key
+        }
+        
+        <span class="comment">-- Convert data to JSON</span>
+        <span class="keyword">local</span> jsonData = HttpService:JSONEncode(requestData)
+        
+        <span class="comment">-- Send the request to validate the key</span>
+        <span class="keyword">local</span> response = HttpService:PostAsync(
+            validationUrl,
+            jsonData,
+            Enum.HttpContentType.ApplicationJson
+        )
+        
+        <span class="comment">-- Parse the response</span>
+        <span class="keyword">local</span> responseData = HttpService:JSONDecode(response)
+        
+        <span class="keyword">return</span> responseData.valid
+    <span class="keyword">end</span>)
+    
+    <span class="keyword">if</span> success <span class="keyword">and</span> isValid <span class="keyword">then</span>
+        <span class="comment">-- Key validated successfully</span>
+        <span class="keyword">return</span> <span class="keyword">true</span>
+    <span class="keyword">else</span>
+        <span class="comment">-- Key validation failed</span>
+        <span class="keyword">return</span> <span class="keyword">false</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">-- Example usage</span>
+<span class="keyword">function</span> <span class="function">KeyAuth.Start</span>()
+    <span class="keyword">local</span> isKeyValid = KeyAuth.ValidateKey()
+    
+    <span class="keyword">if</span> isKeyValid <span class="keyword">then</span>
+        <span class="comment">-- Key is valid, enable your script functionality</span>
+        print(<span class="string">"Key is valid! Unlocking features..."</span>)
+        <span class="keyword">return</span> <span class="keyword">true</span>
+    <span class="keyword">else</span>
+        <span class="comment">-- Key is invalid, disable functionality</span>
+        print(<span class="string">"Invalid key! Access denied."</span>)
+        <span class="keyword">return</span> <span class="keyword">false</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">return</span> KeyAuth</div>
+                </div>
+                
+                <div class="instructions-step">
+                    <h3><span class="step-number">3</span> Using the Module</h3>
+                    <p>Here's how to use the key authentication module in your Roblox script:</p>
+                    <div class="code-block">
+<span class="comment">-- In your main script</span>
+<span class="keyword">local</span> KeyAuth = require(script.Parent.KeyAuth)
+
+<span class="comment">-- Check if the key is valid before running your code</span>
+<span class="keyword">if</span> KeyAuth.Start() <span class="keyword">then</span>
+    <span class="comment">-- Your protected code here</span>
+    print(<span class="string">"Script is running with valid authentication!"</span>)
+    
+    <span class="comment">-- Example premium feature</span>
+    <span class="keyword">local</span> <span class="function">function</span> createPremiumItem()
+        <span class="comment">-- Your premium item creation code</span>
+    <span class="keyword">end</span>
+    
+    createPremiumItem()
+<span class="keyword">else</span>
+    <span class="comment">-- Handle invalid key</span>
+    print(<span class="string">"Authentication failed! Premium features are disabled."</span>)
+<span class="keyword">end</span></div>
+                </div>
+                
+                <div class="instructions-step">
+                    <h3><span class="step-number">4</span> HTTP Requests in Roblox</h3>
+                    <p>Remember to enable HTTP requests in your Roblox game:</p>
+                    <ol style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>Go to Game Settings</li>
+                        <li>Select the Security tab</li>
+                        <li>Enable "Allow HTTP Requests"</li>
+                        <li>Add your validation URL to the allowed list</li>
+                    </ol>
+                </div>
+                
+                <div class="instructions-step">
+                    <h3><span class="step-number">5</span> Deploy Your API</h3>
+                    <p>Make sure to update the <code>validationUrl</code> in the script with your actual deployed URL.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Roblox Key Generator | A secure key authentication system for Roblox developers</p>
+    </footer>
+
+    <div id="toast" class="toast" style="display: none;">
+        <div>
+            <div id="toastTitle" class="toast-title"></div>
+            <div id="toastDescription"></div>
+        </div>
+        <button id="toastClose" class="toast-close">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <script>
+        // State management
+        let generatedKey = '';
+        let validationStatus = null;
+        
+        // DOM elements
+        const keyValue = document.getElementById('keyValue');
+        const copyBtn = document.getElementById('copyBtn');
+        const copyMessage = document.getElementById('copyMessage');
+        const generateBtn = document.getElementById('generateBtn');
+        const validateBtn = document.getElementById('validateBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const validationStatusEl = document.getElementById('validationStatus');
+        const toast = document.getElementById('toast');
+        const toastTitle = document.getElementById('toastTitle');
+        const toastDescription = document.getElementById('toastDescription');
+        const toastClose = document.getElementById('toastClose');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        // Tab switching
+        function switchTab(tabId) {
+            // Update navigation
+            navLinks.forEach(link => {
+                if (link.dataset.tab === tabId) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+            
+            // Update content
+            tabContents.forEach(content => {
+                if (content.id === tabId) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+        }
+        
+        // Add event listeners to nav links
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                switchTab(link.dataset.tab);
+            });
+        });
+        
+        // Toast notification system
+        function showToast(title, description, type = '') {
+            toastTitle.textContent = title;
+            toastDescription.textContent = description;
+            toast.className = 'toast';
+            if (type) toast.classList.add(type);
+            toast.style.display = 'flex';
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                hideToast();
+            }, 5000);
+        }
+        
+        function hideToast() {
+            toast.style.display = 'none';
+        }
+        
+        toastClose.addEventListener('click', hideToast);
+        
+        // Copy to clipboard
+        copyBtn.addEventListener('click', async () => {
+            if (!generatedKey) return;
+            
+            try {
+                await navigator.clipboard.writeText(generatedKey);
+                copyMessage.style.display = 'flex';
+                setTimeout(() => {
+                    copyMessage.style.display = 'none';
+                }, 3000);
+            } catch (err) {
+                showToast('Copy failed', 'Failed to copy key to clipboard', 'error');
+            }
+        });
+        
+        // Generate key
+        generateBtn.addEventListener('click', async () => {
+            try {
+                // Disable button and show loading state
+                generateBtn.disabled = true;
+                generateBtn.innerHTML = '<i class="fas fa-spinner spinner"></i> Generating...';
+                
+                // Reset validation status
+                validationStatus = null;
+                validationStatusEl.style.display = 'none';
+                
+                // Generate random key (would be from server in real app)
+                const key = generateRandomKey();
+                generatedKey = key;
+                keyValue.textContent = key;
+                
+                // Restore button state
+                setTimeout(() => {
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Generate New Key';
+                }, 1000);
+            } catch (error) {
+                showToast('Error generating key', error.message || 'Unknown error', 'error');
+                
+                // Restore button state
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Generate New Key';
+            }
+        });
+        
+        // Helper function to generate a random key (client-side for the standalone version)
+        function generateRandomKey() {
+            const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            const keyFormat = 'xxxx-xxxx-xxxx-xxxx-xxxx-xxxx';
+            
+            return keyFormat.replace(/x/g, () => {
+                return characters.charAt(Math.floor(Math.random() * characters.length));
+            });
+        }
+        
+        // Validate key
+        validateBtn.addEventListener('click', async () => {
+            if (!generatedKey) {
+                showToast('No key to validate', 'Please generate a key first', 'error');
+                return;
+            }
+            
+            try {
+                // Disable button and show loading state
+                validateBtn.disabled = true;
+                validateBtn.innerHTML = '<i class="fas fa-spinner spinner"></i> Validating...';
+                
+                // Simulate key validation (would call the server in real app)
+                setTimeout(() => {
+                    // Set validation status (always valid in this demo)
+                    validationStatus = {
+                        valid: true,
+                        message: 'Key is valid and active!'
+                    };
+                    
+                    // Update the UI
+                    validationStatusEl.className = validationStatus.valid ? 
+                        'validation-status valid' : 'validation-status invalid';
+                    
+                    validationStatusEl.innerHTML = `
+                        <i class="fas ${validationStatus.valid ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                        <p>${validationStatus.message}</p>
+                    `;
+                    
+                    validationStatusEl.style.display = 'flex';
+                    
+                    // Restore button state
+                    validateBtn.disabled = false;
+                    validateBtn.innerHTML = '<i class="fas fa-check-circle"></i> Test Key';
+                }, 1500);
+            } catch (error) {
+                showToast('Error validating key', error.message || 'Unknown error', 'error');
+                
+                // Set error state
+                validationStatus = {
+                    valid: false,
+                    message: error.message || 'Validation failed'
+                };
+                
+                // Update the UI
+                validationStatusEl.className = 'validation-status invalid';
+                validationStatusEl.innerHTML = `
+                    <i class="fas fa-times-circle"></i>
+                    <p>${validationStatus.message}</p>
+                `;
+                validationStatusEl.style.display = 'flex';
+                
+                // Restore button state
+                validateBtn.disabled = false;
+                validateBtn.innerHTML = '<i class="fas fa-check-circle"></i> Test Key';
+            }
+        });
+        
+        // Save key (dummy function for the standalone version)
+        saveBtn.addEventListener('click', () => {
+            if (!generatedKey) {
+                showToast('No key to save', 'Please generate a key first', 'error');
+                return;
+            }
+            
+            showToast('Key saved', 'Your key has been saved successfully', 'success');
+        });
+        
+        // Generate an initial key on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const key = generateRandomKey();
+            generatedKey = key;
+            keyValue.textContent = key;
+        });
+    </script>
+</body>
+</html>
