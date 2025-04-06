@@ -471,6 +471,49 @@
                 transform: rotate(360deg);
             }
         }
+
+        /* Key management section */
+        .keys-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .keys-table th, .keys-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .keys-table th {
+            background-color: #1E1E1E;
+            font-weight: 600;
+        }
+
+        .keys-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .download-container {
+            margin-top: 1.5rem;
+            background-color: #1E1E1E;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .download-info {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
     </style>
 </head>
 <body>
@@ -482,6 +525,7 @@
             <nav>
                 <a href="#home" class="nav-link active" data-tab="home">Home</a>
                 <a href="#generator" class="nav-link" data-tab="generator">Key Generator</a>
+                <a href="#keys" class="nav-link" data-tab="keys">My Keys</a>
                 <a href="#instructions" class="nav-link" data-tab="instructions">Instructions</a>
             </nav>
         </div>
@@ -541,31 +585,108 @@
                         <label>Your Generated Key:</label>
                         <div class="key-field">
                             <div id="keyValue" class="key-value"></div>
-                            <button id="copyBtn" class="copy-btn" aria-label="Copy key">
+                            <button id="copyBtn" class="copy-btn" title="Copy to clipboard">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
                         <div id="copyMessage" class="copy-message" style="display: none;">
-                            <i class="fas fa-check-circle"></i> Key copied to clipboard!
+                            <i class="fas fa-check-circle"></i> Copied to clipboard
                         </div>
                     </div>
                     
                     <div class="action-buttons">
-                        <button id="generateBtn" class="btn btn-secondary btn-lg">
-                            <i class="fas fa-sync-alt"></i> Generate New Key
-                        </button>
                         <div class="action-group">
-                            <button id="saveBtn" class="btn btn-gray">
-                                <i class="fas fa-save"></i> Save
+                            <button id="generateBtn" class="btn btn-primary">
+                                <i class="fas fa-sync-alt"></i> Generate New Key
                             </button>
                             <button id="validateBtn" class="btn btn-primary">
                                 <i class="fas fa-check-circle"></i> Test Key
                             </button>
                         </div>
+                        <div class="action-group">
+                            <button id="saveBtn" class="btn btn-gray">
+                                <i class="fas fa-save"></i> Save Key
+                            </button>
+                        </div>
                     </div>
                 </div>
-                
-                <div id="validationStatus" style="display: none;"></div>
+                <div id="validationStatus" class="validation-status" style="display: none;"></div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <h3 style="margin-bottom: 1rem;">Implement in Your Roblox Game</h3>
+                    <p style="margin-bottom: 1rem;">Copy this code snippet to your Roblox script:</p>
+                    
+                    <div class="code-block"><span class="comment">-- Key authentication system</span>
+<span class="keyword">local</span> HttpService = game:GetService(<span class="string">"HttpService"</span>)
+
+<span class="comment">-- Update this URL to your GitHub Pages site</span>
+<span class="keyword">local</span> keysUrl = <span class="string">"https://website-tree.github.io/verfrblx/keys.json"</span>
+
+<span class="keyword">function</span> <span class="function">validateKey</span>(key)
+    <span class="keyword">local</span> success, result = <span class="keyword">pcall</span>(<span class="keyword">function</span>()
+        <span class="comment">-- Fetch the keys database</span>
+        <span class="keyword">local</span> response = HttpService:GetAsync(keysUrl)
+        <span class="keyword">local</span> keyData = HttpService:JSONDecode(response)
+        
+        <span class="comment">-- Check if key exists in the valid keys list</span>
+        <span class="keyword">if</span> keyData <span class="keyword">and</span> keyData.validKeys <span class="keyword">then</span>
+            <span class="keyword">for</span> _, validKey <span class="keyword">in</span> <span class="keyword">ipairs</span>(keyData.validKeys) <span class="keyword">do</span>
+                <span class="keyword">if</span> key == validKey <span class="keyword">then</span>
+                    <span class="keyword">return</span> <span class="keyword">true</span>
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+        
+        <span class="keyword">return</span> <span class="keyword">false</span>
+    <span class="keyword">end</span>)
+    
+    <span class="keyword">return</span> success <span class="keyword">and</span> result <span class="keyword">or</span> <span class="keyword">false</span>
+<span class="keyword">end</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Keys Management Tab -->
+        <div id="keys" class="tab-content">
+            <div class="section-title">
+                <h2>Manage Your Keys</h2>
+                <p>View and manage all your generated keys</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <div id="keysTableContainer">
+                        <table class="keys-table">
+                            <thead>
+                                <tr>
+                                    <th>Key</th>
+                                    <th>Generated</th>
+                                    <th>Validated</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="keysTableBody">
+                                <!-- Keys will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="noKeysMessage" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        <i class="fas fa-key" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                        <p>No keys generated yet. Go to the Generator tab to create your first key.</p>
+                    </div>
+                    
+                    <div class="download-container">
+                        <div class="download-info">
+                            <strong>Export Keys:</strong> Download your keys.json file to upload to GitHub
+                        </div>
+                        <a id="downloadKeysJson" class="btn btn-primary">
+                            <i class="fas fa-download"></i> Download keys.json
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -573,142 +694,63 @@
         <div id="instructions" class="tab-content">
             <div class="section-title">
                 <h2>Implementation Instructions</h2>
-                <p>How to use the key authentication in your Roblox scripts</p>
+                <p>Follow these steps to set up key authentication in your Roblox game</p>
             </div>
             
             <div class="instructions-container">
                 <div class="instructions-step">
-                    <h3><span class="step-number">1</span> Generate a Key</h3>
-                    <p>First, generate a unique key using the Key Generator tab. This key will be used to authorize your Roblox script.</p>
-                </div>
-                
-                <div class="instructions-step">
-                    <h3><span class="step-number">2</span> Implement the Script</h3>
-                    <p>Copy the following Lua script into your Roblox project and replace <code>YOUR_KEY_HERE</code> with your generated key:</p>
-                    <div class="code-block">
-<span class="comment">-- Key Authentication Module</span>
-<span class="keyword">local</span> KeyAuth = {}
-
-<span class="comment">-- Replace with your generated key</span>
-<span class="keyword">local</span> key = <span class="string">"YOUR_KEY_HERE"</span>
-
-<span class="comment">-- Validation URL (keep this URL)</span>
-<span class="keyword">local</span> validationUrl = <span class="string">"https://your-replit-url.repl.co/api/keys/validate"</span>
-
-<span class="keyword">function</span> <span class="function">KeyAuth.ValidateKey</span>()
-    <span class="keyword">local</span> success, isValid = <span class="keyword">pcall</span>(<span class="keyword">function</span>()
-        <span class="keyword">local</span> HttpService = game:GetService(<span class="string">"HttpService"</span>)
-        
-        <span class="comment">-- Prepare the request data</span>
-        <span class="keyword">local</span> requestData = {
-            key = key
-        }
-        
-        <span class="comment">-- Convert data to JSON</span>
-        <span class="keyword">local</span> jsonData = HttpService:JSONEncode(requestData)
-        
-        <span class="comment">-- Send the request to validate the key</span>
-        <span class="keyword">local</span> response = HttpService:PostAsync(
-            validationUrl,
-            jsonData,
-            Enum.HttpContentType.ApplicationJson
-        )
-        
-        <span class="comment">-- Parse the response</span>
-        <span class="keyword">local</span> responseData = HttpService:JSONDecode(response)
-        
-        <span class="keyword">return</span> responseData.valid
-    <span class="keyword">end</span>)
-    
-    <span class="keyword">if</span> success <span class="keyword">and</span> isValid <span class="keyword">then</span>
-        <span class="comment">-- Key validated successfully</span>
-        <span class="keyword">return</span> <span class="keyword">true</span>
-    <span class="keyword">else</span>
-        <span class="comment">-- Key validation failed</span>
-        <span class="keyword">return</span> <span class="keyword">false</span>
-    <span class="keyword">end</span>
-<span class="keyword">end</span>
-
-<span class="comment">-- Example usage</span>
-<span class="keyword">function</span> <span class="function">KeyAuth.Start</span>()
-    <span class="keyword">local</span> isKeyValid = KeyAuth.ValidateKey()
-    
-    <span class="keyword">if</span> isKeyValid <span class="keyword">then</span>
-        <span class="comment">-- Key is valid, enable your script functionality</span>
-        print(<span class="string">"Key is valid! Unlocking features..."</span>)
-        <span class="keyword">return</span> <span class="keyword">true</span>
-    <span class="keyword">else</span>
-        <span class="comment">-- Key is invalid, disable functionality</span>
-        print(<span class="string">"Invalid key! Access denied."</span>)
-        <span class="keyword">return</span> <span class="keyword">false</span>
-    <span class="keyword">end</span>
-<span class="keyword">end</span>
-
-<span class="keyword">return</span> KeyAuth</div>
-                </div>
-                
-                <div class="instructions-step">
-                    <h3><span class="step-number">3</span> Using the Module</h3>
-                    <p>Here's how to use the key authentication module in your Roblox script:</p>
-                    <div class="code-block">
-<span class="comment">-- In your main script</span>
-<span class="keyword">local</span> KeyAuth = require(script.Parent.KeyAuth)
-
-<span class="comment">-- Check if the key is valid before running your code</span>
-<span class="keyword">if</span> KeyAuth.Start() <span class="keyword">then</span>
-    <span class="comment">-- Your protected code here</span>
-    print(<span class="string">"Script is running with valid authentication!"</span>)
-    
-    <span class="comment">-- Example premium feature</span>
-    <span class="keyword">local</span> <span class="function">function</span> createPremiumItem()
-        <span class="comment">-- Your premium item creation code</span>
-    <span class="keyword">end</span>
-    
-    createPremiumItem()
-<span class="keyword">else</span>
-    <span class="comment">-- Handle invalid key</span>
-    print(<span class="string">"Authentication failed! Premium features are disabled."</span>)
-<span class="keyword">end</span></div>
-                </div>
-                
-                <div class="instructions-step">
-                    <h3><span class="step-number">4</span> HTTP Requests in Roblox</h3>
-                    <p>Remember to enable HTTP requests in your Roblox game:</p>
-                    <ol style="margin-left: 1.5rem; margin-top: 0.5rem;">
-                        <li>Go to Game Settings</li>
-                        <li>Select the Security tab</li>
-                        <li>Enable "Allow HTTP Requests"</li>
-                        <li>Add your validation URL to the allowed list</li>
+                    <h3><span class="step-number">1</span> Generate and Save Keys</h3>
+                    <p>Start by generating unique keys in the Generator tab. Each key can be used to authenticate a user in your game.</p>
+                    <ol style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                        <li>Go to the Generator tab</li>
+                        <li>Click "Generate New Key" to create a unique key</li>
+                        <li>Click "Save Key" to store it for validation</li>
+                        <li>Test the key using the "Test Key" button</li>
                     </ol>
                 </div>
                 
                 <div class="instructions-step">
-                    <h3><span class="step-number">5</span> Deploy Your API</h3>
-                    <p>Make sure to update the <code>validationUrl</code> in the script with your actual deployed URL.</p>
+                    <h3><span class="step-number">2</span> Download and Host keys.json</h3>
+                    <p>Your generated keys are stored in a JSON file that you'll need to host on GitHub Pages.</p>
+                    <ol style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                        <li>Go to the Keys tab</li>
+                        <li>Click "Download keys.json" to save your keys file</li>
+                        <li>Create a GitHub repository (e.g., verfrblx) if you don't have one already</li>
+                        <li>Upload the keys.json file to your repository</li>
+                        <li>Enable GitHub Pages in your repository settings</li>
+                    </ol>
+                </div>
+                
+                <div class="instructions-step">
+                    <h3><span class="step-number">3</span> Implement in Roblox</h3>
+                    <p>Copy the provided Lua code to your Roblox game to validate keys against your hosted keys.json file.</p>
+                    <ol style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                        <li>Copy the code snippet from the Generator tab</li>
+                        <li>Create a script in your Roblox game (e.g., in ServerScriptService)</li>
+                        <li>Paste the code and update the URL to your GitHub Pages URL</li>
+                        <li>Add your own logic for what happens when a valid key is entered</li>
+                        <li>Enable HTTP Requests in your game settings (Game Settings → Security → Allow HTTP Requests)</li>
+                    </ol>
                 </div>
             </div>
         </div>
     </main>
-
-    <footer>
-        <p>&copy; 2025 Roblox Key Generator | A secure key authentication system for Roblox developers</p>
-    </footer>
-
+    
     <div id="toast" class="toast" style="display: none;">
         <div>
-            <div id="toastTitle" class="toast-title"></div>
-            <div id="toastDescription"></div>
+            <div class="toast-title">Title</div>
+            <div class="toast-message">Message</div>
         </div>
-        <button id="toastClose" class="toast-close">
-            <i class="fas fa-times"></i>
-        </button>
+        <button class="toast-close">&times;</button>
     </div>
-
+    
+    <footer>
+        <p>Roblox Key Generator &copy; 2025 | All rights reserved</p>
+    </footer>
+    
+    <script src="generated-keys.js"></script>
     <script>
-        // State management
-        let generatedKey = '';
-        let validationStatus = null;
-        
+        document.addEventListener('DOMContentLoaded', function() {
         // DOM elements
         const keyValue = document.getElementById('keyValue');
         const copyBtn = document.getElementById('copyBtn');
@@ -718,107 +760,59 @@
         const saveBtn = document.getElementById('saveBtn');
         const validationStatusEl = document.getElementById('validationStatus');
         const toast = document.getElementById('toast');
-        const toastTitle = document.getElementById('toastTitle');
-        const toastDescription = document.getElementById('toastDescription');
-        const toastClose = document.getElementById('toastClose');
         const navLinks = document.querySelectorAll('.nav-link');
         const tabContents = document.querySelectorAll('.tab-content');
+        const keysTableBody = document.getElementById('keysTableBody');
+        const noKeysMessage = document.getElementById('noKeysMessage');
+        const keysTableContainer = document.getElementById('keysTableContainer');
         
-        // Tab switching
+        // State
+        let generatedKey = '';
+        
+        // Functions
         function switchTab(tabId) {
-            // Update navigation
+            // Update nav links
             navLinks.forEach(link => {
-                if (link.dataset.tab === tabId) {
+                if (link.getAttribute('data-tab') === tabId) {
                     link.classList.add('active');
                 } else {
                     link.classList.remove('active');
                 }
             });
             
-            // Update content
+            // Update tab content
             tabContents.forEach(content => {
                 if (content.id === tabId) {
                     content.classList.add('active');
+                    
+                    // Refresh keys table if switching to keys tab
+                    if (tabId === 'keys') {
+                        refreshKeysTable();
+                    }
                 } else {
                     content.classList.remove('active');
                 }
             });
         }
         
-        // Add event listeners to nav links
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                switchTab(link.dataset.tab);
-            });
-        });
-        
-        // Toast notification system
-        function showToast(title, description, type = '') {
-            toastTitle.textContent = title;
-            toastDescription.textContent = description;
-            toast.className = 'toast';
-            if (type) toast.classList.add(type);
-            toast.style.display = 'flex';
+        function showToast(title, message, type = 'success') {
+            const toastEl = document.getElementById('toast');
+            toastEl.querySelector('.toast-title').textContent = title;
+            toastEl.querySelector('.toast-message').textContent = message;
+            
+            toastEl.className = 'toast';
+            if (type) {
+                toastEl.classList.add(type);
+            }
+            
+            toastEl.style.display = 'flex';
             
             // Auto hide after 5 seconds
             setTimeout(() => {
-                hideToast();
+                toastEl.style.display = 'none';
             }, 5000);
         }
         
-        function hideToast() {
-            toast.style.display = 'none';
-        }
-        
-        toastClose.addEventListener('click', hideToast);
-        
-        // Copy to clipboard
-        copyBtn.addEventListener('click', async () => {
-            if (!generatedKey) return;
-            
-            try {
-                await navigator.clipboard.writeText(generatedKey);
-                copyMessage.style.display = 'flex';
-                setTimeout(() => {
-                    copyMessage.style.display = 'none';
-                }, 3000);
-            } catch (err) {
-                showToast('Copy failed', 'Failed to copy key to clipboard', 'error');
-            }
-        });
-        
-        // Generate key
-        generateBtn.addEventListener('click', async () => {
-            try {
-                // Disable button and show loading state
-                generateBtn.disabled = true;
-                generateBtn.innerHTML = '<i class="fas fa-spinner spinner"></i> Generating...';
-                
-                // Reset validation status
-                validationStatus = null;
-                validationStatusEl.style.display = 'none';
-                
-                // Generate random key (would be from server in real app)
-                const key = generateRandomKey();
-                generatedKey = key;
-                keyValue.textContent = key;
-                
-                // Restore button state
-                setTimeout(() => {
-                    generateBtn.disabled = false;
-                    generateBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Generate New Key';
-                }, 1000);
-            } catch (error) {
-                showToast('Error generating key', error.message || 'Unknown error', 'error');
-                
-                // Restore button state
-                generateBtn.disabled = false;
-                generateBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Generate New Key';
-            }
-        });
-        
-        // Helper function to generate a random key (client-side for the standalone version)
         function generateRandomKey() {
             const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             const keyFormat = 'xxxx-xxxx-xxxx-xxxx-xxxx-xxxx';
@@ -836,72 +830,209 @@
             }
             
             try {
-                // Disable button and show loading state
                 validateBtn.disabled = true;
                 validateBtn.innerHTML = '<i class="fas fa-spinner spinner"></i> Validating...';
                 
-                // Simulate key validation (would call the server in real app)
-                setTimeout(() => {
-                    // Set validation status (always valid in this demo)
-                    validationStatus = {
-                        valid: true,
-                        message: 'Key is valid and active!'
-                    };
-                    
-                    // Update the UI
-                    validationStatusEl.className = validationStatus.valid ? 
-                        'validation-status valid' : 'validation-status invalid';
-                    
+                // Real key validation
+                let isValid = false;
+                
+                // Check if the key exists in our storage
+                isValid = keyExists(generatedKey);
+                
+                // Show validation result
+                validationStatusEl.innerHTML = '';
+                validationStatusEl.style.display = 'flex';
+                
+                if (isValid) {
+                    validationStatusEl.classList.add('valid');
+                    validationStatusEl.classList.remove('invalid');
                     validationStatusEl.innerHTML = `
-                        <i class="fas ${validationStatus.valid ? 'fa-check-circle' : 'fa-times-circle'}"></i>
-                        <p>${validationStatus.message}</p>
+                        <i class="fas fa-check-circle"></i>
+                        <p>Key is valid! This key will work in your Roblox game.</p>
                     `;
+                    showToast('Key Valid', 'This key will work in your Roblox game.', 'success');
                     
-                    validationStatusEl.style.display = 'flex';
-                    
-                    // Restore button state
-                    validateBtn.disabled = false;
-                    validateBtn.innerHTML = '<i class="fas fa-check-circle"></i> Test Key';
-                }, 1500);
+                    // Mark the key as validated
+                    validateKey(generatedKey);
+                } else {
+                    validationStatusEl.classList.add('invalid');
+                    validationStatusEl.classList.remove('valid');
+                    validationStatusEl.innerHTML = `
+                        <i class="fas fa-times-circle"></i>
+                        <p>Invalid key. This key doesn't exist in your database and won't work in your game.</p>
+                    `;
+                    showToast('Key Invalid', 'This key doesn\'t exist in your database.', 'error');
+                }
+                
+                validateBtn.disabled = false;
+                validateBtn.innerHTML = '<i class="fas fa-check-circle"></i> Test Key';
             } catch (error) {
                 showToast('Error validating key', error.message || 'Unknown error', 'error');
                 
-                // Set error state
-                validationStatus = {
-                    valid: false,
-                    message: error.message || 'Validation failed'
-                };
-                
-                // Update the UI
-                validationStatusEl.className = 'validation-status invalid';
+                validationStatusEl.classList.add('invalid');
+                validationStatusEl.classList.remove('valid');
                 validationStatusEl.innerHTML = `
                     <i class="fas fa-times-circle"></i>
-                    <p>${validationStatus.message}</p>
+                    <p>Error validating key: ${error.message || 'Unknown error'}</p>
                 `;
-                validationStatusEl.style.display = 'flex';
                 
-                // Restore button state
                 validateBtn.disabled = false;
                 validateBtn.innerHTML = '<i class="fas fa-check-circle"></i> Test Key';
             }
         });
         
-        // Save key (dummy function for the standalone version)
+        // Save key
         saveBtn.addEventListener('click', () => {
             if (!generatedKey) {
                 showToast('No key to save', 'Please generate a key first', 'error');
                 return;
             }
             
-            showToast('Key saved', 'Your key has been saved successfully', 'success');
+            try {
+                // Save the key
+                storeKey(generatedKey);
+                
+                showToast('Key Saved', 'Your key has been saved successfully.', 'success');
+                
+                // Update keys.json for download
+                updateKeysJson();
+            } catch (error) {
+                showToast('Error saving key', error.message || 'Unknown error', 'error');
+            }
         });
         
-        // Generate an initial key on page load
-        window.addEventListener('DOMContentLoaded', () => {
-            const key = generateRandomKey();
-            generatedKey = key;
-            keyValue.textContent = key;
+        // Generate key
+        generateBtn.addEventListener('click', () => {
+            try {
+                // Generate a new random key
+                const key = generateRandomKey();
+                generatedKey = key;
+                keyValue.textContent = key;
+                
+                // Hide validation status if shown
+                validationStatusEl.style.display = 'none';
+                
+                showToast('Key Generated', 'A new key has been generated.', 'success');
+            } catch (error) {
+                showToast('Error generating key', error.message || 'Unknown error', 'error');
+            }
         });
+        
+        // Copy key
+        copyBtn.addEventListener('click', async () => {
+            if (!generatedKey) {
+                showToast('No key to copy', 'Please generate a key first', 'error');
+                return;
+            }
+            
+            try {
+                await navigator.clipboard.writeText(generatedKey);
+                
+                copyMessage.style.display = 'flex';
+                setTimeout(() => {
+                    copyMessage.style.display = 'none';
+                }, 2000);
+            } catch (error) {
+                showToast('Error copying key', error.message || 'Unknown error', 'error');
+            }
+        });
+        
+        // Close toast
+        document.querySelector('.toast-close').addEventListener('click', () => {
+            toast.style.display = 'none';
+        });
+        
+        // Nav links
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tabId = link.getAttribute('data-tab');
+                switchTab(tabId);
+                
+                // Update URL hash without scrolling
+                const scrollPosition = window.scrollY;
+                window.location.hash = tabId;
+                window.scrollTo(0, scrollPosition);
+            });
+        });
+        
+        // Refresh keys table
+        function refreshKeysTable() {
+            const keys = getAllKeys();
+            
+            if (keys.length === 0) {
+                keysTableContainer.style.display = 'none';
+                noKeysMessage.style.display = 'block';
+                return;
+            }
+            
+            keysTableContainer.style.display = 'block';
+            noKeysMessage.style.display = 'none';
+            
+            keysTableBody.innerHTML = '';
+            
+            keys.forEach(keyEntry => {
+                const row = document.createElement('tr');
+                
+                // Format date
+                const generatedDate = new Date(keyEntry.generatedAt);
+                const formattedDate = generatedDate.toLocaleDateString() + ' ' + 
+                                     generatedDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                row.innerHTML = `
+                    <td>${keyEntry.key}</td>
+                    <td>${formattedDate}</td>
+                    <td>${keyEntry.validated ? '<span style="color: var(--success);">Yes</span>' : 'No'}</td>
+                    <td class="table-actions">
+                        <button class="btn btn-gray btn-sm copy-key" data-key="${keyEntry.key}">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </td>
+                `;
+                
+                keysTableBody.appendChild(row);
+            });
+            
+            // Add event listeners to copy buttons
+            document.querySelectorAll('.copy-key').forEach(button => {
+                button.addEventListener('click', async () => {
+                    const key = button.getAttribute('data-key');
+                    try {
+                        await navigator.clipboard.writeText(key);
+                        showToast('Key Copied', 'Key has been copied to clipboard.', 'success');
+                    } catch (error) {
+                        showToast('Error copying key', error.message || 'Unknown error', 'error');
+                    }
+                });
+            });
+        }
+        
+        // Initialize
+        function init() {
+            // Generate initial key
+            generateBtn.click();
+            
+            // Check if URL has a hash and switch to that tab
+            const hash = window.location.hash.substring(1);
+            if (hash && document.getElementById(hash)) {
+                switchTab(hash);
+            }
+            
+            // Init download link
+            updateKeysJson();
+            
+            // Watch for hash changes
+            window.addEventListener('hashchange', () => {
+                const hash = window.location.hash.substring(1);
+                if (hash && document.getElementById(hash)) {
+                    switchTab(hash);
+                }
+            });
+        }
+        
+        // Start the app
+        init();
+    });
     </script>
 </body>
 </html>
