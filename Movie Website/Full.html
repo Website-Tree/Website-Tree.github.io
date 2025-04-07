@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Hub - Shows & Movies</title>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #1a0033, #000000);
+            z-index: -1;
+        }
+        
+        body {
+            margin: 0;
+            color: white;
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header h1 {
+            color: #bf00ff;
+            font-size: 36px;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px rgba(191, 0, 255, 0.5);
+        }
+        
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .nav-tab {
+            padding: 12px 25px;
+            background: #2a0052;
+            color: white;
+            border: 1px solid #8a2be2;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            text-transform: uppercase;
+        }
+        
+        .nav-tab:hover {
+            background: #3a0066;
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+        }
+        
+        .nav-tab.active {
+            background: #8a2be2;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+        }
+        
+        .content-section {
+            display: none;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .shows-grid, .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 25px;
+            padding: 20px;
+        }
+        
+        .show-card, .movie-card {
+            border: 2px solid #8a2be2;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: rgba(26, 0, 51, 0.8);
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        
+        .show-card:hover, .movie-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(138, 43, 226, 0.4);
+        }
+        
+        .card-img {
+            height: 70%;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .card-title {
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            color: #bf00ff;
+        }
+        
+        .container {
+            display: flex;
+            gap: 30px;
+            padding: 30px;
+            position: relative;
+            z-index: 1;
+            height: 90vh;
+        }
+        
+        .left-panel {
+            flex: 1;
+            border: 2px solid #8a2be2;
+            padding: 25px;
+            background: rgba(26, 0, 51, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .right-panel {
+            flex: 3;
+            border: 2px solid #8a2be2;
+            padding: 25px;
+            background: rgba(26, 0, 51, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .season-selector {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .season-btn {
+            flex: 1;
+            padding: 10px;
+            background: #2a0052;
+            color: white;
+            border: 1px solid #8a2be2;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .season-btn:hover {
+            background: #3a0066;
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+        }
+        
+        .season-btn.active {
+            background: #8a2be2;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+        }
+        
+        select {
+            flex-grow: 1;
+            padding: 15px;
+            background: #2a0052;
+            color: white;
+            border: 1px solid #8a2be2;
+            border-radius: 10px;
+            font-size: 16px;
+            min-height: 600px;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+        
+        option {
+            padding: 15px;
+            margin: 8px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        option:hover {
+            background: #3a0066;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 90%;
+            padding: 10px;
+            margin-top: 20px;
+            border: 3px solid #8a2be2;
+            border-radius: 15px;
+            background: rgba(138, 43, 226, 0.1);
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.3);
+        }
+        
+        iframe {
+            width: 100%;
+            height: 600px;
+            border-radius: 10px;
+            background: #000;
+        }
+        
+        h3 {
+            color: #bf00ff;
+            font-size: 24px;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(191, 0, 255, 0.3);
+        }
+        
+        select::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        select::-webkit-scrollbar-track {
+            background: #2a0052;
+            border-radius: 10px;
+        }
+        
+        select::-webkit-scrollbar-thumb {
+            background: #8a2be2;
+            border-radius: 10px;
+        }
+        
+        select::-webkit-scrollbar-thumb:hover {
+            background: #bf00ff;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: #2a0052;
+            color: white;
+            border: 1px solid #8a2be2;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .back-btn:hover {
+            background: #3a0066;
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+        }
+        
+        #player-section {
+            display: none;
+        }
+        
+        /* Fullscreen button styles */
+        .fullscreen-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(138, 43, 226, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease, background-color 0.3s ease;
+            opacity: 0.3;
+        }
+        
+        .fullscreen-btn:hover {
+            opacity: 1;
+            background-color: rgba(138, 43, 226, 0.7);
+        }
+        
+        .fullscreen-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+        
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Fullscreen styles */
+        .video-container.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            border: none;
+            border-radius: 0;
+            background: black;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .video-container.fullscreen iframe {
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+        }
+        
+        .video-container.fullscreen .fullscreen-btn {
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        .video-container.fullscreen:hover .fullscreen-btn {
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    
+    <div id="main-section">
+        <div class="header">
+            <h1>Video Hub</h1>
+        </div>
+        
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="shows">TV Shows</button>
+            <button class="nav-tab" data-tab="movies">Movies</button>
+        </div>
+        
+        <div id="shows" class="content-section active">
+            <div class="shows-grid">
+                <div class="show-card" data-show="the-boys">
+                    <div class="card-img" style="background-image: url('https://m.media-amazon.com/images/M/MV5BOTEyNDJhMDAtY2U5ZS00OTMzLTkwODktMjU3MjFkZWVlMGYyXkEyXkFqcGdeQXVyMjkwOTAyMDU@._V1_.jpg');"></div>
+                    <div class="card-title">The Boys</div>
+                </div>
+                <div class="show-card" data-show="stranger-things">
+                    <div class="card-img" style="background-image: url('https://m.media-amazon.com/images/M/MV5BMDZkYmVhNjMtNWU4MC00MDQxLWE3MjYtZGMzZWI1ZjhlOWJmXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg');"></div>
+                    <div class="card-title">Stranger Things</div>
+                </div>
+                <div class="show-card" data-show="breaking-bad">
+                    <div class="card-img" style="background-image: url('https://m.media-amazon.com/images/M/MV5BYmQ4YWMxYjUtNjZmYi00MDQ1LWFjMjMtNjA5ZDdiYjdiODU5XkEyXkFqcGdeQXVyMTMzNDExODE5._V1_.jpg');"></div>
+                    <div class="card-title">Breaking Bad</div>
+                </div>
+                <div class="show-card" data-show="game-of-thrones">
+                    <div class="card-img" style="background-image: url('https://m.media-amazon.com/images/M/MV5BYTRiNDQwYzAtMzVlZS00NTI5LWJjYjUtMzkwNTUzMWMxZTllXkEyXkFqcGdeQXVyNDIzMzcwNjc@._V1_.jpg');"></div>
+                    <div class="card-title">Game of Thrones</div>
+                </div>
+                <div class="show-card" data-show="the-witcher">
+                    <div class="card-img" style="background-image: url('https://m.media-amazon.com/images/M/MV5BN2FiOWU4YzYtMzZiOS00MzcyLTlkOGEtOTgwZmEwMzAxMzA3XkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg');"></div>
+                    <div class="card-title">The Witcher</div>
+                </div>
+                <div class="show-card" data-show="peaky-blinders">
+                    <div class="card-img" style="background-image: url('https://m.media-amazon.com/images/M/MV5BMThlOWE3MWEtZjM4Yi00M2Y1LTg0ZDktNjFkM2ZkMmQ3YWYyXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_.jpg');"></div>
+                    <div class="card-title">Peaky Blinders</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="movies" class="content-section">
+            <div class="movies-grid">
+                <div class="movie-card" data-movie="inception">
+                    <div class="card-img" style="background-image: url('https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg');"></div>
+                    <div class="card-title">Inception</div>
+                </div>
+                <div class="movie-card" data-movie="interstellar">
+                    <div class="card-img" style="background-image: url('https://m.media-amazon.com/images/M/MV5BZjdkOTU3MDktN2IxOS00OGEyLWFmMjktY2FiMmZkNWIyODZiXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg');"></div>
+                    <div class="card-title">Interstellar</div>
+                </div>
+                <div class="movie-card" data-movie="the-dark-knight">
+                    <div class="card-img" style="background-image: url('https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg');"></div>
+                    <div class="card-title">The Dark Knight</div>
+                </div>
+                <div class="movie-card" data-movie="pulp-fiction">
+                    <div class="card-img" style="background-image: url('https://m.media-amazon.com/images/M/MV5BNGNhMDIzZTUtNTBlZi00MTRlLWFjM2ItYzViMjE3YzI5MjljXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg');"></div>
+                    <div class="card-title">Pulp Fiction</div>
+                </div>
+                <div class="movie-card" data-movie="the-matrix">
+                    <div class="card-img" style="background-image: url('https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg');"></div>
+                    <div class="card-title">The Matrix</div>
+                </div>
+                <div class="movie-card" data-movie="the-lord-of-the-rings">
+                    <div class="card-img" style="background-image: url('https://m.media-amazon.com/images/M/MV5BN2EyZjM3NzUtNWUzMi00MTgxLWI0NTctMzY4M2VlOTdjZWRiXkEyXkFqcGdeQXVyNDUzOTQ5MjY@._V1_.jpg');"></div>
+                    <div class="card-title">The Lord of the Rings</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="player-section">
+        <button class="back-btn" id="back-to-main">← Back to Hub</button>
+        <div class="container">
+            <div class="left-panel">
+                <h3 id="show-title">Select Episodes</h3>
+                <div class="season-selector" id="season-container">
+                    <!-- Season buttons will be added dynamically -->
+                </div>
+                <select id="itemSelector" multiple></select>
+            </div>
+            <div class="right-panel">
+                <h3>Video Player</h3>
+                <div class="video-container">
+                    <div class="video-wrapper">
+                        <button class="fullscreen-btn" id="fullscreen-btn" title="Fullscreen">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                            </svg>
+                        </button>
+                        <iframe id="videoPlayer" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Particle.js initialization
+        particlesJS('particles-js', {
+            particles: {
+                number: {
+                    value: 200,
+                    density: {
+                        enable: true,
+                        value_area: 800
+                    }
+                },
+                color: {
+                    value: '#8a2be2'
+                },
+                shape: {
+                    type: 'circle'
+                },
+                size: {
+                    value: 3,
+                    random: true
+                },
+                move: {
+                    enable: true,
+                    speed: 2,
+                    direction: 'bottom',
+                    straight: false
+                }
+            }
+        });
+        
+        // Tab navigation
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+        
+        // Show/Movie content database
+        const contentDatabase = {
+            shows: {
+                'the-boys': {
+                    title: "The Boys",
+                    seasons: {
+                        1: [
+                            {value: "https://drive.google.com/file/d/1A3MxpBP92BV5ep6e7Xq6_pTXpXI9n7Yi/preview", title: "S1E1 - The Name of the Game"},
+                            {value: "https://drive.google.com/file/d/1HtiIQHMzgQbSdoOe3Cj7OxuKmShP8d_I/preview", title: "S1E2 - Cherry"},
+                            {value: "https://drive.google.com/file/d/19LEfUALsAQdrAPhRS2KYejgDqWTyzpoO/preview", title: "S1E3 - Get Some"},
+                            {value: "https://drive.google.com/file/d/1TFFIb3th7LIWQAq2z6_FStusBPJ_B-1n/preview", title: "S1E4 - The Female of the Species"},
+                            {value: "https://drive.google.com/file/d/1yeh_pcq_ifJZWZsMf21N1Q2wuZxPEXgd/preview", title: "S1E5 - Good for the Soul"},
+                            {value: "https://drive.google.com/file/d/1Ww52tSqq3Vh4GxWZAV4ct1g11cdZu8yY/preview", title: "S1E6 - The Innocents"},
+                            {value: "https://drive.google.com/file/d/1e6Gg5tOx4xamQOcOLdQ4LEUig0lt-T55/preview", title: "S1E7 - The Self-Preservation Society"},
+                            {value: "https://drive.google.com/file/d/1vYREqLDFcl-RtaHOPYZ4hRR7j2NNGu-B/preview", title: "S1E8 - You Found Me"}
+                        ],
+                        2: [
+                            {value: "https://drive.google.com/file/d/1_weKxqD7nzznG9CvH-sToSxli12mNwh-/preview", title: "S2E1 - The Big Ride"},
+                            {value: "https://drive.google.com/file/d/1gwJnjy2QML-pm6KwgEzLNgEjkuBcNCBA/preview", title: "S2E2 - Proper Preparation"},
+                            {value: "https://drive.google.com/file/d/19op7cT5N0aBeVFyE6eiu7g6UPL4RocXn/preview", title: "S2E3 - Over the Hill"},
+                            {value: "https://drive.google.com/file/d/1VZpu9mxWrQ6Ov9uldqt3EdJqxYEIlebC/preview", title: "S2E4 - Nothing Like It"},
+                            {value: "https://drive.google.com/file/d/1nd4PTutWxM3LlzdYbrCf848S2Pfflzgn/preview", title: "S2E5 - We Gotta Go Now"},
+                            {value: "https://drive.google.com/file/d/1XsNrV9LOQK50sf46xnvP5u4T2PFLxWG3/preview", title: "S2E6 - The Bloody Doors Off"},
+                            {value: "https://drive.google.com/file/d/1ncWjNIIqFZzdRCV9PNClTU_JSXNoqs7H/preview", title: "S2E7 - Butcher, Baker"},
+                            {value: "https://drive.google.com/file/d/1v__gLI6R3_YixR__9rvTvFUxeVSOV9hE/preview", title: "S2E8 - What I Know"}
+                        ],
+                        3: [
+                            {value: "https://drive.google.com/file/d/1lKKBhHjiOvXSFs5kyiiJ7EQ8R-L3jVJQ/preview", title: "S3E1 - Payback"},
+                            {value: "https://drive.google.com/file/d/19aqLtizvmjJCKElLx_D0GmfdRbzpYwfk/preview", title: "S3E2 - The Only Man"},
+                            {value: "https://drive.google.com/file/d/1LsCsOnQwdJXXe2mFHlmZx6mdv7rvBLWe/preview", title: "S3E3 - Barbary Coast"},
+                            {value: "https://drive.google.com/file/d/1a5XhHw7-W0w7bHYSh72HLQG7MIsVyV3Q/preview", title: "S3E4 - Glorious Five Year Plan"},
+                            {value: "https://drive.google.com/file/d/1k8D9XjISq6qII7AHlUBaH4nHvcLdTUb1/preview", title: "S3E5 - The Last Time to Look"},
+                            {value: "https://drive.google.com/file/d/1EugbYvhRxME1EAFxB-x5QEetuKgjsbli/preview", title: "S3E6 - Herogasm"},
+                            {value: "https://drive.google.com/file/d/1OFrwLqS6sOFKPZb4ReTyoASPfU12ww0Y/preview", title: "S3E7 - Here Comes a Candle"},
+                            {value: "https://drive.google.com/file/d/1L6FXHGTLqDaVMorh9dbV78OouNsdFvdV/preview", title: "S3E8 - The Instant White-Hot Wild"}
+                        ],
+                        4: [
+                            {value: "https://drive.google.com/file/d/1EWL18BAYdKqjy12XmAqBb-Nylu1AhVXm/preview", title: "S4E1 - Department of Dirty Tricks"},
+                            {value: "https://drive.google.com/file/d/1lBHOA5W7dOtMDN-zVlHAB-c5iGlcqVtj/preview", title: "S4E2 - Life Among the Septics"},
+                            {value: "https://drive.google.com/file/d/1uZdCngyGkeR5LjLgulcn6naBiQNtPxZe/preview", title: "S4E3 - We'll Keep the Red Flag Flying Here"},
+                            {value: "https://drive.google.com/file/d/1LfcfKlVUmRMmzKdvHH2Mu4vJbhxouBON/preview", title: "S4E4 - Wisdom of the Ages"},
+                            {value: "https://drive.google.com/file/d/1fSspBzmbA9tNhpxCfvYMCI_rTYkF31lm/preview", title: "S4E5 - Beware the Jabberwock, My Son"},
+                            {value: "https://drive.google.com/file/d/1aw-dyFVz6C58WRvqky8ETEQPfW0-NRGA/preview", title: "S4E6 - Dirty Business"},
+                            {value: "https://drive.google.com/file/d/1gGopY-9oyJwHY8QImbBbR5tvRpGDcQbw/preview", title: "S4E7 - The Insider"},
+                            {value: "https://drive.google.com/file/d/1gXIikuTzM2e4-lllBmx2yeso9AFFUqDr/preview", title: "S4E8 - Season Four Finale"}
+                        ]
+                    }
+                },
+                'stranger-things': {
+                    title: "Stranger Things",
+                    seasons: {
+                        1: [
+                            {value: "#", title: "S1E1 - The Vanishing of Will Byers"},
+                            {value: "#", title: "S1E2 - The Weirdo on Maple Street"},
+                            {value: "#", title: "S1E3 - Holly, Jolly"},
+                            {value: "#", title: "S1E4 - The Body"}
+                        ],
+                        2: [
+                            {value: "#", title: "S2E1 - MADMAX"},
+                            {value: "#", title: "S2E2 - Trick or Treat, Freak"},
+                            {value: "#", title: "S2E3 - The Pollywog"},
+                            {value: "#", title: "S2E4 - Will the Wise"}
+                        ]
+                    }
+                },
+                'breaking-bad': {
+                    title: "Breaking Bad",
+                    seasons: {
+                        1: [
+                            {value: "#", title: "S1E1 - Pilot"},
+                            {value: "#", title: "S1E2 - Cat's in the Bag..."},
+                            {value: "#", title: "S1E3 - ...And the Bag's in the River"},
+                            {value: "#", title: "S1E4 - Cancer Man"}
+                        ],
+                        2: [
+                            {value: "#", title: "S2E1 - Seven Thirty-Seven"},
+                            {value: "#", title: "S2E2 - Grilled"},
+                            {value: "#", title: "S2E3 - Bit by a Dead Bee"},
+                            {value: "#", title: "S2E4 - Down"}
+                        ]
+                    }
+                },
+                'game-of-thrones': {
+                    title: "Game of Thrones",
+                    seasons: {
+                        1: [
+                            {value: "#", title: "S1E1 - Winter Is Coming"},
+                            {value: "#", title: "S1E2 - The Kingsroad"},
+                            {value: "#", title: "S1E3 - Lord Snow"},
+                            {value: "#", title: "S1E4 - Cripples, Bastards, and Broken Things"}
+                        ],
+                        2: [
+                            {value: "#", title: "S2E1 - The North Remembers"},
+                            {value: "#", title: "S2E2 - The Night Lands"},
+                            {value: "#", title: "S2E3 - What Is Dead May Never Die"},
+                            {value: "#", title: "S2E4 - Garden of Bones"}
+                        ]
+                    }
+                },
+                'the-witcher': {
+                    title: "The Witcher",
+                    seasons: {
+                        1: [
+                            {value: "#", title: "S1E1 - The End's Beginning"},
+                            {value: "#", title: "S1E2 - Four Marks"},
+                            {value: "#", title: "S1E3 - Betrayer Moon"},
+                            {value: "#", title: "S1E4 - Of Banquets, Bastards and Burials"}
+                        ],
+                        2: [
+                            {value: "#", title: "S2E1 - A Grain of Truth"},
+                            {value: "#", title: "S2E2 - Kaer Morhen"},
+                            {value: "#", title: "S2E3 - What Is Lost"},
+                            {value: "#", title: "S2E4 - Redanian Intelligence"}
+                        ]
+                    }
+                },
+                'peaky-blinders': {
+                    title: "Peaky Blinders",
+                    seasons: {
+                        1: [
+                            {value: "#", title: "S1E1 - Episode 1"},
+                            {value: "#", title: "S1E2 - Episode 2"},
+                            {value: "#", title: "S1E3 - Episode 3"},
+                            {value: "#", title: "S1E4 - Episode 4"}
+                        ],
+                        2: [
+                            {value: "#", title: "S2E1 - Episode 1"},
+                            {value: "#", title: "S2E2 - Episode 2"},
+                            {value: "#", title: "S2E3 - Episode 3"},
+                            {value: "#", title: "S2E4 - Episode 4"}
+                        ]
+                    }
+                }
+            },
+            movies: {
+                'inception': {
+                    title: "Inception",
+                    value: "#"
+                },
+                'interstellar': {
+                    title: "Interstellar",
+                    value: "#"
+                },
+                'the-dark-knight': {
+                    title: "The Dark Knight",
+                    value: "#"
+                },
+                'pulp-fiction': {
+                    title: "Pulp Fiction",
+                    value: "#"
+                },
+                'the-matrix': {
+                    title: "The Matrix",
+                    value: "#"
+                },
+                'the-lord-of-the-rings': {
+                    title: "The Lord of the Rings",
+                    value: "#"
+                }
+            }
+        };
+        
+        // Show card click handler
+        document.querySelectorAll('.show-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const showId = card.dataset.show;
+                const showData = contentDatabase.shows[showId];
+                
+                // Set show title
+                document.getElementById('show-title').textContent = showData.title;
+                
+                // Create season buttons
+                const seasonContainer = document.getElementById('season-container');
+                seasonContainer.innerHTML = '';
+                
+                Object.keys(showData.seasons).forEach(season => {
+                    const seasonBtn = document.createElement('button');
+                    seasonBtn.classList.add('season-btn');
+                    seasonBtn.dataset.season = season;
+                    seasonBtn.textContent = `Season ${season}`;
+                    seasonContainer.appendChild(seasonBtn);
+                    
+                    // Add event listener to season button
+                    seasonBtn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.season-btn').forEach(btn => btn.classList.remove('active'));
+                        e.target.classList.add('active');
+                        populateEpisodes(showId, e.target.dataset.season);
+                    });
+                });
+                
+                // Activate first season button
+                const firstSeasonBtn = seasonContainer.querySelector('.season-btn');
+                if (firstSeasonBtn) {
+                    firstSeasonBtn.classList.add('active');
+                    populateEpisodes(showId, firstSeasonBtn.dataset.season);
+                }
+                
+                // Show player section, hide main section
+                document.getElementById('main-section').style.display = 'none';
+                document.getElementById('player-section').style.display = 'block';
+            });
+        });
+        
+        // Movie card click handler
+        document.querySelectorAll('.movie-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const movieId = card.dataset.movie;
+                const movieData = contentDatabase.movies[movieId];
+                
+                // Set movie title
+                document.getElementById('show-title').textContent = movieData.title;
+                
+                // Clear season container
+                document.getElementById('season-container').innerHTML = '';
+                
+                // Populate with just the movie
+                const select = document.getElementById('itemSelector');
+                select.innerHTML = '';
+                const option = document.createElement('option');
+                option.value = movieData.value;
+                option.textContent = movieData.title;
+                select.appendChild(option);
+                
+                // Set video player source
+                document.getElementById('videoPlayer').src = movieData.value;
+                
+                // Show player section, hide main section
+                document.getElementById('main-section').style.display = 'none';
+                document.getElementById('player-section').style.display = 'block';
+            });
+        });
+        
+        // Back button handler
+        document.getElementById('back-to-main').addEventListener('click', () => {
+            document.getElementById('player-section').style.display = 'none';
+            document.getElementById('main-section').style.display = 'block';
+            document.getElementById('videoPlayer').src = '';
+        });
+        
+        // Function to populate episodes for a show and season
+        function populateEpisodes(showId, season) {
+            const select = document.getElementById('itemSelector');
+            select.innerHTML = '';
+            
+            const episodes = contentDatabase.shows[showId].seasons[season];
+            episodes.forEach(episode => {
+                const option = document.createElement('option');
+                option.value = episode.value;
+                option.textContent = episode.title;
+                select.appendChild(option);
+            });
+            
+            // Set first episode as default in video player
+            if (episodes.length > 0) {
+                document.getElementById('videoPlayer').src = episodes[0].value;
+            }
+        }
+        
+        // Episode selection handler
+        document.getElementById('itemSelector').addEventListener('change', function() {
+            const selectedVideo = this.value;
+            document.getElementById('videoPlayer').src = selectedVideo;
+        });
+        
+        // Fullscreen button handler
+        document.getElementById('fullscreen-btn').addEventListener('click', function() {
+            const videoContainer = document.querySelector('.video-container');
+            
+            if (videoContainer.classList.contains('fullscreen')) {
+                // Exit fullscreen
+                videoContainer.classList.remove('fullscreen');
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                }
+            } else {
+                // Enter fullscreen
+                videoContainer.classList.add('fullscreen');
+                videoContainer.requestFullscreen().catch(err => {
+                    // Fallback if requestFullscreen fails
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                    // Still apply the fullscreen class for our custom fullscreen
+                });
+            }
+        });
+        
+        // Also handle ESC key for exiting fullscreen
+        document.addEventListener('fullscreenchange', function() {
+            const videoContainer = document.querySelector('.video-container');
+            if (!document.fullscreenElement && videoContainer.classList.contains('fullscreen')) {
+                videoContainer.classList.remove('fullscreen');
+            }
+        });
+    </script>
+</body>
+</html>
