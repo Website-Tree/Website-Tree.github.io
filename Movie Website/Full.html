@@ -6,24 +6,24 @@
     <title>Video Hub - Shows & Movies</title>
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <style>
-#particles-js {
-    position: fixed; /* Change from absolute to fixed */
-    width: 100vw; /* Use viewport width instead of percentage */
-    height: 100vh; /* Use viewport height instead of percentage */
-    background: linear-gradient(to bottom, #1a0033, #000000);
-    z-index: -1;
-    top: 0;
-    left: 0;
-}
-
-body {
-    margin: 0;
-    color: white;
-    min-height: 100vh;
-    font-family: 'Arial', sans-serif;
-    overflow-x: hidden; /* Prevent horizontal scrolling */
-    position: relative;
-}
+        #particles-js {
+            position: fixed; /* Change from absolute to fixed */
+            width: 100vw; /* Use viewport width instead of percentage */
+            height: 100vh; /* Use viewport height instead of percentage */
+            background: linear-gradient(to bottom, #1a0033, #000000);
+            z-index: -1;
+            top: 0;
+            left: 0;
+        }
+        
+        body {
+            margin: 0;
+            color: white;
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+            position: relative;
+        }
         
         .header {
             text-align: center;
@@ -336,6 +336,24 @@ body {
         .video-container.fullscreen:hover .fullscreen-btn {
             opacity: 0.7;
         }
+        
+        /* Movie player styles */
+        .movie-mode .left-panel {
+            display: none;
+        }
+        
+        .movie-mode .right-panel {
+            flex: 1;
+        }
+        
+        .movie-mode .video-container {
+            width: 100%;
+            height: 90%;
+        }
+        
+        .movie-mode iframe {
+            height: 700px;
+        }
     </style>
 </head>
 <body>
@@ -370,13 +388,17 @@ body {
                     <div class="card-img" style="background-image: url('https://th.bing.com/th/id/R.4b6d8320a1626851c5f1d7e56bff0c0e?rik=xL1n8j1QCXzaKA&pid=ImgRaw&r=0');"></div>
                     <div class="card-title">Just Friends</div>
                 </div>
+                <div class="movie-card" data-movie="Bolt">
+                    <div class="card-img" style="background-image: url('https://www.themoviedb.org/t/p/original/hAQoJ4pku20vy3EqRKtj94RH7vC.jpg');"></div>
+                    <div class="card-title">Bolt</div>
+                </div>
             </div>
         </div>
     </div>
     
     <div id="player-section">
         <button class="back-btn" id="back-to-main">← Back to Hub</button>
-        <div class="container">
+        <div class="container" id="player-container">
             <div class="left-panel">
                 <h3 id="show-title">Select Episodes</h3>
                 <div class="season-selector" id="season-container">
@@ -509,25 +531,9 @@ body {
                     title: "Just Friends",
                     value: "https://drive.google.com/file/d/1fv1lEHQdstZr8dX3JzlnRPzCsXV_GPS1/preview"
                 },
-                'interstellar': {
-                    title: "Interstellar",
-                    value: "#"
-                },
-                'the-dark-knight': {
-                    title: "The Dark Knight",
-                    value: "#"
-                },
-                'pulp-fiction': {
-                    title: "Pulp Fiction",
-                    value: "#"
-                },
-                'the-matrix': {
-                    title: "The Matrix",
-                    value: "#"
-                },
-                'the-lord-of-the-rings': {
-                    title: "The Lord of the Rings",
-                    value: "#"
+                'Bolt': {
+                    title: "Bolt",
+                    value: "https://drive.google.com/file/d/1HWvZG0D5keLWYFzuXqw4jXPTw2Mmw2ES/preview"
                 }
             }
         };
@@ -570,6 +576,12 @@ body {
                 // Show player section, hide main section
                 document.getElementById('main-section').style.display = 'none';
                 document.getElementById('player-section').style.display = 'block';
+                
+                // Set TV show mode (show the episode selector)
+                document.getElementById('player-container').classList.remove('movie-mode');
+                document.querySelector('.left-panel').style.display = 'flex';
+                document.querySelector('.season-selector').style.display = 'flex';
+                document.getElementById('itemSelector').style.display = 'block';
             });
         });
         
@@ -582,23 +594,15 @@ body {
                 // Set movie title
                 document.getElementById('show-title').textContent = movieData.title;
                 
-                // Clear season container
-                document.getElementById('season-container').innerHTML = '';
-                
-                // Populate with just the movie
-                const select = document.getElementById('itemSelector');
-                select.innerHTML = '';
-                const option = document.createElement('option');
-                option.value = movieData.value;
-                option.textContent = movieData.title;
-                select.appendChild(option);
-                
-                // Set video player source
+                // Set video player source directly
                 document.getElementById('videoPlayer').src = movieData.value;
                 
                 // Show player section, hide main section
                 document.getElementById('main-section').style.display = 'none';
                 document.getElementById('player-section').style.display = 'block';
+                
+                // Set movie mode (hide the episode selector)
+                document.getElementById('player-container').classList.add('movie-mode');
             });
         });
         
