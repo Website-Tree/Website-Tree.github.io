@@ -118,18 +118,45 @@
             bottom: 0;
         }
         
-        .card-title {
-            padding: 15px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 18px;
-            color: #bf00ff;
-            background: rgba(26, 0, 51, 0.8);
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-        }
+.card-title {
+    padding: 15px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+    color: #bf00ff;
+    background: rgba(26, 0, 51, 0.9); /* Make background darker */
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: 0; /* Hide by default */
+    transition: opacity 0.3s ease; /* Smooth transition */
+}
+
+/* Show the title on hover */
+.show-card:hover .card-title,
+.movie-card:hover .card-title {
+    opacity: 1;
+}
+
+/* Ensure the image covers the entire card */
+.card-img {
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition: filter 0.3s ease; /* Smooth transition for any filter effects */
+}
+
+/* Optional: slightly darken the image on hover to make title more readable */
+.show-card:hover .card-img,
+.movie-card:hover .card-img {
+    filter: brightness(0.7);
+}
         
         .container {
             display: flex;
