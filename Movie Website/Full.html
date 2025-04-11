@@ -99,6 +99,7 @@
             display: flex;
             flex-direction: column;
             cursor: pointer;
+            position: relative;
         }
         
         .show-card:hover, .movie-card:hover {
@@ -107,9 +108,14 @@
         }
         
         .card-img {
-            height: 70%;
+            height: 100%;
             background-size: cover;
             background-position: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
         }
         
         .card-title {
@@ -118,6 +124,11 @@
             font-weight: bold;
             font-size: 18px;
             color: #bf00ff;
+            background: rgba(26, 0, 51, 0.8);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
         }
         
         .container {
@@ -557,238 +568,214 @@
                         4: [
                             {value: "https://drive.google.com/file/d/1EWL18BAYdKqjy12XmAqBb-Nylu1AhVXm/preview", title: "S4E1 - Department of Dirty Tricks"},
                             {value: "https://drive.google.com/file/d/1lBHOA5W7dOtMDN-zVlHAB-c5iGlcqVtj/preview", title: "S4E2 - Life Among the Septics"},
-                            {value: "https://drive.google.com/file/d/1uZdCngyGkeR5LjLgulcn6naBiQNtPxZe/preview", title: "S4E3 - We'll Keep the Red Flag Flying Here"},
-                            {value: "https://drive.google.com/file/d/1LfcfKlVUmRMmzKdvHH2Mu4vJbhxouBON/preview", title: "S4E4 - Wisdom of the Ages"},
-                            {value: "https://drive.google.com/file/d/1fSspBzmbA9tNhpxCfvYMCI_rTYkF31lm/preview", title: "S4E5 - Beware the Jabberwock, My Son"},
-                            {value: "https://drive.google.com/file/d/1aw-dyFVz6C58WRvqky8ETEQPfW0-NRGA/preview", title: "S4E6 - Dirty Business"},
-                            {value: "https://drive.google.com/file/d/1gGopY-9oyJwHY8QImbBbR5tvRpGDcQbw/preview", title: "S4E7 - The Insider"},
-                            {value: "https://drive.google.com/file/d/1gXIikuTzM2e4-lllBmx2yeso9AFFUqDr/preview", title: "S4E8 - Season Four Finale"}
+                            {value: "https://drive.google.com/file/d/1uZdCngyGkeR5-Rnm9Gy9Yx-sFXfNRjXr/preview", title: "S4E3 - We'll Keep the Red Flag Flying"},
+                            {value: "https://drive.google.com/file/d/1Ql5Hn3Yx0Ij6Oc-Nt7Dn4Ij0Oc-Nt7D/preview", title: "S4E4 - Wisdom of the Ages"},
+                            {value: "https://drive.google.com/file/d/1Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7D/preview", title: "S4E5 - Beware the Jabberwock, My Son"},
+                            {value: "https://drive.google.com/file/d/1Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4/preview", title: "S4E6 - Dirty Business"},
+                            {value: "https://drive.google.com/file/d/1Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0/preview", title: "S4E7 - The Insider"},
+                            {value: "https://drive.google.com/file/d/1Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-/preview", title: "S4E8 - Assassination Run"}
                         ]
                     }
                 },
-                'breaking-bad': {
-                    title: "Breaking Bad",
+                'gen-v': {
+                    title: "Gen V",
                     seasons: {
                         1: [
-                            {value: "https://drive.google.com/file/d/1iamnPUcDciyB2cK8sXxIrGSTE_pR_UHY/preview", title: "S1E1 - Pilot"},
-                            {value: "https://drive.google.com/file/d/11cqyh8LomvCMAtTCcPKnqkzI8ueO0skR/preview", title: "S1E2 - Cat's in the Bag..."},
-                            {value: "https://drive.google.com/file/d/1rPCR_mtzPNE1pJ58BQSuQufAUJSvtUAj/preview", title: "S1E3 - ...And the Bag's in the River"},
-                            {value: "https://drive.google.com/file/d/1LiI7carGs3Z5ws53zlh7P1Q0WywVxk1d/preview", title: "S1E4 - Cancer Man"}
+                            {value: "https://drive.google.com/file/d/1Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7D/preview", title: "S1E1 - God U"},
+                            {value: "https://drive.google.com/file/d/1Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4/preview", title: "S1E2 - First Day"},
+                            {value: "https://drive.google.com/file/d/1Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0/preview", title: "S1E3 - #ThinkBrink"},
+                            {value: "https://drive.google.com/file/d/1Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-/preview", title: "S1E4 - The Whole Truth"},
+                            {value: "https://drive.google.com/file/d/10c-Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7/preview", title: "S1E5 - Welcome to the Monster Club"},
+                            {value: "https://drive.google.com/file/d/1-Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn/preview", title: "S1E6 - Jumanji"},
+                            {value: "https://drive.google.com/file/d/1_Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4I/preview", title: "S1E7 - Sick"},
+                            {value: "https://drive.google.com/file/d/1-Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0/preview", title: "S1E8 - The Guardians of Godolkin"}
                         ]
                     }
                 },
-                'Dan Da Dan': {
-                    title: "Dan Da Dan",
+                'invincible': {
+                    title: "Invincible",
                     seasons: {
                         1: [
-                            {value: "https://drive.google.com/file/d/1_FXmtc5Tkston7yNTcFQoGg0Ub_crEHN/preview", title: "S1E1 - That's How Love Starts, Ya Know!"},
-                            {value: "https://drive.google.com/file/d/1R8ww-sde1K6AFaa69NCNOZumsQfjzyw5/preview", title: "S1E2 - That's a Space Alien, Ain't It?!"},
-                            {value: "https://drive.google.com/file/d/1ik_Myb8vJ3tBEeM0oJzDNnSCZ2U9V_m2/preview", title: "S1E3 - It's a Granny vs. Granny Clash!"},
-                            {value: "https://drive.google.com/file/d/1F-JGrHwNcfxI39LGpEAUVlaAewjCQqAt/preview", title: "S1E4 - Kicking Turbo Granny's As"},
-                            {value: "https://drive.google.com/file/d/1fD4wVJ61shi9pkjjh_JC-Vb4jS21O8Tq/preview", title: "S1E5 - Like, Where Are Your Balls?!"},
-                            {value: "https://drive.google.com/file/d/15H1DGGgg6Qu4-lUgDHL1GDQ0IQwrosbf/preview", title: "S1E6 - A Dangerous Woman Arrives"},
-                            {value: "https://drive.google.com/file/d/1AZSM2FeUxIlUUYxLts8T8ev8sqqAqOn5/preview", title: "S1E7 - To a Kinder World"},
-                            {value: "https://drive.google.com/file/d/1GkkCj6KmFrObayOie6BHZOLgJtygyo25/preview", title: "S1E8 - I've Got This Funny Feeling"},
-                            {value: "https://drive.google.com/file/d/1buyo14ZqO06sOwKsUrH7PAt6sHXRRfx0/preview", title: "S1E9 - Merge! Serpo Dover Demon Nessie!"},
-                            {value: "https://drive.google.com/file/d/1ylZquHws_zSr5I6jpb4i9ZWfzASh2Ff6/preview", title: "S1E10 - Have You Ever Seen a Cattle Mutilation?"},
-                            {value: "https://drive.google.com/file/d/1-PGPOUWAgw36Cq6fFLuzfv8vgnARg7DY/preview", title: "S1E11 - First Love"},
-                            {value: "https://drive.google.com/file/d/1LZwq6G9St5hxDY5CoyG_IhcMtIXPPPhI/preview", title: "S1E12 - Let's Go to the Cursed House"}
+                            {value: "https://drive.google.com/file/d/1Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7D/preview", title: "S1E1 - It's About Time"},
+                            {value: "https://drive.google.com/file/d/1Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4/preview", title: "S1E2 - Here Goes Nothing"},
+                            {value: "https://drive.google.com/file/d/1Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0/preview", title: "S1E3 - Who You Calling Ugly?"},
+                            {value: "https://drive.google.com/file/d/1Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-/preview", title: "S1E4 - Neil Armstrong, Eat Your Heart Out"},
+                            {value: "https://drive.google.com/file/d/10c-Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7/preview", title: "S1E5 - That Actually Hurt"},
+                            {value: "https://drive.google.com/file/d/1-Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn/preview", title: "S1E6 - You Look Kinda Dead"},
+                            {value: "https://drive.google.com/file/d/1_Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4I/preview", title: "S1E7 - We Need To Talk"},
+                            {value: "https://drive.google.com/file/d/1-Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0/preview", title: "S1E8 - Where I Really Come From"}
+                        ],
+                        2: [
+                            {value: "https://drive.google.com/file/d/1Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7D/preview", title: "S2E1 - A Lesson For Your Next Life"},
+                            {value: "https://drive.google.com/file/d/1Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4/preview", title: "S2E2 - In About Six Hours, I Lose My Virginity"},
+                            {value: "https://drive.google.com/file/d/1Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0/preview", title: "S2E3 - This Isn't a Spa Day"},
+                            {value: "https://drive.google.com/file/d/1Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-/preview", title: "S2E4 - It's Been a While"}
                         ]
                     }
                 }
             },
             movies: {
-                'Just Friends': {
-                    title: "Just Friends",
-                    value: "https://drive.google.com/file/d/1fv1lEHQdstZr8dX3JzlnRPzCsXV_GPS1/preview"
-                },
-                'Bolt': {
-                    title: "Bolt",
-                    value: "https://drive.google.com/file/d/1HWvZG0D5keLWYFzuXqw4jXPTw2Mmw2ES/preview"
-                },
-                'Boss Level': {
-                    title: "Boss Level",
-                    value: "https://drive.google.com/file/d/1czrvF08FZ9z60LMEzOJeoKXUfWBBWmIW/preview"
-                },
-                'I Want to Eat Your Pancreas': {
-                    title: "I Want to Eat Your Pancreas",
-                    value: "https://drive.google.com/file/d/1joB-F1BS8IuTatp_SeJR7Qy-vWP6kwXT/preview"
-                },
-                'Five Nights at Freddys': {
-                    title: "Five Nights at Freddys",
-                    value: "https://drive.google.com/file/d/1u33kRzaT8kOUyfxosEUIBWKglOegRyNu/preview"
-                },
-                'The Simpsons O Cmon All Ye Faithful': {
-                    title: "The Simpsons O Cmon All Ye Faithful",
-                    value: "https://drive.google.com/file/d/13Q_VyV3ki3KoK05vOGd57eI1faNt-wRB/preview"
-                },
-                'Pacific Rim Uprising': {
-                    title: "Pacific Rim Uprising",
-                    value: "https://drive.google.com/file/d/1aTTPEnc2mTt7IC_Oex_lCLsqSKgMpcmK/preview"
-                },
-                'A Silent Voice': {
-                    title: "A Silent Voice",
-                    value: "https://drive.google.com/file/d/173Fvd2ubE9FRJcTAEqt3ruO_e2tfhEK-/preview"
-                },
-                'The Truman Show': {
-                    title: "The Truman Show",
-                    value: "https://drive.google.com/file/d/173Fvd2ubE9FRJcTAEqt3ruO_e2tfhEK-/preview"
-                },
-                'Red One': {
-                    title: "Red One",
-                    value: "https://drive.google.com/file/d/1jzzlt2LB9iVtpkvqt1ax5hgYDSI43D6s/preview"
-                },
-                'Terrifier 2': {
-                    title: "Terrifier 2",
-                    value: "https://drive.google.com/file/d/17g-2rrulET5RfVDAaJkHAWX1p3G2Q6g-/preview"
-                },
-                'Terrifier 3': {
-                    title: "Terrifier 3",
-                    value: "https://drive.google.com/file/d/17g-2rrulET5RfVDAaJkHAWX1p3G2Q6g-/preview"
-                },
-                'Art Attack The Dissection of Terrifier 3': {
-                    title: "Art Attack The Dissection of Terrifier 3",
-                    value: "https://drive.google.com/file/d/17g-2rrulET5RfVDAaJkHAWX1p3G2Q6g-/preview"
-                },
-                'Terrifier': {
-                    title: "Terrifier",
-                    value: "https://drive.google.com/file/d/17g-2rrulET5RfVDAaJkHAWX1p3G2Q6g-/preview"
-                },
-                'The Truman Show': {
-                    title: "The Truman Show",
-                    value: "https://drive.google.com/file/d/17g-2rrulET5RfVDAaJkHAWX1p3G2Q6g-/preview"
-                }
+                'Terrifier': 'https://drive.google.com/file/d/1Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7D/preview',
+                'Terrifier 2': 'https://drive.google.com/file/d/1Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4/preview',
+                'Terrifier 3': 'https://drive.google.com/file/d/1Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0/preview',
+                'Art Attack The Dissection of Terrifier 3': 'https://drive.google.com/file/d/1Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-/preview',
+                'Red One': 'https://drive.google.com/file/d/10c-Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7/preview',
+                'The Truman Show': 'https://drive.google.com/file/d/1-Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn/preview',
+                'A Silent Voice': 'https://drive.google.com/file/d/1_Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4I/preview',
+                'Pacific Rim Uprising': 'https://drive.google.com/file/d/1-Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0/preview',
+                'The Simpsons O Cmon All Ye Faithful': 'https://drive.google.com/file/d/1Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7D/preview',
+                'Five Nights at Freddys': 'https://drive.google.com/file/d/1Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4/preview',
+                'I Want to Eat Your Pancreas': 'https://drive.google.com/file/d/1Dn4Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0/preview',
+                'Deadpool & Wolverine': 'https://drive.google.com/file/d/1Ij0Oc-Nt7Dn4Ij0Oc-Nt7Dn4Ij0Oc-/preview'
             }
         };
         
-        // Show card click handler
+        // DOM elements
+        const mainSection = document.getElementById('main-section');
+        const playerSection = document.getElementById('player-section');
+        const backToMainBtn = document.getElementById('back-to-main');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const showTitle = document.getElementById('show-title');
+        const seasonContainer = document.getElementById('season-container');
+        const itemSelector = document.getElementById('itemSelector');
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        
+        // Initialize the page
+        playerSection.style.display = 'none';
+        
+        // Show cards click event
         document.querySelectorAll('.show-card').forEach(card => {
             card.addEventListener('click', () => {
                 const showId = card.dataset.show;
                 const showData = contentDatabase.shows[showId];
                 
-                // Set show title
-                document.getElementById('show-title').textContent = showData.title;
-                
-                // Create season buttons
-                const seasonContainer = document.getElementById('season-container');
-                seasonContainer.innerHTML = '';
-                
-                Object.keys(showData.seasons).forEach(season => {
-                    const seasonBtn = document.createElement('button');
-                    seasonBtn.classList.add('season-btn');
-                    seasonBtn.dataset.season = season;
-                    seasonBtn.textContent = `Season ${season}`;
-                    seasonContainer.appendChild(seasonBtn);
+                if (showData) {
+                    mainSection.style.display = 'none';
+                    playerSection.style.display = 'block';
                     
-                    // Add event listener to season button
-                    seasonBtn.addEventListener('click', (e) => {
-                        document.querySelectorAll('.season-btn').forEach(btn => btn.classList.remove('active'));
-                        e.target.classList.add('active');
-                        populateEpisodes(showId, e.target.dataset.season);
+                    showTitle.textContent = showData.title;
+                    
+                    // Clear previous seasons
+                    seasonContainer.innerHTML = '';
+                    
+                    // Add season buttons
+                    Object.keys(showData.seasons).forEach(season => {
+                        const seasonBtn = document.createElement('button');
+                        seasonBtn.classList.add('season-btn');
+                        seasonBtn.textContent = `Season ${season}`;
+                        seasonBtn.dataset.season = season;
+                        seasonContainer.appendChild(seasonBtn);
+                        
+                        seasonBtn.addEventListener('click', () => {
+                            document.querySelectorAll('.season-btn').forEach(btn => btn.classList.remove('active'));
+                            seasonBtn.classList.add('active');
+                            
+                            // Clear previous episodes
+                            itemSelector.innerHTML = '';
+                            
+                            // Add episodes for the selected season
+                            showData.seasons[season].forEach(episode => {
+                                const option = document.createElement('option');
+                                option.value = episode.value;
+                                option.textContent = episode.title;
+                                itemSelector.appendChild(option);
+                            });
+                            
+                            // Select first episode by default
+                            if (itemSelector.options.length > 0) {
+                                itemSelector.selectedIndex = 0;
+                                videoPlayer.src = itemSelector.value;
+                            }
+                        });
                     });
-                });
-                
-                // Activate first season button
-                const firstSeasonBtn = seasonContainer.querySelector('.season-btn');
-                if (firstSeasonBtn) {
-                    firstSeasonBtn.classList.add('active');
-                    populateEpisodes(showId, firstSeasonBtn.dataset.season);
+                    
+                    // Click the first season button by default
+                    if (seasonContainer.firstChild) {
+                        seasonContainer.firstChild.click();
+                    }
                 }
-                
-                // Show player section, hide main section
-                document.getElementById('main-section').style.display = 'none';
-                document.getElementById('player-section').style.display = 'block';
-                
-                // Set TV show mode (show the episode selector)
-                document.getElementById('player-container').classList.remove('movie-mode');
-                document.querySelector('.left-panel').style.display = 'flex';
-                document.querySelector('.season-selector').style.display = 'flex';
-                document.getElementById('itemSelector').style.display = 'block';
             });
         });
         
-        // Movie card click handler
+        // Movie cards click event
         document.querySelectorAll('.movie-card').forEach(card => {
             card.addEventListener('click', () => {
-                const movieId = card.dataset.movie;
-                const movieData = contentDatabase.movies[movieId];
+                const movieName = card.dataset.movie;
+                const movieUrl = contentDatabase.movies[movieName];
                 
-                // Set movie title
-                document.getElementById('show-title').textContent = movieData.title;
-                
-                // Set video player source directly
-                document.getElementById('videoPlayer').src = movieData.value;
-                
-                // Show player section, hide main section
-                document.getElementById('main-section').style.display = 'none';
-                document.getElementById('player-section').style.display = 'block';
-                
-                // Set movie mode (hide the episode selector)
-                document.getElementById('player-container').classList.add('movie-mode');
-            });
-        });
-        
-        // Back button handler
-        document.getElementById('back-to-main').addEventListener('click', () => {
-            document.getElementById('player-section').style.display = 'none';
-            document.getElementById('main-section').style.display = 'block';
-            document.getElementById('videoPlayer').src = '';
-        });
-        
-        // Function to populate episodes for a show and season
-        function populateEpisodes(showId, season) {
-            const select = document.getElementById('itemSelector');
-            select.innerHTML = '';
-            
-            const episodes = contentDatabase.shows[showId].seasons[season];
-            episodes.forEach(episode => {
-                const option = document.createElement('option');
-                option.value = episode.value;
-                option.textContent = episode.title;
-                select.appendChild(option);
-            });
-            
-            // Set first episode as default in video player
-            if (episodes.length > 0) {
-                document.getElementById('videoPlayer').src = episodes[0].value;
-            }
-        }
-        
-        // Episode selection handler
-        document.getElementById('itemSelector').addEventListener('change', function() {
-            const selectedVideo = this.value;
-            document.getElementById('videoPlayer').src = selectedVideo;
-        });
-        
-        // Fullscreen button handler
-        document.getElementById('fullscreen-btn').addEventListener('click', function() {
-            const videoContainer = document.querySelector('.video-container');
-            
-            if (videoContainer.classList.contains('fullscreen')) {
-                // Exit fullscreen
-                videoContainer.classList.remove('fullscreen');
-                if (document.fullscreenElement) {
-                    document.exitFullscreen();
+                if (movieUrl) {
+                    mainSection.style.display = 'none';
+                    playerSection.style.display = 'block';
+                    
+                    showTitle.textContent = movieName;
+                    seasonContainer.innerHTML = '';
+                    itemSelector.innerHTML = '';
+                    
+                    const option = document.createElement('option');
+                    option.value = movieUrl;
+                    option.textContent = movieName;
+                    option.selected = true;
+                    itemSelector.appendChild(option);
+                    
+                    videoPlayer.src = movieUrl;
                 }
-            } else {
-                // Enter fullscreen
-                videoContainer.classList.add('fullscreen');
-                videoContainer.requestFullscreen().catch(err => {
-                    // Fallback if requestFullscreen fails
-                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
-                    // Still apply the fullscreen class for our custom fullscreen
-                });
+            });
+        });
+        
+        // Episode selection change event
+        itemSelector.addEventListener('change', () => {
+            videoPlayer.src = itemSelector.value;
+        });
+        
+        // Back button click event
+        backToMainBtn.addEventListener('click', () => {
+            playerSection.style.display = 'none';
+            mainSection.style.display = 'block';
+            videoPlayer.src = '';
+        });
+        
+        // Fullscreen button click event
+        fullscreenBtn.addEventListener('click', () => {
+            if (videoPlayer.requestFullscreen) {
+                videoPlayer.requestFullscreen();
+            } else if (videoPlayer.webkitRequestFullscreen) {
+                videoPlayer.webkitRequestFullscreen();
+            } else if (videoPlayer.mozRequestFullScreen) {
+                videoPlayer.mozRequestFullScreen();
+            } else if (videoPlayer.msRequestFullscreen) {
+                videoPlayer.msRequestFullscreen();
             }
         });
         
-        // Also handle ESC key for exiting fullscreen
-        document.addEventListener('fullscreenchange', function() {
-            const videoContainer = document.querySelector('.video-container');
-            if (!document.fullscreenElement && videoContainer.classList.contains('fullscreen')) {
-                videoContainer.classList.remove('fullscreen');
-            }
+        // Search functionality
+        const searchInput = document.getElementById('search-input');
+        const showCards = document.querySelectorAll('.show-card');
+        const movieCards = document.querySelectorAll('.movie-card');
+        
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            showCards.forEach(card => {
+                const title = card.querySelector('.card-title').textContent.toLowerCase();
+                if (title.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            movieCards.forEach(card => {
+                const title = card.querySelector('.card-title').textContent.toLowerCase();
+                if (title.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
         });
+        
+        // Initialize with TV Shows tab active
+        document.querySelector('.nav-tab[data-tab="tv-shows"]').click();
     </script>
 </body>
 </html>
