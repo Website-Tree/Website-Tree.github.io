@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+  <title>Video Hub - Shows & Movies</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- particles.js for snow effect -->
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <style>
+    /* Base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      background-color: #000000;
+      font-family: 'Montserrat', sans-serif;
+      color: #fff;
+    }
+    
+    #particles-js, #player-particles-js {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: linear-gradient(to bottom, #111111, #000000);
+    }
+    
+    canvas {
+      display: block;
+    }
+    
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #0a0a0a;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #ffffff;
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #cccccc;
+    }
+    
+    ::selection {
+      background-color: #ffffff;
+      color: #000000;
+    }
+    
+    /* Main Container */
+    .container {
+      min-height: 100vh;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* Header styles */
+    header {
+      text-align: center;
+      padding: 1rem 0;
+      position: relative;
+      z-index: 10;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.7s ease;
+    }
+    
+    header.loaded {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .title {
+      font-size: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-weight: 900;
+      margin-bottom: 1rem;
+      position: relative;
+      display: inline-block;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      background-image: linear-gradient(to right, white, #a0a0a0);
+    }
+    
+    .title::after {
+      content: '';
+      position: absolute;
+      bottom: -0.25rem;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background-color: white;
+    }
+    
+    /* Navigation styles */
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      padding: 0 1rem;
+    }
+    
+    .tab-btn {
+      position: relative;
+      padding: 0.5rem 1rem;
+      border: 1px solid white;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.75rem;
+      overflow: hidden;
+      background-color: transparent;
+      color: white;
+    }
+    
+    .tab-btn.active {
+      background-color: white;
+      color: black;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.25);
+    }
+    
+    .tab-btn:not(.active):hover {
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
+    }
+    
+    .tab-btn:not(.active):hover span {
+      color: black;
+    }
+    
+    .tab-btn span {
+      position: relative;
+      z-index: 10;
+      transition: color 0.3s ease;
+    }
+    
+    .tab-btn:not(.active)::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 0;
+      transition: all 0.3s ease-out;
+      background-color: white;
+      z-index: 0;
+    }
+    
+    .tab-btn:not(.active):hover::after {
+      height: 100%;
+    }
+    
+    /* Content section styles */
+    section.content {
+      padding: 0 0.75rem;
+      padding-bottom: 2.5rem;
+      transition: all 0.5s ease;
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
+      position: absolute;
+      width: 100%;
+      z-index: 0;
+    }
+    
+    section.content.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      position: relative;
+      z-index: 5;
+    }
+    
+    .content-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    @media (min-width: 640px) {
+      .content-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    
+    @media (min-width: 768px) {
+      .content-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+      }
+      
+      header .title {
+        font-size: 2rem;
+      }
+    }
+    
+    @media (min-width: 1024px) {
+      .content-grid {
+        grid-template-columns: repeat(6, 1fr);
+      }
+    }
+    
+    @media (min-width: 1280px) {
+      .content-grid {
+        grid-template-columns: repeat(8, 1fr);
+      }
+    }
+    
+    /* Content Card styles - MODIFIED to be full width/height */
+    .content-card {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.7s ease;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .content-card.loaded {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .card {
+      position: relative;
+      border: 1px solid white;
+      border-radius: 0.375rem;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      background-color: rgba(0, 0, 0, 0.7);
+      aspect-ratio: 2/3;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 255, 255, 0.15);
+    }
+    
+    .card-image {
+      height: 100%;
+      width: 100%;
+      background-size: cover;
+      background-position: center;
+      transition: all 0.5s ease;
+    }
+    
+    .card:hover .card-image {
+      transform: scale(1.05);
+    }
+    
+    /* MODIFIED: Title only shows on hover */
+    .card-title {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0.5rem;
+      text-align: center;
+      font-weight: 500;
+      background-color: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      transition: all 0.3s ease;
+      border-top: 1px solid white;
+      font-size: 0.75rem;
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    
+    .card:hover .card-title {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent, black);
+      opacity: 0.3;
+    }
+    
+    .card-tag {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      display: inline-block;
+      padding: 0.125rem 0.375rem;
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background-color: white;
+      color: black;
+      border-radius: 9999px;
+      font-weight: 700;
+    }
+    
+    /* Footer styles */
+    footer {
+      text-align: center;
+      padding: 0.5rem 0;
+      font-size: 0.75rem;
+      color: #a0a0a0;
+      position: relative;
+      z-index: 10;
+      opacity: 0;
+      transition: all 0.7s ease;
+    }
+    
+    footer.loaded {
+      opacity: 0.7;
+    }
+    
+    /* Player styles */
+    .player-container {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background-color: black;
+      display: none;
+    }
+    
+    .player-container.active {
+      display: block;
+    }
+    
+    .back-btn {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.75rem;
+      z-index: 10;
+      padding: 0.375rem 0.75rem;
+      background-color: black;
+      color: white;
+      border: 1px solid white;
+      border-radius: 9999px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      font-size: 0.75rem;
+      transform: translateY(-10px);
+      opacity: 0;
+      cursor: pointer;
+    }
+    
+    .back-btn.loaded {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    .back-btn:hover {
+      background-color: white;
+      color: black;
+    }
+    
+    .player-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      height: 100vh;
+      padding-top: 3rem;
+      transition: opacity 0.7s ease;
+      opacity: 0;
+      align-items: center;
+    }
+    
+    .player-content.loaded {
+      opacity: 1;
+    }
+    
+    /* Video container - auto-adjusts to video size */
+    .video-container {
+      flex: 3;
+      border: 1px solid white;
+      border-radius: 0.375rem;
+      overflow: hidden;
+      background-color: black;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+      width: 100%;
+      /* Fixed aspect ratio for video container */
+      aspect-ratio: 16/9;
+      position: relative;
+    }
+    
+    #videoPlayer {
+      border: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: black;
+    }
+    
+    @media (min-width: 768px) {
+      .player-content {
+        flex-direction: row;
+        padding: 1.5rem;
+      }
+    }
+    
+    /* Sidebar for shows */
+    .sidebar {
+      flex: 1;
+      border: 1px solid white;
+      border-radius: 0.375rem;
+      padding: 0.75rem;
+      background-color: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 25%;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+      transition: all 0.5s ease;
+    }
+    
+    @media (min-width: 768px) {
+      .sidebar {
+        height: auto;
+      }
+    }
+    
+    .sidebar-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      position: relative;
+      display: inline-block;
+      align-self: center;
+    }
+    
+    .sidebar-title::after {
+      content: '';
+      position: absolute;
+      bottom: -0.125rem;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background-color: white;
+    }
+    
+    .seasons-grid {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+    
+    .season-btn {
+      flex: 1;
+      padding: 0.25rem 0.5rem;
+      border: 1px solid white;
+      border-radius: 0.25rem;
+      transition: all 0.3s ease;
+      min-width: 30px;
+      text-align: center;
+      font-weight: 500;
+      font-size: 0.75rem;
+      background-color: transparent;
+      color: white;
+      cursor: pointer;
+    }
+    
+    .season-btn.active {
+      background-color: white;
+      color: black;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+    
+    .season-btn:hover:not(.active) {
+      background-color: white;
+      color: black;
+    }
+    
+    .episode-list {
+      flex-grow: 1;
+      border: 1px solid white;
+      border-radius: 0.25rem;
+      overflow: hidden;
+    }
+    
+    .episode-select {
+      width: 100%;
+      height: 100%;
+      padding: 0.5rem;
+      background-color: black;
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      outline: none;
+      font-size: 0.75rem;
+      overflow-y: auto;
+    }
+    
+    .episode-select:focus {
+      box-shadow: 0 0 0 1px white;
+    }
+    
+    .episode-select option {
+      padding: 0.5rem;
+      margin-bottom: 0.25rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Particles container for snow effect -->
+  <div id="particles-js"></div>
+  <div id="player-particles-js"></div>
+
+  <div class="container">
+    <header>
+      <h1 class="title">Video Hub</h1>
+      <nav>
+        <button class="tab-btn active" data-tab="movies"><span>Movies</span></button>
+        <button class="tab-btn" data-tab="shows"><span>TV Shows</span></button>
+      </nav>
+    </header>
+
+    <section id="movies" class="content active">
+      <div class="content-grid" id="moviesGrid">
+        <!-- Movies will be dynamically added here -->
+      </div>
+    </section>
+
+    <section id="shows" class="content">
+      <div class="content-grid" id="showsGrid">
+        <!-- Shows will be dynamically added here -->
+      </div>
+    </section>
+
+    <footer>
+      <p>&copy; 2023 Video Hub. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <div class="player-container">
+    <button class="back-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      <span>Back</span>
+    </button>
+    <div class="player-content">
+      <div class="video-container">
+        <!-- Using iframe for Google Drive videos -->
+        <iframe id="videoPlayer" allowfullscreen allow="autoplay" src=""></iframe>
+      </div>
+      <div class="sidebar">
+        <h3 class="sidebar-title">Episodes</h3>
+        <div class="seasons-grid" id="seasonsGrid">
+          <!-- Season buttons will be dynamically added here -->
+        </div>
+        <div class="episode-list">
+          <select class="episode-select" id="episodeSelect" size="10">
+            <!-- Episodes will be dynamically added here -->
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sample data for movies and shows
+    const movies = [
+      // You can add Google Drive links directly as the video source
+      // Example with the link you provided
+      { id: 1, title: "The Matrix", image: "https://placehold.co/600x900/222/fff?text=The+Matrix", tag: "", videoUrl: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
+      { id: 2, title: "Terrifier 2", image: "https://wallpapercave.com/wp/wp11570036.jpg", tag: "", videoUrl: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
+      { id: 3, title: "Terrifier 3", image: "https://mlpnk72yciwc.i.optimole.com/cqhiHLc.IIZS~2ef73/w:auto/h:auto/q:75/https://bleedingcool.com/wp-content/uploads/2024/08/terrifier_three_ver2_xxlg.jpg", tag: "", videoUrl: "https://drive.google.com/file/d/1MKAvj7e9nSE1lsLRC6uFGOTqTHiAeM6l/preview" },
+      { id: 4, title: "Art Attack The Dissection of Terrifier 3", image: "https://raw.githubusercontent.com/Website-Tree/Website-Tree.github.io/refs/heads/main/Movie%20Website/pic/OIP.png", tag: "", videoUrl: "https://drive.google.com/file/d/1Y2XPYXug37JQCJWuw_U6wjz6iDOEUZlM/preview" },
+      { id: 5, title: "The Dark Knight", image: "https://placehold.co/600x900/222/fff?text=Dark+Knight", tag: "", videoUrl: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
+      { id: 6, title: "Pulp Fiction", image: "https://placehold.co/600x900/222/fff?text=Pulp+Fiction", tag: "", videoUrl: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
+      { id: 7, title: "Fight Club", image: "https://placehold.co/600x900/222/fff?text=Fight+Club", tag: "", videoUrl: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
+      { id: 8, title: "The Godfather", image: "https://placehold.co/600x900/222/fff?text=Godfather", tag: "", videoUrl: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
+      { id: 9, title: "Avatar", image: "https://placehold.co/600x900/222/fff?text=Avatar", tag: "", videoUrl: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
+      { id: 10, title: "Jurassic Park", image: "https://placehold.co/600x900/222/fff?text=Jurassic+Park", tag: "", videoUrl: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
+      { id: 11, title: "Titanic", image: "https://placehold.co/600x900/222/fff?text=Titanic", tag: "", videoUrl: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
+      { id: 12, title: "The Lion King", image: "https://placehold.co/600x900/222/fff?text=Lion+King", tag: "", videoUrl: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
+    ];
+
+    const shows = [
+      { 
+        id: 1, 
+        title: "Breaking Bad", 
+        image: "https://placehold.co/600x900/222/fff?text=Breaking+Bad", 
+        tag: "drama",
+        seasons: [
+          { 
+            number: 1, 
+            episodes: [
+              { number: 1, title: "Pilot", url: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
+              { number: 2, title: "Cat's in the Bag...", url: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
+              { number: 3, title: "...And the Bag's in the River", url: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" }
+            ]
+          },
+          {
+            number: 2,
+            episodes: [
+              { number: 1, title: "Seven Thirty-Seven", url: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
+              { number: 2, title: "Grilled", url: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
+              { number: 3, title: "Bit by a Dead Bee", url: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" }
+            ]
+          }
+        ]
+      },
+      { 
+        id: 2, 
+        title: "Game of Thrones", 
+        image: "https://placehold.co/600x900/222/fff?text=Game+of+Thrones", 
+        tag: "fantasy",
+        seasons: [
+          { 
+            number: 1, 
+            episodes: [
+              { number: 1, title: "Winter Is Coming", url: "https://example.com/got1.mp4" },
+              { number: 2, title: "The Kingsroad", url: "https://example.com/got2.mp4" },
+              { number: 3, title: "Lord Snow", url: "https://example.com/got3.mp4" }
+            ]
+          },
+          {
+            number: 2,
+            episodes: [
+              { number: 1, title: "The North Remembers", url: "https://example.com/got4.mp4" },
+              { number: 2, title: "The Night Lands", url: "https://example.com/got5.mp4" },
+              { number: 3, title: "What Is Dead May Never Die", url: "https://example.com/got6.mp4" }
+            ]
+          }
+        ]
+      },
+      { 
+        id: 3, 
+        title: "Stranger Things", 
+        image: "https://placehold.co/600x900/222/fff?text=Stranger+Things", 
+        tag: "sci-fi",
+        seasons: [
+          { 
+            number: 1, 
+            episodes: [
+              { number: 1, title: "Chapter One: The Vanishing of Will Byers", url: "https://example.com/st1.mp4" },
+              { number: 2, title: "Chapter Two: The Weirdo on Maple Street", url: "https://example.com/st2.mp4" },
+              { number: 3, title: "Chapter Three: Holly, Jolly", url: "https://example.com/st3.mp4" }
+            ]
+          },
+          {
+            number: 2,
+            episodes: [
+              { number: 1, title: "Chapter One: MADMAX", url: "https://example.com/st4.mp4" },
+              { number: 2, title: "Chapter Two: Trick or Treat, Freak", url: "https://example.com/st5.mp4" },
+              { number: 3, title: "Chapter Three: The Pollywog", url: "https://example.com/st6.mp4" }
+            ]
+          }
+        ]
+      },
+      { 
+        id: 4, 
+        title: "The Office", 
+        image: "https://placehold.co/600x900/222/fff?text=The+Office", 
+        tag: "comedy",
+        seasons: [
+          { 
+            number: 1, 
+            episodes: [
+              { number: 1, title: "Pilot", url: "https://example.com/office1.mp4" },
+              { number: 2, title: "Diversity Day", url: "https://example.com/office2.mp4" },
+              { number: 3, title: "Health Care", url: "https://example.com/office3.mp4" }
+            ]
+          },
+          {
+            number: 2,
+            episodes: [
+              { number: 1, title: "The Dundies", url: "https://example.com/office4.mp4" },
+              { number: 2, title: "Sexual Harassment", url: "https://example.com/office5.mp4" },
+              { number: 3, title: "Office Olympics", url: "https://example.com/office6.mp4" }
+            ]
+          }
+        ]
+      },
+      { id: 5, title: "Friends", image: "https://placehold.co/600x900/222/fff?text=Friends", tag: "comedy" },
+      { id: 6, title: "The Crown", image: "https://placehold.co/600x900/222/fff?text=The+Crown", tag: "drama" },
+      { id: 7, title: "Westworld", image: "https://placehold.co/600x900/222/fff?text=Westworld", tag: "sci-fi" },
+      { id: 8, title: "Black Mirror", image: "https://placehold.co/600x900/222/fff?text=Black+Mirror", tag: "thriller" },
+    ];
+
+    // Configure snow particles
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize particles.js for main background
+      particlesJS('particles-js', {
+        "particles": {
+          "number": {
+            "value": 200,
+            "density": {
+              "enable": true,
+              "value_area": 800
+            }
+          },
+          "color": {
+            "value": "#ffffff"
+          },
+          "shape": {
+            "type": "circle",
+            "stroke": {
+              "width": 0,
+              "color": "#000000"
+            }
+          },
+          "opacity": {
+            "value": 0.5,
+            "random": true,
+            "anim": {
+              "enable": false,
+              "speed": 1,
+              "opacity_min": 0.1,
+              "sync": false
+            }
+          },
+          "size": {
+            "value": 3,
+            "random": true,
+            "anim": {
+              "enable": false,
+              "speed": 40,
+              "size_min": 0.1,
+              "sync": false
+            }
+          },
+          "line_linked": {
+            "enable": false
+          },
+          "move": {
+            "enable": true,
+            "speed": 2,
+            "direction": "bottom",
+            "random": false,
+            "straight": false,
+            "out_mode": "out",
+            "bounce": false
+          }
+        },
+        "interactivity": {
+          "detect_on": "canvas",
+          "events": {
+            "onhover": {
+              "enable": true,
+              "mode": "repulse"
+            },
+            "onclick": {
+              "enable": true,
+              "mode": "push"
+            },
+            "resize": true
+          },
+          "modes": {
+            "repulse": {
+              "distance": 50,
+              "duration": 0.4
+            },
+            "push": {
+              "particles_nb": 4
+            }
+          }
+        },
+        "retina_detect": true
+      });
+
+      // Initialize particles for player background
+      particlesJS('player-particles-js', {
+        "particles": {
+          "number": {
+            "value": 200,
+            "density": {
+              "enable": true,
+              "value_area": 800
+            }
+          },
+          "color": {
+            "value": "#ffffff"
+          },
+          "shape": {
+            "type": "circle",
+            "stroke": {
+              "width": 0,
+              "color": "#000000"
+            }
+          },
+          "opacity": {
+            "value": 0.5,
+            "random": true,
+            "anim": {
+              "enable": false,
+              "speed": 1,
+              "opacity_min": 0.1,
+              "sync": false
+            }
+          },
+          "size": {
+            "value": 3,
+            "random": true,
+            "anim": {
+              "enable": false,
+              "speed": 40,
+              "size_min": 0.1,
+              "sync": false
+            }
+          },
+          "line_linked": {
+            "enable": false
+          },
+          "move": {
+            "enable": true,
+            "speed": 2,
+            "direction": "bottom",
+            "random": false,
+            "straight": false,
+            "out_mode": "out",
+            "bounce": false
+          }
+        },
+        "interactivity": {
+          "detect_on": "canvas",
+          "events": {
+            "onhover": {
+              "enable": true,
+              "mode": "repulse"
+            },
+            "onclick": {
+              "enable": true,
+              "mode": "push"
+            },
+            "resize": true
+          },
+          "modes": {
+            "repulse": {
+              "distance": 50,
+              "duration": 0.4
+            },
+            "push": {
+              "particles_nb": 4
+            }
+          }
+        },
+        "retina_detect": true
+      });
+      
+      // Load UI components with animation
+      setTimeout(() => {
+        document.querySelector('header').classList.add('loaded');
+        document.querySelector('footer').classList.add('loaded');
+        loadMovies();
+        loadShows();
+      }, 300);
+
+      // Handle tab switching
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const tabName = this.getAttribute('data-tab');
+          
+          // Update tab buttons
+          tabBtns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          
+          // Show corresponding content
+          document.querySelectorAll('.content').forEach(content => {
+            content.classList.remove('active');
+          });
+          document.getElementById(tabName).classList.add('active');
+        });
+      });
+
+      // Handle back button click (FIX: stop video when clicking back)
+      const backBtn = document.querySelector('.back-btn');
+      backBtn.addEventListener('click', function() {
+        const playerContainer = document.querySelector('.player-container');
+        const videoPlayer = document.getElementById('videoPlayer');
+        
+        // Stop video playback by clearing the iframe source
+        videoPlayer.src = "";
+        
+        // Hide player
+        playerContainer.classList.remove('active');
+      });
+    });
+
+    // Load movies into grid
+    function loadMovies() {
+      const moviesGrid = document.getElementById('moviesGrid');
+      moviesGrid.innerHTML = '';
+      
+      movies.forEach((movie, index) => {
+        const delay = 100 + (index * 50);
+        const card = createCard(movie, delay, 'movie');
+        moviesGrid.appendChild(card);
+      });
+    }
+
+    // Load shows into grid
+    function loadShows() {
+      const showsGrid = document.getElementById('showsGrid');
+      showsGrid.innerHTML = '';
+      
+      shows.forEach((show, index) => {
+        const delay = 100 + (index * 50);
+        const card = createCard(show, delay, 'show');
+        showsGrid.appendChild(card);
+      });
+    }
+
+    // Create a card element
+    function createCard(item, delay, type) {
+      const card = document.createElement('div');
+      card.className = 'content-card';
+      card.innerHTML = `
+        <div class="card" data-id="${item.id}" data-type="${type}">
+          <div class="card-image" style="background-image: url('${item.image}')"></div>
+          <div class="card-overlay"></div>
+          <div class="card-title">${item.title}</div>
+          <div class="card-tag">${item.tag}</div>
+        </div>
+      `;
+      
+      setTimeout(() => {
+        card.classList.add('loaded');
+      }, delay);
+      
+      // Add click event to open player
+      card.querySelector('.card').addEventListener('click', function() {
+        const id = this.getAttribute('data-id');
+        const type = this.getAttribute('data-type');
+        openPlayer(id, type);
+      });
+      
+      return card;
+    }
+
+    // Open the player with selected content
+    function openPlayer(id, type) {
+      const playerContainer = document.querySelector('.player-container');
+      const videoPlayer = document.getElementById('videoPlayer');
+      const backBtn = document.querySelector('.back-btn');
+      const playerContent = document.querySelector('.player-content');
+      const sidebar = document.querySelector('.sidebar');
+      
+      // Reset UI
+      backBtn.classList.remove('loaded');
+      playerContent.classList.remove('loaded');
+      
+      if (type === 'movie') {
+        // For movies, we'll hide the sidebar
+        sidebar.style.display = 'none';
+        const movie = movies.find(m => m.id == id);
+        if (movie) {
+          // Set Google Drive video URL
+          videoPlayer.src = movie.videoUrl;
+          
+          // Show player UI with animation
+          playerContainer.classList.add('active');
+          setTimeout(() => {
+            backBtn.classList.add('loaded');
+            playerContent.classList.add('loaded');
+          }, 100);
+        }
+      } else if (type === 'show') {
+        // For shows, we'll show the sidebar
+        sidebar.style.display = 'flex';
+        const show = shows.find(s => s.id == id);
+        if (show && show.seasons) {
+          // Load seasons
+          loadSeasons(show);
+          
+          // Set initial episode
+          if (show.seasons[0] && show.seasons[0].episodes[0]) {
+            videoPlayer.src = show.seasons[0].episodes[0].url;
+          }
+          
+          // Show player UI with animation
+          playerContainer.classList.add('active');
+          setTimeout(() => {
+            backBtn.classList.add('loaded');
+            playerContent.classList.add('loaded');
+          }, 100);
+        }
+      }
+    }
+
+    // Load seasons and episodes for a show
+    function loadSeasons(show) {
+      const seasonsGrid = document.getElementById('seasonsGrid');
+      const episodeSelect = document.getElementById('episodeSelect');
+      
+      // Clear previous data
+      seasonsGrid.innerHTML = '';
+      episodeSelect.innerHTML = '';
+      
+      // Load seasons
+      if (show.seasons && show.seasons.length > 0) {
+        show.seasons.forEach((season, index) => {
+          const seasonBtn = document.createElement('button');
+          seasonBtn.className = 'season-btn' + (index === 0 ? ' active' : '');
+          seasonBtn.textContent = 'S' + season.number;
+          seasonBtn.setAttribute('data-season', season.number);
+          
+          seasonBtn.addEventListener('click', function() {
+            // Update active button
+            document.querySelectorAll('.season-btn').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Load episodes for this season
+            loadEpisodes(show, season.number);
+          });
+          
+          seasonsGrid.appendChild(seasonBtn);
+        });
+        
+        // Load episodes for first season by default
+        loadEpisodes(show, show.seasons[0].number);
+      }
+    }
+
+    // Load episodes for a specific season
+    function loadEpisodes(show, seasonNumber) {
+      const episodeSelect = document.getElementById('episodeSelect');
+      const videoPlayer = document.getElementById('videoPlayer');
+      
+      // Clear previous episodes
+      episodeSelect.innerHTML = '';
+      
+      // Find the season
+      const season = show.seasons.find(s => s.number == seasonNumber);
+      if (season && season.episodes) {
+        // Add episodes to select
+        season.episodes.forEach(episode => {
+          const option = document.createElement('option');
+          option.value = episode.url;
+          option.textContent = `E${episode.number}: ${episode.title}`;
+          episodeSelect.appendChild(option);
+        });
+        
+        // Set first episode as selected
+        if (season.episodes.length > 0) {
+          episodeSelect.value = season.episodes[0].url;
+          videoPlayer.src = season.episodes[0].url;
+        }
+        
+        // Add change event to select
+        episodeSelect.addEventListener('change', function() {
+          videoPlayer.src = this.value;
+          videoPlayer.play();
+        });
+      }
+    }
+  </script>
+</body>
+</html>
