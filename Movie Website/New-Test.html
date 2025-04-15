@@ -617,12 +617,20 @@
     const shows = [
       { 
         id: 1, 
-        title: "Breaking Bad", 
-        image: "https://placehold.co/600x900/222/fff?text=Breaking+Bad", 
-        tag: "drama",
+        title: "The Boys", 
+        image: "https://m.media-amazon.com/images/M/MV5BMWJlN2U5MzItNjU4My00NTM2LWFjOWUtOWFiNjg3ZTMxZDY1XkEyXkFqcGc@._V1_.jpg", 
+        tag: "",
         seasons: [
           { 
             number: 1, 
+            episodes: [
+              { number: 1, title: "The Name of the Game", url: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
+              { number: 2, title: "Cat's in the Bag...", url: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
+              { number: 3, title: "...And the Bag's in the River", url: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" }
+            ]
+          },
+          {
+                        number: 2, 
             episodes: [
               { number: 1, title: "Pilot", url: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
               { number: 2, title: "Cat's in the Bag...", url: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
@@ -630,91 +638,23 @@
             ]
           },
           {
-            number: 2,
+          number: 3, 
             episodes: [
-              { number: 1, title: "Seven Thirty-Seven", url: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
-              { number: 2, title: "Grilled", url: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
-              { number: 3, title: "Bit by a Dead Bee", url: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" }
-            ]
-          }
-        ]
-      },
-      { 
-        id: 2, 
-        title: "Game of Thrones", 
-        image: "https://placehold.co/600x900/222/fff?text=Game+of+Thrones", 
-        tag: "fantasy",
-        seasons: [
-          { 
-            number: 1, 
-            episodes: [
-              { number: 1, title: "Winter Is Coming", url: "https://example.com/got1.mp4" },
-              { number: 2, title: "The Kingsroad", url: "https://example.com/got2.mp4" },
-              { number: 3, title: "Lord Snow", url: "https://example.com/got3.mp4" }
+              { number: 1, title: "Pilot", url: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
+              { number: 2, title: "Cat's in the Bag...", url: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
+              { number: 3, title: "...And the Bag's in the River", url: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" }
             ]
           },
           {
-            number: 2,
+            number: 4, 
             episodes: [
-              { number: 1, title: "The North Remembers", url: "https://example.com/got4.mp4" },
-              { number: 2, title: "The Night Lands", url: "https://example.com/got5.mp4" },
-              { number: 3, title: "What Is Dead May Never Die", url: "https://example.com/got6.mp4" }
+              { number: 1, title: "Pilot", url: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
+              { number: 2, title: "Cat's in the Bag...", url: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" },
+              { number: 3, title: "...And the Bag's in the River", url: "https://drive.google.com/file/d/1s15nZ5Y3cby2dAiz8uLmtZWxU5-VGNEL/preview" }
             ]
           }
         ]
       },
-      { 
-        id: 3, 
-        title: "Stranger Things", 
-        image: "https://placehold.co/600x900/222/fff?text=Stranger+Things", 
-        tag: "sci-fi",
-        seasons: [
-          { 
-            number: 1, 
-            episodes: [
-              { number: 1, title: "Chapter One: The Vanishing of Will Byers", url: "https://example.com/st1.mp4" },
-              { number: 2, title: "Chapter Two: The Weirdo on Maple Street", url: "https://example.com/st2.mp4" },
-              { number: 3, title: "Chapter Three: Holly, Jolly", url: "https://example.com/st3.mp4" }
-            ]
-          },
-          {
-            number: 2,
-            episodes: [
-              { number: 1, title: "Chapter One: MADMAX", url: "https://example.com/st4.mp4" },
-              { number: 2, title: "Chapter Two: Trick or Treat, Freak", url: "https://example.com/st5.mp4" },
-              { number: 3, title: "Chapter Three: The Pollywog", url: "https://example.com/st6.mp4" }
-            ]
-          }
-        ]
-      },
-      { 
-        id: 4, 
-        title: "The Office", 
-        image: "https://placehold.co/600x900/222/fff?text=The+Office", 
-        tag: "comedy",
-        seasons: [
-          { 
-            number: 1, 
-            episodes: [
-              { number: 1, title: "Pilot", url: "https://example.com/office1.mp4" },
-              { number: 2, title: "Diversity Day", url: "https://example.com/office2.mp4" },
-              { number: 3, title: "Health Care", url: "https://example.com/office3.mp4" }
-            ]
-          },
-          {
-            number: 2,
-            episodes: [
-              { number: 1, title: "The Dundies", url: "https://example.com/office4.mp4" },
-              { number: 2, title: "Sexual Harassment", url: "https://example.com/office5.mp4" },
-              { number: 3, title: "Office Olympics", url: "https://example.com/office6.mp4" }
-            ]
-          }
-        ]
-      },
-      { id: 5, title: "Friends", image: "https://placehold.co/600x900/222/fff?text=Friends", tag: "comedy" },
-      { id: 6, title: "The Crown", image: "https://placehold.co/600x900/222/fff?text=The+Crown", tag: "drama" },
-      { id: 7, title: "Westworld", image: "https://placehold.co/600x900/222/fff?text=Westworld", tag: "sci-fi" },
-      { id: 8, title: "Black Mirror", image: "https://placehold.co/600x900/222/fff?text=Black+Mirror", tag: "thriller" },
     ];
 
     // Configure snow particles
