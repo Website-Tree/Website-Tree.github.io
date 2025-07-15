@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Animated Black & White Snow with Cool Menu Image</title>
+  <style>
+    /* Reset and base styles */
+    html, body {
+      margin: 0; padding: 0; height:100%;
+      background: #000;
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+      user-select: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      perspective: 1000px;
+    }
+    /* Snow canvas behind all */
+    canvas#snow {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      filter: drop-shadow(0 0 2px white);
+    }
+
+    /* Container for menu and download */
+    #container {
+      z-index: 10;
+      text-align: center;
+      max-width: 320px;
+      width: 90vw;
+    }
+
+    h1 {
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-shadow: 0 0 6px #fff;
+    }
+
+    /* Cool animated menu image style */
+    #menu-image {
+      width: 280px;
+      max-width: 90vw;
+      margin: 0 auto 30px;
+      border: 3px solid #fff;
+      border-radius: 12px;
+      box-shadow: 0 0 15px white;
+      animation: menuFloat 6s ease-in-out infinite, menuGlow 3s ease-in-out infinite;
+      transform-style: preserve-3d;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      display: block;
+    }
+    #menu-image:hover {
+      animation-play-state: paused;
+      transform: rotateY(15deg) rotateX(10deg) scale(1.05);
+      box-shadow:
+        0 0 20px 3px white,
+        0 0 30px 5px #fff,
+        0 0 40px 10px white;
+      filter: brightness(1.2);
+    }
+
+    @keyframes menuFloat {
+      0%, 100% { transform: translateY(0) rotateZ(0deg); }
+      50% { transform: translateY(-15px) rotateZ(5deg); }
+    }
+
+    @keyframes menuGlow {
+      0%, 100% {
+        box-shadow:
+          0 0 15px white;
+      }
+      50% {
+        box-shadow:
+          0 0 30px 5px white;
+      }
+    }
+
+    /* Download button styling */
+    a.download-btn {
+      display: inline-block;
+      background: #fff;
+      color: #000;
+      text-decoration: none;
+      font-weight: 700;
+      padding: 14px 32px;
+      border-radius: 8px;
+      box-shadow: 0 0 12px #fff;
+      transition: background 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
+      user-select: none;
+      letter-spacing: 0.02em;
+      font-size: 1.1rem;
+    }
+    a.download-btn:hover {
+      background: #000;
+      color: #fff;
+      box-shadow:
+        0 0 20px 4px white,
+        0 0 40px 8px #fff;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="snow"></canvas>
+
+<div id="container">
+  <h1>CS2 Visual Helper Menu</h1>
+  <!-- Replace 'menu-image.png' with your actual image file path -->
+  <img id="menu-image" src="menu-image.png" alt="Menu Image" draggable="false" title="Menu Image" />
+  <!-- Replace 'yourfile.extension' with your downloadable file path -->
+  <a href="yourfile.extension" download class="download-btn" aria-label="Download file">Download File</a>
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('snow');
+  const ctx = canvas.getContext('2d');
+
+  let W = window.innerWidth;
+  let H = window.innerHeight;
+  canvas.width = W;
+  canvas.height = H;
+
+  const flakes = [];
+  const maxFlakes = 130;
+
+  function randomRange(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  class Snowflake {
+    constructor() {
+      this.reset();
+    }
+    reset() {
+      this.x = Math.random() * W;
+      this.y = Math.random() * -H;
+      this.radius = randomRange(1, 3.5);
+      this.speed = randomRange(1, 3);
+      this.opacity = randomRange(0.25, 0.9);
+      this.wind = randomRange(-0.7, 0.7);
+      this.tilt = randomRange(-0.5, 0.5);
+      this.tiltAngle = 0;
+      this.tiltSpeed = randomRange(0.02, 0.05);
+    }
+    update() {
+      this.y += this.speed;
+      this.x += this.wind;
+      this.tiltAngle += this.tiltSpeed;
+      this.tilt = Math.sin(this.tiltAngle) * 15;
+
+      if (this.y > H) {
+        this.y = 0;
+        this.x = Math.random() * W;
+      }
+      if (this.x > W) this.x = 0;
+      if (this.x < 0) this.x = W;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(255,255,255,${this.opacity})`;
+      ctx.shadowColor = 'white';
+      ctx.shadowBlur = 5;
+      ctx.moveTo(this.x + this.tilt, this.y);
+      ctx.lineTo(this.x + this.tilt + this.radius / 2, this.y + this.radius);
+      ctx.lineTo(this.x + this.tilt - this.radius / 2, this.y + this.radius);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+
+  function initFlakes(){
+    flakes.length = 0;
+    for (let i = 0; i < maxFlakes; i++) {
+      flakes.push(new Snowflake());
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    for (const flake of flakes){
+      flake.update();
+      flake.draw();
+    }
+    requestAnimationFrame(animate);
+  }
+
+  window.addEventListener('resize', () => {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W;
+    canvas.height = H;
+    initFlakes();
+  });
+
+  initFlakes();
+  animate();
+})();
+</script>
+
+</body>
+</html>
